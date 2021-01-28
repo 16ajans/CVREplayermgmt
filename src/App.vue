@@ -1,13 +1,13 @@
 
 <template>
   <v-app class="growy">
-    <v-app-bar app>
+    <v-app-bar app color="primary">
       <v-img alt="CVRE Logo" src="./assets/logo.png" />
-      <v-tabs>
+      <v-tabs color="white">
         <v-tab to="/beatsaber">Beat Saber</v-tab>
         <v-tab to="/echoarena">Echo Arena</v-tab>
         <v-spacer></v-spacer>
-        <v-tab to="/captaincorner">Captain's Corner</v-tab>
+        <v-tab to="/captainscorner">Captain's Corner</v-tab>
       </v-tabs>
     </v-app-bar>
     <v-main>

@@ -23,7 +23,7 @@ const routes = [
     component: () => import('../views/EA.vue')
   },
   {
-    path: '/captaincorner',
+    path: '/captainscorner',
     name: 'Captain\'s Corner',
     component: () => import('../views/CC.vue')
   }
