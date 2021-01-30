@@ -73,7 +73,20 @@
         <option value="BS">Beat Saber</option>
         <option value="EA">Echo Arena</option>
       </select>
+      <label for="teamNameInput">Team name:</label>
+      <input id="teamNameInput" type="text"><br>
+      <label for="playerNameInput">Player name:</label>
+      <input id="playerNameInput" type="text">
+      <button id="addPlayerButton" type="submit">Add Player</button>
     </form>
+
+    <table id="playerTable">
+      <tr>
+        <th>No players!</th>
+      </tr>
+    </table>
+
+    <button id="saveTeamButton">Save Team</button>
   </div>
 
   <script>
@@ -159,6 +172,7 @@
           document.getElementById("loggedPanel").style.display = "none";
           document.getElementById("approvedPanel").style.display = "none";
           document.getElementById("adminPanel").style.display = "none";
+          document.getElementById("teamCreationPanel").style.display = "none";
         }
 
       });
@@ -193,8 +207,53 @@
         document.getElementById("orgDisp").innerHTML = orgAttempt;
       });
 
-      document.getElementById("createTeamButton").addEventListener("click", function (event) {
+      var playerArray = [];
 
+      function drawPlayerTable() {
+        let table = document.getElementById("playerTable");
+        if (playerArray.length) {
+          table.innerHTML = "";
+          let currentCell;
+          for (let i = 0; i < playerArray.length; i++) {
+            table.innerHTML += "<tr><th>" + playerArray[i] + " (<span style=\"text-decoration: underline;\" id=" + i + ">remove</span>)" + "</tr></th>";
+            currentCell = document.getElementById(i);
+            currentCell.addEventListener("click", function (event) {
+              playerArray.splice(i, 1);
+              drawPlayerTable();
+            });
+          }
+        } else {
+          table.innerHTML = "<tr><th>No players!</th></tr>";
+        }
+      }
+
+      document.getElementById("createTeamButton").addEventListener("click", function (event) {
+        playerArray = [];
+        drawPlayerTable();
+        teamCreationForm.reset();
+        document.getElementById("teamCreationPanel").style.display = "block";
+      });
+
+      document.getElementById("addPlayerButton").addEventListener("click", function (event) {
+        event.preventDefault();
+        let field = document.getElementById("playerNameInput");
+        playerArray.push(field.value);
+        field.value = "";
+        drawPlayerTable();
+      });
+
+      document.getElementById("saveTeamButton").addEventListener("click", function (event) {
+        if (!document.getElementById("teamNameInput").value) {
+          alert("Please provide a team name.");
+        } else if (playerArray.length == 0) {
+          alert("Please add at least one player.");
+        } else {
+          db.ref(auth.currentUser.uid + "/" + document.getElementById("gameSelect").value + "/" + document.getElementById("teamNameInput").value).set({ ...playerArray });
+          playerArray = [];
+          drawPlayerTable();
+          teamCreationForm.reset();
+          document.getElementById("teamCreationPanel").style.display = "none";
+        }
       });
     });
   </script>
