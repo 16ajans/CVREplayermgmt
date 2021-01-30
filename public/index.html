@@ -10,10 +10,9 @@
   <script defer src="/__/firebase/8.2.5/firebase-app.js"></script>
   <script defer src="/__/firebase/8.2.5/firebase-auth.js"></script>
   <script defer src="/__/firebase/8.2.5/firebase-database.js"></script>
-  <script defer src="/__/firebase/8.2.5/firebase-firestore.js"></script>
   <script defer src="/__/firebase/8.2.5/firebase-storage.js"></script>
 
-  <script defer src="/__/firebase/init.js"></script>
+  <script defer src="/__/firebase/init.js?useEmulator=true"></script>
 </head>
 
 <body>
@@ -36,11 +35,11 @@
   <div style="display: none;" id="loggedPanel">
     <button id="signoutButton">Sign-out</button>
 
-    <p>Current Discord: <span id="discordDisp"></span></p>
+    <p>Current Discord: <span style="font-weight: bold;" id="discordDisp">Still needs to be set.</span></p>
 
     <form id="discordForm">
-      <label for="dispNameInput">Discord Username:</label>
-      <input id="dispNameInput" type="text">
+      <label for="discordInput">Discord Username:</label>
+      <input id="discordInput" type="text">
       <input type="submit" value="Submit">
     </form>
 
@@ -61,6 +60,8 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
+
+      var currentUserData;
 
       firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE)
         .catch((error) => {
@@ -85,10 +86,76 @@
       });
 
       document.getElementById("signinButton").addEventListener("click", function (event) {
-        auth.signInWithEmailAndPassword(document.getElementById("mail").value, document.getElementById("pass").value)
+        event.preventDefault();
+        auth.signInWithEmailAndPassword(document.getElementById("mailInput").value, document.getElementById("passInput").value)
           .catch((error) => {
             alert(error.message);
           });
+      });
+
+      document.getElementById("forgotButton").addEventListener("click", function (event) {
+        auth.sendPasswordResetEmail(document.getElementById("mailInput").value).then(function () {
+          alert("Sent password reset email.");
+        }).catch(function (error) {
+          alert(error.message);
+        });
+      });
+
+      document.getElementById("signoutButton").addEventListener("click", function (event) {
+        auth.signOut()
+          .catch((error) => {
+            alert(error.message);
+          });
+      });
+
+      auth.onAuthStateChanged(function (user) {
+        document.getElementById("loginForm").reset();
+        document.getElementById("discordForm").reset();
+
+        if (user) {
+          db.ref(user.uid).once('value').then((snapshot) => {
+            currentUserData = snapshot.val();
+            try {
+              document.getElementById("welcomeMsg").innerHTML = "Welcome " + currentUserData.discord.match(discordDispRegex) + "!";
+              document.getElementById("discordDisp").innerHTML = currentUserData.discord;
+            } catch (err) {
+              document.getElementById("welcomeMsg").innerHTML = "Welcome! Please set your Discord username."
+            }
+            document.getElementById("unLoggedPanel").style.display = "none";
+            document.getElementById("loggedPanel").style.display = "block";
+            if (currentUserData.approved) {
+              document.getElementById("approvedPanel").style.display = "block";
+            }
+            if (currentUserData.admin) {
+              document.getElementById("adminPanel").style.display = "block";
+            }
+          });
+        } else {
+          document.getElementById("welcomeMsg").innerHTML = "Login to access options & manage your teams.";
+          document.getElementById("unLoggedPanel").style.display = "block";
+          document.getElementById("loggedPanel").style.display = "none";
+          document.getElementById("approvedPanel").style.display = "none";
+          document.getElementById("adminPanel").style.display = "none";
+        }
+
+      });
+      const discordForm = document.getElementById("discordForm");
+      const discordSubRegex = /^[^@#:`]{2,32}#\d{4}$/u;
+      const discordDispRegex = /^[^@#:`]{2,32}/u;
+
+      discordForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        let discordAttempt = document.getElementById("discordInput").value;
+        if (discordSubRegex.test(discordAttempt)) {
+          db.ref(auth.currentUser.uid).update({
+            discord: discordAttempt,
+          });
+          discordForm.reset();
+          document.getElementById("welcomeMsg").innerHTML = "Welcome " + discordAttempt.match(discordDispRegex) + "!";
+          document.getElementById("discordDisp").innerHTML = discordAttempt;
+        } else {
+          alert("The Discord username is badly formatted.");
+        }
       });
 
     });
