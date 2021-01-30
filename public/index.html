@@ -144,7 +144,7 @@
             if (currentUserData.approved) {
               document.getElementById("orgDisp").innerHTML = currentUserData.org;
               document.getElementById("approvedPanel").style.display = "block";
-            } else {
+            } else if (!currentUserData.Admin) {
               document.getElementById("welcomeMsg").innerHTML += " You're still waiting on approval. Please sit tight."
             }
             if (currentUserData.admin) {
