@@ -13,38 +13,34 @@
   <script defer src="/__/firebase/8.2.5/firebase-firestore.js"></script>
   <script defer src="/__/firebase/8.2.5/firebase-storage.js"></script>
 
-  <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-  <script defer src="/__/firebase/init.js?useEmulator=false"></script>
+  <script defer src="/__/firebase/init.js"></script>
 </head>
 
 <body>
 
-  <p id="welcome">Login to access options & manage your teams.</p>
+  <p id="welcomeMsg">Login to access options & manage your teams.</p>
 
-  <div id="notLogged">
-    <form style="display: inline;" id="basicInfo">
-      <label for="mail">Email Address:</label>
-      <input id="mail" type="email">
-      <label for="pass">Password:</label>
-      <input id="pass" type="password"><br>
-      <button type="submit" id="signin">Sign-in</button>
+  <div id="unLoggedPanel">
+    <form style="display: inline;" id="loginForm">
+      <label for="mailInput">Email Address:</label>
+      <input id="mailInput" type="email" autocomplete="username">
+      <label for="passInput">Password:</label>
+      <input id="passInput" type="password" autocomplete="current-password"><br>
+      <button type="submit" id="signinButton">Sign-in</button>
     </form>
 
-    <button id="register">Register</button>
-    <button id="forgot">Forgot Password</button>
+    <button id="registerButton">Register</button>
+    <button id="forgotButton">Forgot Password</button>
   </div>
 
-  <div style="display: none;" id="logged">
-    <button id="signout">Sign-out</button>
+  <div style="display: none;" id="loggedPanel">
+    <button id="signoutButton">Sign-out</button>
 
     <p>Current Discord: <span id="discordDisp"></span></p>
 
-    <form id="userInfo">
-      <label for="dispName">Discord Username:</label>
-      <input id="dispName" type="text">
+    <form id="discordForm">
+      <label for="dispNameInput">Discord Username:</label>
+      <input id="dispNameInput" type="text">
       <input type="submit" value="Submit">
     </form>
 
@@ -52,7 +48,7 @@
 
   <div style="display: none;" id="adminPanel">
     <p>Users awaiting approval:</p>
-    <table id="pendUserList">
+    <table id="pendUserTable">
       <tr>
         <th>Nobody!</th>
       </tr>
@@ -63,22 +59,34 @@
     <p>You're approved now.</p>
   </div>
 
-
-
-
-
-
-
-
   <script>
     document.addEventListener('DOMContentLoaded', function () {
 
-      firebase.auth().onAuthStateChanged(user => { });
-      firebase.database().ref('/path/to/ref').on('value', snapshot => { });
+      const auth = firebase.auth();
+      const db = firebase.database();
+      const stor = firebase.storage();
 
-      firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
+      document.getElementById("registerButton").addEventListener("click", function (event) {
+        auth.createUserWithEmailAndPassword(document.getElementById("mailInput").value, document.getElementById("passInput").value)
+          .then((userCredential) => {
+            db.ref(userCredential.user.uid).set({
+              approved: false,
+            });
+          })
+          .catch((error) => {
+            alert(error.message);
+          });
+      });
 
-      let app = firebase.app();
+      document.getElementById("signinButton").addEventListener("click", function (event) {
+        auth.signInWithEmailAndPassword(document.getElementById("mail").value, document.getElementById("pass").value)
+          .then((userCredential) => {
+
+          })
+          .catch((error) => {
+            alert(error.message);
+          });
+      });
 
     });
   </script>
