@@ -62,6 +62,11 @@
   <script>
     document.addEventListener('DOMContentLoaded', function () {
 
+      firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE)
+        .catch((error) => {
+          alert(error.message);
+        });
+
       const auth = firebase.auth();
       const db = firebase.database();
       const stor = firebase.storage();
@@ -71,6 +76,7 @@
           .then((userCredential) => {
             db.ref(userCredential.user.uid).set({
               approved: false,
+              admin: false,
             });
           })
           .catch((error) => {
@@ -80,9 +86,6 @@
 
       document.getElementById("signinButton").addEventListener("click", function (event) {
         auth.signInWithEmailAndPassword(document.getElementById("mail").value, document.getElementById("pass").value)
-          .then((userCredential) => {
-
-          })
           .catch((error) => {
             alert(error.message);
           });
