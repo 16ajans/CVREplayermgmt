@@ -38,7 +38,7 @@
     <p>Current Discord: <span style="font-weight: bold;" id="discordDisp">Still needs to be set.</span></p>
 
     <form id="discordForm">
-      <label for="discordInput">Update Discord Username:</label>
+      <label for="discordInput">Update Discord username:</label>
       <input id="discordInput" type="text">
       <input type="submit" value="Submit">
     </form>
@@ -55,12 +55,24 @@
   </div>
 
   <div style="display: none;" id="approvedPanel">
-    <p>Current Organization: <span style="font-weight: bold;" id="orgDisp">Still needs to be set.</span></p>
+    <p>Current organization: <span style="font-weight: bold;" id="orgDisp">Still needs to be set.</span></p>
 
     <form id="orgForm">
-      <label for="orgInput">Update Organization Name:</label>
+      <label for="orgInput">Update organization name:</label>
       <input id="orgInput" type="text">
       <input type="submit" value="Submit">
+    </form>
+
+    <button id="createTeamButton">Create New Team</button>
+  </div>
+
+  <div id="teamCreationPanel">
+    <form id="teamCreationForm">
+      <label for="gameSelect">Select game:</label>
+      <select id="gameSelect">
+        <option value="BS">Beat Saber</option>
+        <option value="EA">Echo Arena</option>
+      </select>
     </form>
   </div>
 
@@ -179,6 +191,9 @@
         document.getElementById("orgDisp").innerHTML = orgAttempt;
       });
 
+      document.getElementById("createTeamButton").addEventListener("click", function (event) {
+
+      });
     });
   </script>
 </body>
