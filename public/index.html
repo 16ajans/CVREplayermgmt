@@ -108,13 +108,13 @@
       </table>
     </div>
 
-    <div style="display: none;" id="playerEditPanel">
+    <!-- <div style="display: none;" id="playerEditPanel">
       <form id="playerEditForm">
         <label for="playerNameEditInput">Updated player name:</label>
         <input id="playerNameEditInput" type="text">
         <button id="savePlayerButton" type="submit">Save Player</button>
       </form>
-    </div>
+    </div> -->
 
     <button id="createTeamButton">Create New Team</button>
 
@@ -122,39 +122,30 @@
       <form id="teamCreationForm">
         <label for="gameSelect">Select game:</label>
         <select id="gameSelect">
-          <option value="BS">Beat Saber</option>
-          <option value="EA">Echo Arena</option>
+          <option value="Beat Saber">Beat Saber</option>
+          <option value="Echo Arena">Echo Arena</option>
         </select>
         <label for="teamNameInput">Team name:</label>
-        <input id="teamNameInput" type="text"><br>
-        <label for="playerNameInput">Player name:</label>
-        <input id="playerNameInput" type="text">
-        <button id="addPlayerButton" type="submit">Add Player</button>
+        <input id="teamNameInput" type="text">
+        <button id="saveTeamButton">Save Team</button>
+        <button id="teamCreationCancel">Cancel</button>
       </form>
-
-      <table id="playerTable">
-        <tr>
-          <th>No players!</th>
-        </tr>
-      </table>
-
-      <button id="saveTeamButton">Save Team</button>
     </div>
   </div>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
 
-      var currentUserData;
-
-      firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
-        .catch((error) => {
-          alert(error.message);
-        });
-
       const auth = firebase.auth();
       const db = firebase.database();
       // const stor = firebase.storage();
+      var currentUser;
+      var currentUserData;
+
+      auth.setPersistence(firebase.auth.Auth.Persistence.SESSION)
+        .catch((error) => {
+          alert(error.message);
+        });
 
       document.getElementById("registerButton").addEventListener("click", function (event) {
         auth.createUserWithEmailAndPassword(document.getElementById("mailInput").value, document.getElementById("passInput").value)
@@ -192,48 +183,43 @@
           });
       });
 
-      function drawCurrentTeams() {
-        db.ref(auth.currentUser.uid).once('value').then((snapshot) => {
-          if (snapshot.val().BS) {
-            let teams = snapshot.val()["BS"];
-            let BSTBody = document.getElementById("BSTeamTableBody");
-            BSTBody.innerHTML = "";
-            for (const team in teams) {
-              let rows = 0;
-              let bodyTarget = "";
+      function drawGameTable(dbSnapshotData, game, tableBodyID) {
+        if (dbSnapshotData[game]) {
+          let teams = dbSnapshotData[game];
+          let gameTableBody = document.getElementById(tableBodyID);
+          gameTableBody.innerHTML = "";
+          for (const team in teams) {
+            let rows = 0;
+            let bodyTarget = "";
+            if (teams[team] === "No players yet!") {
+              rows = 1;
+              bodyTarget = "<tr><td colspan=\"3\">No players yet!</td></tr>";
+            } else {
               for (const player in teams[team]) {
                 bodyTarget += "<tr><td>" + player + "</td><td>" + (teams[team][player].url ? teams[team][player].url : "Not provided.") + "</td><td>" + (teams[team][player].verified ? "Yes" : "No") + "</td></tr>";
                 rows++;
               }
-              BSTBody.innerHTML += [bodyTarget.slice(0, 4), "<td rowspan=" + rows + ">" + team + "</td>", bodyTarget.slice(4)].join('');
             }
-          } else {
-            document.getElementById("BSTeamTableBody").innerHTML = "<tr><td colspan=\"4\">No teams!</td></tr>";
+            gameTableBody.innerHTML += [bodyTarget.slice(0, 4), "<td rowspan=" + rows + ">" + team + "</td>", bodyTarget.slice(4)].join('');
           }
-          if (snapshot.val().EA) {
-            let teams = snapshot.val()["EA"];
-            let EATBody = document.getElementById("EATeamTableBody");
-            EATBody.innerHTML = "";
-            for (const team in teams) {
-              let rows = 0;
-              let bodyTarget = "";
-              for (const player in teams[team]) {
-                bodyTarget += "<tr><td>" + player + "</td><td>" + (teams[team][player].url ? teams[team][player].url : "Not provided.") + "</td><td>" + (teams[team][player].verified ? "Yes" : "No") + "</td></tr>";
-                rows++;
-              }
-              EATBody.innerHTML += [bodyTarget.slice(0, 4), "<td rowspan=" + rows + ">" + team + "</td>", bodyTarget.slice(4)].join('');
-            }
-          } else {
-            document.getElementById("EATeamTableBody").innerHTML = "<tr><td colspan=\"4\">No teams!</td></tr>";
-          }
-        });
+          return;
+        } else {
+          document.getElementById(tableBodyID).innerHTML = "<tr><td colspan=\"4\">No teams!</td></tr>";
+        }
+      }
 
+      function drawCurrentTeams() {
+        db.ref(currentUser.uid).once('value').then((snapshot) => {
+          drawGameTable(snapshot.val(), "Beat Saber", "BSTeamTableBody");
+          drawGameTable(snapshot.val(), "Echo Arena", "EATeamTableBody");
+        });
       }
 
       auth.onAuthStateChanged(function (user) {
         document.getElementById("loginForm").reset();
         document.getElementById("discordForm").reset();
         if (user) {
+          currentUser = user;
           db.ref(user.uid).once('value').then((snapshot) => {
             currentUserData = snapshot.val();
             try {
@@ -259,6 +245,7 @@
             }
           });
         } else {
+          currentUser = null;
           document.getElementById("welcomeMsg").innerHTML = "Login to access options & manage your teams.";
           document.getElementById("unLoggedPanel").style.display = "block";
           document.getElementById("loggedPanel").style.display = "none";
@@ -276,7 +263,7 @@
         event.preventDefault();
         let discordAttempt = document.getElementById("discordInput").value;
         if (discordSubRegex.test(discordAttempt)) {
-          db.ref(auth.currentUser.uid).update({
+          db.ref(currentUser.uid).update({
             discord: discordAttempt,
           });
           discordForm.reset();
@@ -292,62 +279,70 @@
       orgForm.addEventListener("submit", function (event) {
         let orgAttempt = document.getElementById("orgInput").value;
         event.preventDefault();
-        db.ref(auth.currentUser.uid).update({
+        db.ref(currentUser.uid).update({
           org: orgAttempt,
         });
         orgForm.reset();
         document.getElementById("orgDisp").innerHTML = orgAttempt;
       });
 
-      var playerListObj = {};
+      // var playerListObj = {};
 
-      function drawPlayerTable() {
-        let table = document.getElementById("playerTable");
-        if (JSON.stringify(playerListObj) !== JSON.stringify({})) {
-          table.innerHTML = "";
-          let currentCell;
-          for (const player in playerListObj) {
-            table.innerHTML += "<tr><td>" + player + " (<span style=\"text-decoration: underline;\" id=" + player + ">remove</span>)" + "</tr></td>";
-            currentCell = document.getElementById(player);
-            currentCell.addEventListener("click", function (event) {
-              delete playerListObj[player];
-              drawPlayerTable();
-            });
-          }
-        } else {
-          table.innerHTML = "<tr><th>No players!</th></tr>";
-        }
-      }
+      // function drawPlayerTable() {
+      //   let table = document.getElementById("playerTable");
+      //   if (JSON.stringify(playerListObj) !== JSON.stringify({})) {
+      //     table.innerHTML = "";
+      //     let currentCell;
+      //     for (const player in playerListObj) {
+      //       table.innerHTML += "<tr><td>" + player + " (<span style=\"text-decoration: underline;\" id=" + player + ">remove</span>)" + "</tr></td>";
+      //       currentCell = document.getElementById(player);
+      //       currentCell.addEventListener("click", function (event) {
+      //         delete playerListObj[player];
+      //         drawPlayerTable();
+      //       });
+      //     }
+      //   } else {
+      //     table.innerHTML = "<tr><th>No players!</th></tr>";
+      //   }
+      // }
+
 
       document.getElementById("createTeamButton").addEventListener("click", function (event) {
-        playerListObj = {};
-        drawPlayerTable();
+        event.preventDefault();
         teamCreationForm.reset();
         document.getElementById("teamCreationPanel").style.display = "block";
       });
 
-      const alphaNumRegex = /^[a-z0-9\s]+$/i;
-
-      document.getElementById("addPlayerButton").addEventListener("click", function (event) {
+      document.getElementById("teamCreationCancel").addEventListener("click", function (event) {
         event.preventDefault();
-        let field = document.getElementById("playerNameInput");
-        if (alphaNumRegex.test(field.value)) {
-          playerListObj[field.value] = { verified: false, url: "" };
-          field.value = "";
-          drawPlayerTable();
-        } else { alert("Please keep player names alphanumeric."); }
+        teamCreationForm.reset();
+        document.getElementById("teamCreationPanel").style.display = "none";
       });
 
+      const alphaNumRegex = /^[a-z0-9\s]+$/i;
+
+      // document.getElementById("addPlayerButton").addEventListener("click", function (event) {
+      //   event.preventDefault();
+      //   let field = document.getElementById("playerNameInput");
+      //   if (alphaNumRegex.test(field.value)) {
+      //     playerListObj[field.value] = { verified: false, url: "" };
+      //     field.value = "";
+      //     drawPlayerTable();
+      //   } else { alert("Please keep player names alphanumeric."); }
+      // });
+
       document.getElementById("saveTeamButton").addEventListener("click", function (event) {
+        event.preventDefault();
         let teamNameAttempt = document.getElementById("teamNameInput").value;
         if (!teamNameAttempt) {
           alert("Please provide a team name.");
         } else if (!alphaNumRegex.test(teamNameAttempt)) {
           alert("Please keep team names alphanumeric.");
-        } else if (playerListObj.length == 0) {
-          alert("Please add at least one player.");
+          // } else if (playerListObj.length == 0) {
+          //   alert("Please add at least one player.");
         } else {
-          db.ref(auth.currentUser.uid + "/" + document.getElementById("gameSelect").value + "/" + document.getElementById("teamNameInput").value).set(playerListObj);
+          db.ref(currentUser.uid + "/" + document.getElementById("gameSelect").value)
+            .update({ [teamNameAttempt]: "No players yet!", });
           document.getElementById("teamCreationPanel").style.display = "none";
           drawCurrentTeams();
         }
