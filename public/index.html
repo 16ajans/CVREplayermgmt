@@ -13,6 +13,20 @@
   <!-- <script defer src="/__/firebase/8.2.5/firebase-storage.js"></script> -->
 
   <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+
+  <!--<style>
+    * {
+      vertical-align: baseline;
+      font-weight: inherit;
+      font-family: inherit;
+      font-style: inherit;
+      font-size: 100%;
+      border: 0 none;
+      outline: 0;
+      padding: 0;
+      margin: 0;
+    }
+  </style>-->
 </head>
 
 <body>
@@ -63,30 +77,61 @@
       <input type="submit" value="Submit">
     </form>
 
+    <div id="currentTeamsPanel">
+      <table id="BSTeamTable">
+        <caption>Your Beat Saber Teams</caption>
+        <tr>
+          <th>Team</th>
+          <th>Player</th>
+          <th>Provided Image</th>
+          <th>Verified</th>
+        </tr>
+        <tbody id="BSTeamTableBody">
+          <tr>
+            <td colspan="4">No teams!</td>
+          </tr>
+        </tbody>
+      </table>
+      <table id="EATeamTable">
+        <caption>Your Echo Arena Teams</caption>
+        <tr>
+          <th>Team</th>
+          <th>Player</th>
+          <th>Provided Image</th>
+          <th>Verified</th>
+        </tr>
+        <tbody id="EATeamTableBody">
+          <tr>
+            <td colspan="4">No teams!</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
     <button id="createTeamButton">Create New Team</button>
-  </div>
 
-  <div style="display: none;" id="teamCreationPanel">
-    <form id="teamCreationForm">
-      <label for="gameSelect">Select game:</label>
-      <select id="gameSelect">
-        <option value="BS">Beat Saber</option>
-        <option value="EA">Echo Arena</option>
-      </select>
-      <label for="teamNameInput">Team name:</label>
-      <input id="teamNameInput" type="text"><br>
-      <label for="playerNameInput">Player name:</label>
-      <input id="playerNameInput" type="text">
-      <button id="addPlayerButton" type="submit">Add Player</button>
-    </form>
+    <div style="display: none;" id="teamCreationPanel">
+      <form id="teamCreationForm">
+        <label for="gameSelect">Select game:</label>
+        <select id="gameSelect">
+          <option value="BS">Beat Saber</option>
+          <option value="EA">Echo Arena</option>
+        </select>
+        <label for="teamNameInput">Team name:</label>
+        <input id="teamNameInput" type="text"><br>
+        <label for="playerNameInput">Player name:</label>
+        <input id="playerNameInput" type="text">
+        <button id="addPlayerButton" type="submit">Add Player</button>
+      </form>
 
-    <table id="playerTable">
-      <tr>
-        <th>No players!</th>
-      </tr>
-    </table>
+      <table id="playerTable">
+        <tr>
+          <th>No players!</th>
+        </tr>
+      </table>
 
-    <button id="saveTeamButton">Save Team</button>
+      <button id="saveTeamButton">Save Team</button>
+    </div>
   </div>
 
   <script>
@@ -139,10 +184,47 @@
           });
       });
 
+      function drawCurrentTeams() {
+        db.ref(auth.currentUser.uid).once('value').then((snapshot) => {
+          if (snapshot.val().BS) {
+            let teams = snapshot.val()["BS"];
+            let BSTBody = document.getElementById("BSTeamTableBody");
+            BSTBody.innerHTML = "";
+            for (const team in teams) {
+              let rows = 0;
+              let bodyTarget = "";
+              for (const player in teams[team]) {
+                bodyTarget += "<tr><td>" + player + "</td><td>" + (teams[team][player].url ? teams[team][player].url : "Not provided.") + "</td><td>" + (teams[team][player].verified ? "Yes" : "No") + "</td></tr>";
+                rows++;
+              }
+              BSTBody.innerHTML += [bodyTarget.slice(0, 4), "<td rowspan=" + rows + ">" + team + "</td>", bodyTarget.slice(4)].join('');
+            }
+          } else {
+            document.getElementById("BSTeamTableBody").innerHTML = "<tr><td colspan=\"4\">No teams!</td></tr>";
+          }
+          if (snapshot.val().EA) {
+            let teams = snapshot.val()["EA"];
+            let EATBody = document.getElementById("EATeamTableBody");
+            EATBody.innerHTML = "";
+            for (const team in teams) {
+              let rows = 0;
+              let bodyTarget = "";
+              for (const player in teams[team]) {
+                bodyTarget += "<tr><td>" + player + "</td><td>" + (teams[team][player].url ? teams[team][player].url : "Not provided.") + "</td><td>" + (teams[team][player].verified ? "Yes" : "No") + "</td></tr>";
+                rows++;
+              }
+              EATBody.innerHTML += [bodyTarget.slice(0, 4), "<td rowspan=" + rows + ">" + team + "</td>", bodyTarget.slice(4)].join('');
+            }
+          } else {
+            document.getElementById("EATeamTableBody").innerHTML = "<tr><td colspan=\"4\">No teams!</td></tr>";
+          }
+        });
+
+      }
+
       auth.onAuthStateChanged(function (user) {
         document.getElementById("loginForm").reset();
         document.getElementById("discordForm").reset();
-
         if (user) {
           db.ref(user.uid).once('value').then((snapshot) => {
             currentUserData = snapshot.val();
@@ -157,8 +239,10 @@
             if (currentUserData.approved && currentUserData.org) {
               document.getElementById("orgDisp").innerHTML = currentUserData.org;
               document.getElementById("approvedPanel").style.display = "block";
+              drawCurrentTeams();
             } else if (currentUserData.approved) {
               document.getElementById("approvedPanel").style.display = "block";
+              drawCurrentTeams();
             } else if (!currentUserData.Admin) {
               document.getElementById("welcomeMsg").innerHTML += " You're still waiting on approval. Please sit tight."
             }
@@ -207,18 +291,18 @@
         document.getElementById("orgDisp").innerHTML = orgAttempt;
       });
 
-      var playerArray = [];
+      var playerListObj = {};
 
       function drawPlayerTable() {
         let table = document.getElementById("playerTable");
-        if (playerArray.length) {
+        if (JSON.stringify(playerListObj) !== JSON.stringify({})) {
           table.innerHTML = "";
           let currentCell;
-          for (let i = 0; i < playerArray.length; i++) {
-            table.innerHTML += "<tr><th>" + playerArray[i] + " (<span style=\"text-decoration: underline;\" id=" + i + ">remove</span>)" + "</tr></th>";
-            currentCell = document.getElementById(i);
+          for (const player in playerListObj) {
+            table.innerHTML += "<tr><td>" + player + " (<span style=\"text-decoration: underline;\" id=" + player + ">remove</span>)" + "</tr></td>";
+            currentCell = document.getElementById(player);
             currentCell.addEventListener("click", function (event) {
-              playerArray.splice(i, 1);
+              delete playerListObj[player];
               drawPlayerTable();
             });
           }
@@ -228,31 +312,36 @@
       }
 
       document.getElementById("createTeamButton").addEventListener("click", function (event) {
-        playerArray = [];
+        playerListObj = {};
         drawPlayerTable();
         teamCreationForm.reset();
         document.getElementById("teamCreationPanel").style.display = "block";
       });
 
+      const alphaNumRegex = /^[a-z0-9\s]+$/i;
+
       document.getElementById("addPlayerButton").addEventListener("click", function (event) {
         event.preventDefault();
         let field = document.getElementById("playerNameInput");
-        playerArray.push(field.value);
-        field.value = "";
-        drawPlayerTable();
+        if (alphaNumRegex.test(field.value)) {
+          playerListObj[field.value] = { verified: false, url: "" };
+          field.value = "";
+          drawPlayerTable();
+        } else { alert("Please keep player names alphanumeric."); }
       });
 
       document.getElementById("saveTeamButton").addEventListener("click", function (event) {
-        if (!document.getElementById("teamNameInput").value) {
+        let teamNameAttempt = document.getElementById("teamNameInput").value;
+        if (!teamNameAttempt) {
           alert("Please provide a team name.");
-        } else if (playerArray.length == 0) {
+        } else if (!alphaNumRegex.test(teamNameAttempt)) {
+          alert("Please keep team names alphanumeric.");
+        } else if (playerListObj.length == 0) {
           alert("Please add at least one player.");
         } else {
-          db.ref(auth.currentUser.uid + "/" + document.getElementById("gameSelect").value + "/" + document.getElementById("teamNameInput").value).set({ ...playerArray });
-          playerArray = [];
-          drawPlayerTable();
-          teamCreationForm.reset();
+          db.ref(auth.currentUser.uid + "/" + document.getElementById("gameSelect").value + "/" + document.getElementById("teamNameInput").value).set(playerListObj);
           document.getElementById("teamCreationPanel").style.display = "none";
+          drawCurrentTeams();
         }
       });
     });
