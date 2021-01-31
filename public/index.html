@@ -108,18 +108,6 @@
       </table>
     </div>
 
-    <div id="playerAddPanel">
-      <p>Add Player:</p>
-      <form id="playerAddForm">
-        <select id="teamSelect">
-          <option>No teams yet!</option>
-        </select>
-        <label for="playerNameAddInput">New player name:</label>
-        <input id="playerNameAddInput" type="text">
-        <button id="savePlayerButton" type="submit">Save Player</button>
-      </form>
-    </div>
-
     <button id="createTeamButton">Create New Team</button>
 
     <div style="display: none;" id="teamCreationPanel">
@@ -135,6 +123,18 @@
         <button id="teamCreationCancel">Cancel</button>
       </form>
     </div>
+  </div>
+
+  <div id="playerAddPanel">
+    <p>Add player to team:</p>
+    <form id="playerAddForm">
+      <select id="teamSelect">
+        <option>No teams yet!</option>
+      </select>
+      <label for="playerNameAddInput">New player name:</label>
+      <input id="playerNameAddInput" type="text">
+      <button id="savePlayerButton" type="submit">Save Player</button>
+    </form>
   </div>
 
   <script>
@@ -189,7 +189,7 @@
           });
       });
 
-      function drawGameTable(dbSnapshotData, game, tableBodyID) {
+      function populateGameTable(dbSnapshotData, game, tableBodyID) {
         if (dbSnapshotData[game]) {
           let teams = dbSnapshotData[game];
           let gameTableBody = document.getElementById(tableBodyID);
@@ -214,10 +214,28 @@
         }
       }
 
+      function populateTeamSelect(dbSnapshotData, selectElemID) {
+        let selectElem = document.getElementById(selectElemID);
+        selectElem.innerHTML = "";
+        function tempInternal(game) {
+          if (dbSnapshotData[game]) {
+            let teams = dbSnapshotData[game];
+            let optionsTarget = "";
+            for (const team in teams) {
+              optionsTarget += "<option value=\"" + game + "/" + team + "\">" + game + ": " + team + "</option>";
+            }
+            selectElem.innerHTML += optionsTarget;
+          }
+        }
+        tempInternal("Beat Saber");
+        tempInternal("Echo Arena");
+      }
+
       function drawCurrentTeams() {
         db.ref(currentUser.uid).once('value').then((snapshot) => {
-          drawGameTable(snapshot.val(), "Beat Saber", "BSTeamTableBody");
-          drawGameTable(snapshot.val(), "Echo Arena", "EATeamTableBody");
+          populateGameTable(snapshot.val(), "Beat Saber", "BSTeamTableBody");
+          populateGameTable(snapshot.val(), "Echo Arena", "EATeamTableBody");
+          populateTeamSelect(snapshot.val(), "teamSelect");
         });
       }
 
