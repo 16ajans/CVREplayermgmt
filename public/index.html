@@ -238,7 +238,7 @@
               document.getElementById("approvedPanel").style.display = "block";
               drawCurrentTeams();
             } else if (!currentUserData.Admin) {
-              document.getElementById("welcomeMsg").innerHTML += " You're still waiting on approval. Please sit tight."
+              document.getElementById("welcomeMsg").innerHTML += " You're still waiting on approval."
             }
             if (currentUserData.admin) {
               document.getElementById("adminPanel").style.display = "block";
@@ -268,6 +268,9 @@
           });
           discordForm.reset();
           document.getElementById("welcomeMsg").innerHTML = "Welcome " + discordAttempt.match(discordDispRegex) + "!";
+          if (!currentUserData.approved) {
+            document.getElementById("welcomeMsg").innerHTML += " You're still waiting on approval."
+          }
           document.getElementById("discordDisp").innerHTML = discordAttempt;
         } else {
           alert("The Discord username is badly formatted.");
