@@ -14,7 +14,7 @@
 
   <script defer src="/__/firebase/init.js?useEmulator=true"></script>
 
-  <!--<style>
+  <style>
     * {
       vertical-align: baseline;
       font-weight: inherit;
@@ -26,7 +26,7 @@
       padding: 0;
       margin: 0;
     }
-  </style>-->
+  </style>
 </head>
 
 <body>
@@ -108,13 +108,17 @@
       </table>
     </div>
 
-    <!-- <div style="display: none;" id="playerEditPanel">
-      <form id="playerEditForm">
-        <label for="playerNameEditInput">Updated player name:</label>
-        <input id="playerNameEditInput" type="text">
+    <div id="playerAddPanel">
+      <p>Add Player:</p>
+      <form id="playerAddForm">
+        <select id="teamSelect">
+          <option>No teams yet!</option>
+        </select>
+        <label for="playerNameAddInput">New player name:</label>
+        <input id="playerNameAddInput" type="text">
         <button id="savePlayerButton" type="submit">Save Player</button>
       </form>
-    </div> -->
+    </div>
 
     <button id="createTeamButton">Create New Team</button>
 
@@ -142,7 +146,9 @@
       var currentUser;
       var currentUserData;
 
-      auth.setPersistence(firebase.auth.Auth.Persistence.NONE)
+      const alphaNumRegex = /^[a-z0-9\s]+$/i;
+
+      auth.setPersistence(firebase.auth.Auth.Persistence.SESSION)
         .catch((error) => {
           alert(error.message);
         });
@@ -280,13 +286,17 @@
       const orgForm = document.getElementById("orgForm");
 
       orgForm.addEventListener("submit", function (event) {
-        let orgAttempt = document.getElementById("orgInput").value;
         event.preventDefault();
-        db.ref(currentUser.uid).update({
-          org: orgAttempt,
-        });
-        orgForm.reset();
-        document.getElementById("orgDisp").innerHTML = orgAttempt;
+        let orgAttempt = document.getElementById("orgInput").value;
+        if (alphaNumRegex.test(orgAttempt) && orgAttempt) {
+          db.ref(currentUser.uid).update({
+            org: orgAttempt,
+          });
+          orgForm.reset();
+          document.getElementById("orgDisp").innerHTML = orgAttempt;
+        } else {
+          alert("The organization name is badly formatted.");
+        }
       });
 
       // var playerListObj = {};
@@ -321,8 +331,6 @@
         teamCreationForm.reset();
         document.getElementById("teamCreationPanel").style.display = "none";
       });
-
-      const alphaNumRegex = /^[a-z0-9\s]+$/i;
 
       // document.getElementById("addPlayerButton").addEventListener("click", function (event) {
       //   event.preventDefault();
