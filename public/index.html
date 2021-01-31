@@ -210,7 +210,11 @@
                 rows++;
               }
             }
-            gameTableBody.innerHTML += [bodyTarget.slice(0, 4), "<td rowspan=" + rows + ">" + team + "</td>", bodyTarget.slice(4)].join('');
+            gameTableBody.innerHTML += bodyTarget.slice(0, 4) + "<td rowspan=" + rows + ">" + team + "<br><span style=\"text-decoration: underline;\" id=\"" + game + "/" + team + "\">(Delete Team)</span></td>" + bodyTarget.slice(4);
+            document.getElementById(game + "/" + team).addEventListener("click", function (event) {
+              db.ref(currentUser.uid + "/" + game).update({ [team]: null });
+              drawCurrentTeams();
+            });
           }
           return;
         } else {
@@ -218,18 +222,21 @@
         }
       }
 
+// wtf pls fix logic
+
       function populateTeamSelect(dbSnapshotData, selectElemID) {
         let selectElem = document.getElementById(selectElemID);
         selectElem.innerHTML = "";
         function tempInternal(game) {
-          if (dbSnapshotData[game]) {
-            let teams = dbSnapshotData[game];
-            let optionsTarget = "";
-            for (const team in teams) {
-              optionsTarget += "<option value=\"" + game + "/" + team + "\">" + game + ": " + team + "</option>";
-            }
-            selectElem.innerHTML += optionsTarget;
+          if (dbSnapshotData[game] && selectElem.innerHTML === "<option>No teams yet!</option>") {
+            selectElem.innerHTML = "";
+          } else { return; }
+          let teams = dbSnapshotData[game];
+          let optionsTarget = "";
+          for (const team in teams) {
+            optionsTarget += "<option value=\"" + game + "/" + team + "\">" + game + ": " + team + "</option>";
           }
+          selectElem.innerHTML += optionsTarget;
         }
         tempInternal("Beat Saber");
         tempInternal("Echo Arena");
@@ -280,7 +287,7 @@
           document.getElementById("approvedPanel").style.display = "none";
           document.getElementById("adminPanel").style.display = "none";
           document.getElementById("teamCreationPanel").style.display = "none";
-          document.getElementById("addPlayerPanel").style.display = "none";        
+          document.getElementById("addPlayerPanel").style.display = "none";
         }
 
       });
@@ -365,8 +372,8 @@
         if (playerNameAttempt && alphaNumRegex.test(playerNameAttempt)) {
           db.ref(currentUser.uid + "/" + document.getElementById("teamSelect").value)
             .update({ [playerNameAttempt]: { "url": "", "verified": false } });
-            document.getElementById("addPlayerPanel").style.display = "none";
-            drawCurrentTeams();
+          document.getElementById("addPlayerPanel").style.display = "none";
+          drawCurrentTeams();
         } else {
           alert("Please keep team names alphanumeric.");
         }
