@@ -108,7 +108,7 @@
       </table>
     </div>
 
-    <button id="createTeamButton">Create New Team</button>
+    <button style="display: block;" id="createTeamButton">Create New Team</button>
 
     <div style="display: none;" id="teamCreationPanel">
       <form id="teamCreationForm">
@@ -119,22 +119,26 @@
         </select>
         <label for="teamNameInput">Team name:</label>
         <input id="teamNameInput" type="text">
-        <button id="saveTeamButton">Save Team</button>
+        <button id="saveTeamButton" type="submit">Save Team</button>
         <button id="teamCreationCancel">Cancel</button>
       </form>
     </div>
-  </div>
 
-  <div id="playerAddPanel">
-    <p>Add player to team:</p>
-    <form id="playerAddForm">
-      <select id="teamSelect">
-        <option>No teams yet!</option>
-      </select>
-      <label for="playerNameAddInput">New player name:</label>
-      <input id="playerNameAddInput" type="text">
-      <button id="savePlayerButton" type="submit">Save Player</button>
-    </form>
+    <button style="display: block;" id="addPlayerButton">Add New Player</button>
+
+    <div style="display: none;" id="addPlayerPanel">
+      <form id="addPlayerForm">
+        <label for="teamSelect">Select team:</label>
+        <select id="teamSelect">
+          <option>No teams yet!</option>
+        </select>
+        <label for="addPlayerNameInput">Player name:</label>
+        <input id="addPlayerNameInput" type="text">
+        <button id="savePlayerButton" type="submit">Save Player</button>
+        <button id="addPlayerCancel">Cancel</button>
+      </form>
+    </div>
+  </div>
   </div>
 
   <script>
@@ -313,7 +317,7 @@
           orgForm.reset();
           document.getElementById("orgDisp").innerHTML = orgAttempt;
         } else {
-          alert("The organization name is badly formatted.");
+          alert("Please keep organization names alphanumeric.");
         }
       });
 
@@ -350,30 +354,41 @@
         document.getElementById("teamCreationPanel").style.display = "none";
       });
 
-      // document.getElementById("addPlayerButton").addEventListener("click", function (event) {
-      //   event.preventDefault();
-      //   let field = document.getElementById("playerNameInput");
-      //   if (alphaNumRegex.test(field.value)) {
-      //     playerListObj[field.value] = { verified: false, url: "" };
-      //     field.value = "";
-      //     drawPlayerTable();
-      //   } else { alert("Please keep player names alphanumeric."); }
-      // });
-
       document.getElementById("saveTeamButton").addEventListener("click", function (event) {
         event.preventDefault();
         let teamNameAttempt = document.getElementById("teamNameInput").value;
-        if (!teamNameAttempt) {
-          alert("Please provide a team name.");
-        } else if (!alphaNumRegex.test(teamNameAttempt)) {
-          alert("Please keep team names alphanumeric.");
-          // } else if (playerListObj.length == 0) {
-          //   alert("Please add at least one player.");
-        } else {
+        if (teamNameAttempt && alphaNumRegex.test(teamNameAttempt)) {
           db.ref(currentUser.uid + "/" + document.getElementById("gameSelect").value)
             .update({ [teamNameAttempt]: "No players yet!", });
           document.getElementById("teamCreationPanel").style.display = "none";
           drawCurrentTeams();
+        } else {
+          alert("Please keep team names alphanumeric.");
+        }
+      });
+
+      document.getElementById("addPlayerButton").addEventListener("click", function (event) {
+        event.preventDefault();
+        addPlayerForm.reset();
+        document.getElementById("addPlayerPanel").style.display = "block";
+      });
+
+      document.getElementById("addPlayerCancel").addEventListener("click", function (event) {
+        event.preventDefault();
+        addPlayerForm.reset();
+        document.getElementById("addPlayerPanel").style.display = "none";
+      });
+
+      document.getElementById("savePlayerButton").addEventListener("click", function (event) {
+        event.preventDefault();
+        let playerNameAttempt = document.getElementById("addPlayerNameInput").value;
+        if (playerNameAttempt && alphaNumRegex.test(playerNameAttempt)) {
+          db.ref(currentUser.uid + "/" + document.getElementById("teamSelect").value)
+            .update({ [playerNameAttempt]: { "url": "", "verified": false } });
+            document.getElementById("addPlayerPanel").style.display = "none";
+            drawCurrentTeams();
+        } else {
+          alert("Please keep team names alphanumeric.");
         }
       });
     });
