@@ -321,27 +321,6 @@
         }
       });
 
-      // var playerListObj = {};
-
-      // function drawPlayerTable() {
-      //   let table = document.getElementById("playerTable");
-      //   if (JSON.stringify(playerListObj) !== JSON.stringify({})) {
-      //     table.innerHTML = "";
-      //     let currentCell;
-      //     for (const player in playerListObj) {
-      //       table.innerHTML += "<tr><td>" + player + " (<span style=\"text-decoration: underline;\" id=" + player + ">remove</span>)" + "</tr></td>";
-      //       currentCell = document.getElementById(player);
-      //       currentCell.addEventListener("click", function (event) {
-      //         delete playerListObj[player];
-      //         drawPlayerTable();
-      //       });
-      //     }
-      //   } else {
-      //     table.innerHTML = "<tr><th>No players!</th></tr>";
-      //   }
-      // }
-
-
       document.getElementById("createTeamButton").addEventListener("click", function (event) {
         event.preventDefault();
         teamCreationForm.reset();
