@@ -206,11 +206,24 @@
               bodyTarget = "<tr><td colspan=\"3\">No players yet!</td></tr>";
             } else {
               for (const player in teams[team]) {
-                bodyTarget += "<tr><td>" + player + "</td><td>" + (teams[team][player].url ? teams[team][player].url : "Not provided.") + "</td><td>" + (teams[team][player].verified ? "Yes" : "No") + "</td></tr>";
+                bodyTarget += "<tr><td>" + player + "</td><td>" + (teams[team][player].url ? teams[team][player].url : "Not provided.") + "</td><td>" + (teams[team][player].verified ? "Yes" : "No") + "</td><td style=\"text-decoration: underline;\" id=\"" + game + "/" + team + "/" + player + "\">(Delete Player)</td</tr>";
                 rows++;
               }
             }
             gameTableBody.innerHTML += bodyTarget.slice(0, 4) + "<td rowspan=" + rows + ">" + team + "<br><span style=\"text-decoration: underline;\" id=\"" + game + "/" + team + "\">(Delete Team)</span></td>" + bodyTarget.slice(4);
+            if (bodyTarget !== "<tr><td colspan=\"3\">No players yet!</td></tr>") {
+              for (const player in teams[team]) {
+                document.getElementById(game + "/" + team + "/" + player).addEventListener("click", function (event) {
+                  try {
+                    Object.keys(teams[team][1]);
+                    db.ref(currentUser.uid + "/" + game + "/" + team).update({ [player]: null, });
+                  } catch (err) {
+                    db.ref(currentUser.uid + "/" + game).update({ [team]: "No players yet!", });
+                  }
+                  drawCurrentTeams();
+                });
+              }
+            }
             document.getElementById(game + "/" + team).addEventListener("click", function (event) {
               db.ref(currentUser.uid + "/" + game).update({ [team]: null });
               drawCurrentTeams();
@@ -236,7 +249,7 @@
               optionsTarget += "<option value=\"" + game + "/" + team + "\">" + game + ": " + team + "</option>";
             }
             selectElem.innerHTML += optionsTarget;
-          } else {
+          } else if (selectElem.innerHTML === "") {
             selectElem.innerHTML = "<option>No teams yet!</option>";
           }
         }
