@@ -165,6 +165,11 @@
       document.getElementById("registerButton").addEventListener("click", function (event) {
         auth.createUserWithEmailAndPassword(document.getElementById("mailInput").value, document.getElementById("passInput").value)
           .then((userCredential) => {
+            // auth.currentUser.sendEmailVerification().then(function () {
+            //   alert("Sent verification email. Please confirm your email address.")
+            // }).catch(function (error) {
+            //   alert(error.message);
+            // });
             db.ref(userCredential.user.uid).set({
               approved: false,
               admin: false,
