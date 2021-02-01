@@ -222,21 +222,23 @@
         }
       }
 
-// wtf pls fix logic
-
       function populateTeamSelect(dbSnapshotData, selectElemID) {
         let selectElem = document.getElementById(selectElemID);
         selectElem.innerHTML = "";
         function tempInternal(game) {
-          if (dbSnapshotData[game] && selectElem.innerHTML === "<option>No teams yet!</option>") {
-            selectElem.innerHTML = "";
-          } else { return; }
-          let teams = dbSnapshotData[game];
-          let optionsTarget = "";
-          for (const team in teams) {
-            optionsTarget += "<option value=\"" + game + "/" + team + "\">" + game + ": " + team + "</option>";
+          if (dbSnapshotData[game]) {
+            if (selectElem.innerHTML === "<option>No teams yet!</option>") {
+              selectElem.innerHTML = "";
+            }
+            let teams = dbSnapshotData[game];
+            let optionsTarget = "";
+            for (const team in teams) {
+              optionsTarget += "<option value=\"" + game + "/" + team + "\">" + game + ": " + team + "</option>";
+            }
+            selectElem.innerHTML += optionsTarget;
+          } else {
+            selectElem.innerHTML = "<option>No teams yet!</option>";
           }
-          selectElem.innerHTML += optionsTarget;
         }
         tempInternal("Beat Saber");
         tempInternal("Echo Arena");
