@@ -84,11 +84,12 @@
           <th>Team</th>
           <th>Player</th>
           <th>Provided Image</th>
+          <th>Provided Email</th>
           <th>Verified</th>
         </tr>
         <tbody id="BSTeamTableBody">
           <tr>
-            <td colspan="4">No teams!</td>
+            <td colspan="5">No teams!</td>
           </tr>
         </tbody>
       </table>
@@ -98,11 +99,12 @@
           <th>Team</th>
           <th>Player</th>
           <th>Provided Image</th>
+          <th>Provided Email</th>
           <th>Verified</th>
         </tr>
         <tbody id="EATeamTableBody">
           <tr>
-            <td colspan="4">No teams!</td>
+            <td colspan="5">No teams!</td>
           </tr>
         </tbody>
       </table>
@@ -134,6 +136,8 @@
         </select>
         <label for="addPlayerNameInput">Player name:</label>
         <input id="addPlayerNameInput" type="text">
+        <label for="addPlayerMailInput">Player email:</label>
+        <input id="addPlayerMailInput" type="email">
         <button id="savePlayerButton" type="submit">Save Player</button>
         <button id="addPlayerCancel">Cancel</button>
       </form>
@@ -151,6 +155,7 @@
       var currentUserData;
 
       const alphaNumRegex = /^[a-z0-9\s]+$/i;
+      const emailRegex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/
 
       auth.setPersistence(firebase.auth.Auth.Persistence.SESSION)
         .catch((error) => {
@@ -203,15 +208,15 @@
             let bodyTarget = "";
             if (teams[team] === "No players yet!") {
               rows = 1;
-              bodyTarget = "<tr><td colspan=\"3\">No players yet!</td></tr>";
+              bodyTarget = "<tr><td colspan=\"4\">No players yet!</td></tr>";
             } else {
               for (const player in teams[team]) {
-                bodyTarget += "<tr><td>" + player + "</td><td>" + (teams[team][player].url ? teams[team][player].url : "Not provided.") + "</td><td>" + (teams[team][player].verified ? "Yes" : "No") + "</td><td style=\"text-decoration: underline;\" id=\"" + game + "/" + team + "/" + player + "\">(Delete Player)</td</tr>";
+                bodyTarget += "<tr><td>" + player + "</td><td>" + (teams[team][player].url ? teams[team][player].url : "Not provided.") + "</td><td>" + (teams[team][player].email ? teams[team][player].email : "Not provided.") + "</td><td>" + (teams[team][player].verified ? "Yes" : "No") + "</td><td style=\"text-decoration: underline;\" id=\"" + game + "/" + team + "/" + player + "\">(Delete Player)</td</tr>";
                 rows++;
               }
             }
             gameTableBody.innerHTML += bodyTarget.slice(0, 4) + "<td rowspan=" + rows + ">" + team + "<br><span style=\"text-decoration: underline;\" id=\"" + game + "/" + team + "\">(Delete Team)</span></td>" + bodyTarget.slice(4);
-            if (bodyTarget !== "<tr><td colspan=\"3\">No players yet!</td></tr>") {
+            if (bodyTarget !== "<tr><td colspan=\"4\">No players yet!</td></tr>") {
               for (const player in teams[team]) {
                 document.getElementById(game + "/" + team + "/" + player).addEventListener("click", function (event) {
                   try {
@@ -231,7 +236,7 @@
           }
           return;
         } else {
-          document.getElementById(tableBodyID).innerHTML = "<tr><td colspan=\"4\">No teams!</td></tr>";
+          document.getElementById(tableBodyID).innerHTML = "<tr><td colspan=\"5\">No teams!</td></tr>";
         }
       }
 
@@ -364,6 +369,8 @@
             .update({ [teamNameAttempt]: "No players yet!", });
           document.getElementById("teamCreationPanel").style.display = "none";
           drawCurrentTeams();
+        } else if (!teamNameAttempt) {
+          alert("Please provide a team name.")
         } else {
           alert("Please keep team names alphanumeric.");
         }
@@ -384,13 +391,20 @@
       document.getElementById("savePlayerButton").addEventListener("click", function (event) {
         event.preventDefault();
         let playerNameAttempt = document.getElementById("addPlayerNameInput").value;
-        if (playerNameAttempt && alphaNumRegex.test(playerNameAttempt)) {
+        let playerMailAttempt = document.getElementById("addPlayerMailInput").value;
+        if (playerNameAttempt && alphaNumRegex.test(playerNameAttempt) && playerMailAttempt && emailRegex.test(playerMailAttempt)) {
           db.ref(currentUser.uid + "/" + document.getElementById("teamSelect").value)
-            .update({ [playerNameAttempt]: { "url": "", "verified": false } });
+            .update({ [playerNameAttempt]: { "url": "", "verified": false, "email": playerMailAttempt } });
           document.getElementById("addPlayerPanel").style.display = "none";
           drawCurrentTeams();
-        } else {
-          alert("Please keep team names alphanumeric.");
+        } else if (!playerNameAttempt) {
+          alert("Please provide a player name.");
+        } else if (!alphaNumRegex.test(playerNameAttempt)) {
+          alert("Please keep player names alphanumeric.");
+        } else if (!playerMailAttempt) {
+          alert("Please provide a player email.");
+        } else if (!emailRegex.test(playerMailAttempt)) {
+          alert("Email is badly formatted.");
         }
       });
     });
