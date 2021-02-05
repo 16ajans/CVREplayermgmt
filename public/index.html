@@ -146,6 +146,9 @@
         <input id="addPlayerNameInput" type="text">
         <label for="addPlayerMailInput">Player email:</label>
         <input id="addPlayerMailInput" type="email">
+        <label for="addPlayerImageInput">Player verification:</label>
+        <input id="addPlayerImageInput" type="file">
+        <img id="playerImagePreview">
         <button id="savePlayerButton" type="submit">Save Player</button>
         <button id="addPlayerCancel">Cancel</button>
       </form>
@@ -224,7 +227,7 @@
               bodyTarget = "<tr><td colspan=\"4\">No players yet!</td></tr>";
             } else {
               for (const player in teams[team]) {
-                bodyTarget += "<tr><td>" + player + "</td><td>" + (teams[team][player].url ? teams[team][player].url : "Not provided.") + "</td><td>" + (teams[team][player].email ? teams[team][player].email : "Not provided.") + "</td><td>" + (teams[team][player].verified ? "Yes" : "No") + "</td><td style=\"text-decoration: underline;\" id=\"" + game + "/" + team + "/" + player + "\">(Delete Player)</td</tr>";
+                bodyTarget += "<tr><td>" + player + "</td><td><img id=\"" +  + "\" src=\"\"></td><td>" + (teams[team][player].email ? teams[team][player].email : "Not provided.") + "</td><td>" + (teams[team][player].verified ? "Yes" : "No") + "</td><td style=\"text-decoration: underline;\" id=\"" + game + "/" + team + "/" + player + "\">(Delete Player)</td</tr>";
                 rows++;
               }
             }
@@ -367,20 +370,17 @@
       const orgLogoForm = document.getElementById("orgLogoForm");
       const orgLogoInput = document.getElementById("orgLogoInput");
 
-      orgLogoInput.addEventListener("change", function(event) {
+      orgLogoInput.addEventListener("change", function (event) {
         let orgLogoAttempt = orgLogoInput.files[0];
         document.getElementById("orgLogoPreview").src = URL.createObjectURL(orgLogoAttempt);
       });
 
       orgLogoForm.addEventListener("submit", function (event) {
         event.preventDefault();
-        // let orgLogoAttempt = document.getElementById("orgLogoInput").value;
-        // if (alphaNumRegex.test(orgNameAttempt) && orgNameAttempt) {
-        //   db.ref(currentUser.uid).update({
-        //     org: orgNameAttempt,
-        //   });
-          orgLogoForm.reset();
-          // document.getElementById("orgDisp").innerHTML = orgNameAttempt;
+        let logoUpload = stor.ref(currentUser.uid + "/orgLogo").put(orgLogoInput.files[0]);
+        orgLogoForm.reset();
+        document.getElementById("orgLogoPreview").src = "";
+        // document.getElementById("orgDisp").innerHTML = orgNameAttempt;
         // } else if (!orgNameAttempt) {
         //   alert("Please provide an organization name.");
         // } else {
@@ -418,22 +418,32 @@
       document.getElementById("addPlayerButton").addEventListener("click", function (event) {
         event.preventDefault();
         addPlayerForm.reset();
+        document.getElementById("playerImagePreview").src = "";
         document.getElementById("addPlayerPanel").style.display = "block";
       });
 
       document.getElementById("addPlayerCancel").addEventListener("click", function (event) {
         event.preventDefault();
-        addPlayerForm.reset();
         document.getElementById("addPlayerPanel").style.display = "none";
+      });
+
+      const addPlayerImageInput = document.getElementById("addPlayerImageInput");
+
+      addPlayerImageInput.addEventListener("change", function (event) {
+        let addPlayerImageAttempt = addPlayerImageInput.files[0];
+        document.getElementById("playerImagePreview").src = URL.createObjectURL(addPlayerImageAttempt);
       });
 
       document.getElementById("savePlayerButton").addEventListener("click", function (event) {
         event.preventDefault();
         let playerNameAttempt = document.getElementById("addPlayerNameInput").value;
         let playerMailAttempt = document.getElementById("addPlayerMailInput").value;
+        let team = document.getElementById("teamSelect").value;
+        let addPlayerImageAttempt = document.getElementById("addPlayerImageInput");
         if (playerNameAttempt && alphaNumRegex.test(playerNameAttempt) && playerMailAttempt && emailRegex.test(playerMailAttempt)) {
-          db.ref(currentUser.uid + "/" + document.getElementById("teamSelect").value)
-            .update({ [playerNameAttempt]: { "url": "", "verified": false, "email": playerMailAttempt } });
+          db.ref(currentUser.uid + "/" + team)
+            .update({ [playerNameAttempt]: { "verified": false, "email": playerMailAttempt } });
+          let playerImageUpload = stor.ref(currentUser.uid + "/" + team + "/" + playerNameAttempt).put(addPlayerImageAttempt.files[0]);
           document.getElementById("addPlayerPanel").style.display = "none";
           drawCurrentTeams();
         } else if (!playerNameAttempt) {
