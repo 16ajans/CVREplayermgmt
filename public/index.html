@@ -11,7 +11,7 @@
   <script defer src="/__/firebase/8.2.5/firebase-app.js"></script>
   <script defer src="/__/firebase/8.2.5/firebase-auth.js"></script>
   <script defer src="/__/firebase/8.2.5/firebase-database.js"></script>
-  <!-- <script defer src="/__/firebase/8.2.5/firebase-storage.js"></script> -->
+  <script defer src="/__/firebase/8.2.5/firebase-storage.js"></script>
 
   <script defer src="/__/firebase/init.js?useEmulator=true"></script>
 
@@ -72,9 +72,16 @@
   <div style="display: none;" id="approvedPanel">
     <p>Current organization: <span style="font-weight: bold;" id="orgDisp">Still needs to be set.</span></p>
 
-    <form id="orgForm">
-      <label for="orgInput">Update organization name:</label>
-      <input id="orgInput" type="text">
+    <form id="orgNameForm">
+      <label for="orgNameInput">Update organization name:</label>
+      <input id="orgNameInput" type="text">
+      <input type="submit" value="Submit">
+    </form>
+
+    <form id="orgLogoForm">
+      <label for="orgLogoInput">Update org logo:</label>
+      <input id="orgLogoInput" type="file">
+      <img id="orgLogoPreview">
       <input type="submit" value="Submit">
     </form>
 
@@ -151,7 +158,7 @@
 
       const auth = firebase.auth();
       const db = firebase.database();
-      // const stor = firebase.storage();
+      const stor = firebase.storage();
       var currentUser;
       var currentUserData;
 
@@ -339,20 +346,46 @@
         }
       });
 
-      const orgForm = document.getElementById("orgForm");
+      const orgNameForm = document.getElementById("orgNameForm");
 
-      orgForm.addEventListener("submit", function (event) {
+      orgNameForm.addEventListener("submit", function (event) {
         event.preventDefault();
-        let orgAttempt = document.getElementById("orgInput").value;
-        if (alphaNumRegex.test(orgAttempt) && orgAttempt) {
+        let orgNameAttempt = document.getElementById("orgNameInput").value;
+        if (alphaNumRegex.test(orgNameAttempt) && orgNameAttempt) {
           db.ref(currentUser.uid).update({
-            org: orgAttempt,
+            org: orgNameAttempt,
           });
-          orgForm.reset();
-          document.getElementById("orgDisp").innerHTML = orgAttempt;
+          orgNameForm.reset();
+          document.getElementById("orgDisp").innerHTML = orgNameAttempt;
+        } else if (!orgNameAttempt) {
+          alert("Please provide an organization name.");
         } else {
           alert("Please keep organization names alphanumeric.");
         }
+      });
+
+      const orgLogoForm = document.getElementById("orgLogoForm");
+      const orgLogoInput = document.getElementById("orgLogoInput");
+
+      orgLogoInput.addEventListener("change", function(event) {
+        let orgLogoAttempt = orgLogoInput.files[0];
+        document.getElementById("orgLogoPreview").src = URL.createObjectURL(orgLogoAttempt);
+      });
+
+      orgLogoForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        // let orgLogoAttempt = document.getElementById("orgLogoInput").value;
+        // if (alphaNumRegex.test(orgNameAttempt) && orgNameAttempt) {
+        //   db.ref(currentUser.uid).update({
+        //     org: orgNameAttempt,
+        //   });
+          orgLogoForm.reset();
+          // document.getElementById("orgDisp").innerHTML = orgNameAttempt;
+        // } else if (!orgNameAttempt) {
+        //   alert("Please provide an organization name.");
+        // } else {
+        //   alert("Please keep organization names alphanumeric.");
+        // }
       });
 
       document.getElementById("createTeamButton").addEventListener("click", function (event) {
