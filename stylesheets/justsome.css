@@ -10,7 +10,7 @@ body {
 
 header,
 footer,
-header>section {
+header > section {
   background-color: #703893;
   height: 4rem;
   display: flex;
@@ -18,16 +18,25 @@ header>section {
   color: white;
 }
 
-header>section>img {
+header > section > img {
   max-height: 100%;
 }
 
-header>button {
+header > button {
   margin: 1rem;
 }
 
 main {
   flex: 1 0 auto;
+}
+
+main > section {
+  height: 100%;
+}
+
+main > section > img {
+  min-height: 100%;
+  object-fit: cover;
 }
 
 footer {
