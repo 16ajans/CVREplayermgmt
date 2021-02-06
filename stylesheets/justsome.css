@@ -60,3 +60,7 @@ footer {
   height: 3rem;
   width: 3rem;
 }
+
+.pure-button-primary {
+  background: #703893;
+}
