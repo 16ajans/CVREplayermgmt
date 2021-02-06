@@ -1,0 +1,53 @@
+html,
+body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+header,
+footer,
+header>section {
+  background-color: #703893;
+  height: 4rem;
+  display: flex;
+  justify-content: space-between;
+  color: white;
+}
+
+header>section>img {
+  max-height: 100%;
+}
+
+header>button {
+  margin: 1rem;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+footer {
+  flex-shrink: 0;
+}
+
+.PUTTHECONTENTINTHEMIDDLE {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logoContainer {
+  position: relative;
+}
+
+.discordLogo {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 0.5rem;
+  height: 3rem;
+  width: 3rem;
+}

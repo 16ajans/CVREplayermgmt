@@ -6,6 +6,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CVRE Player Manager</title>
+  <link rel="icon" type="image/png" href="../assets/favicon.png">
+
+  <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.5/build/pure-min.css"
+    integrity="sha384-LTIDeidl25h2dPxrB2Ekgc9c7sEC3CWGM6HeFmuDNUjX76Ert4Z4IY714dhZHPLd" crossorigin="anonymous">
+  <link rel="stylesheet" href="../stylesheets/justsome.css">
 
   <script defer src="/__/firebase/8.2.5/firebase-app.js"></script>
   <script defer src="/__/firebase/8.2.5/firebase-auth.js"></script>
@@ -13,10 +18,6 @@
   <script defer src="/__/firebase/8.2.5/firebase-storage.js"></script>
 
   <script defer src="/__/firebase/init.js?useEmulator=true"></script>
-
-  <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.5/build/pure-min.css"
-    integrity="sha384-LTIDeidl25h2dPxrB2Ekgc9c7sEC3CWGM6HeFmuDNUjX76Ert4Z4IY714dhZHPLd" crossorigin="anonymous">
-  <link rel="stylesheet" href="../stylesheets/headerfooter.css">
 
   <style>
     h1 {
@@ -36,8 +37,11 @@
 <body>
 
   <header>
-    <img class="pure-img" src="../assets/CVRE.png">
-    <button id="signout">Sign-out</button>
+    <section>
+      <img class="pure-img" src="../assets/CVRE.png">
+      <h1>Player Manager</h1>
+    </section>
+    <button id="signout" class="pure-button">Sign-out</button>
   </header>
   <main>
     <h1>Welcome!</h1>
@@ -155,7 +159,8 @@
     </row>
   </main>
   <footer>
-
+    <section class="pure-u-1-2 logoContainer">
+      <a href="http://discord.gg/JXbmZjp"><img class="pure-img discordLogo" src="../assets/Discord-Logo-White.png"></a>
   </footer>
 
 
