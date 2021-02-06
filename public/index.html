@@ -7,460 +7,70 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CVRE Player Manager</title>
 
-  <!-- update the version number as needed -->
   <script defer src="/__/firebase/8.2.5/firebase-app.js"></script>
   <script defer src="/__/firebase/8.2.5/firebase-auth.js"></script>
-  <script defer src="/__/firebase/8.2.5/firebase-database.js"></script>
-  <script defer src="/__/firebase/8.2.5/firebase-storage.js"></script>
 
   <script defer src="/__/firebase/init.js?useEmulator=true"></script>
 
   <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.5/build/pure-min.css"
     integrity="sha384-LTIDeidl25h2dPxrB2Ekgc9c7sEC3CWGM6HeFmuDNUjX76Ert4Z4IY714dhZHPLd" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.5/build/grids-responsive-min.css">
-  <!-- <style>
-    * {
-      vertical-align: baseline;
-      font-weight: inherit;
-      font-family: inherit;
-      font-style: inherit;
-      font-size: 100%;
-      border: 0 none;
-      outline: 0;
-      padding: 0;
-      margin: 0;
+  <link rel="stylesheet" href="../stylesheets/headerfooter.css">
+
+  <style>
+    .PUTTHECONTENTINTHEMIDDLE {
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
-  </style> -->
+
+    #imgContainer {
+      position: relative;
+    }
+
+    #discordLogo {
+      position: absolute;
+      bottom: 1rem;
+      left: 1rem;
+      height: 4rem;
+      width: 4rem;
+    }
+  </style>
+
 </head>
 
 <body>
-  <img src="../assets/siteLogo.png"
-  <p id="welcomeMsg">Login to access options & manage your teams.</p>
 
-  <div id="unLoggedPanel">
-    <form style="display: inline;" id="loginForm">
-      <label for="mailInput">Email Address:</label>
-      <input id="mailInput" type="email" autocomplete="username">
-      <label for="passInput">Password:</label>
-      <input id="passInput" type="password" autocomplete="current-password"><br>
-      <button type="submit" id="signinButton">Sign-in</button>
-    </form>
+  <header>
+    <img class="pure-img" src="../assets/CVRE.png">
+  </header>
+  <main class="PUTTHECONTENTINTHEMIDDLE">
+    <card class="pure-g">
+      <section id="imgContainer" class="pure-u-1-2">
+        <img class="pure-img" src="../assets/echo.png">
+        <a href="http://discord.gg/JXbmZjp"><img id="discordLogo" class="pure-img" src="../assets/Discord-Logo-White.png"></a>
+      </section>
+      <section class="pure-u-1-2 PUTTHECONTENTINTHEMIDDLE">
+        <form class="pure-form pure-form-stacked">
+          <fieldset>
+            <label for="email">Email Address</label>
+            <input type="email" id="email" placeholder="Email Address" required="">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Password" required="">
+            <a href="js or something">Forgot your password?</a><br>
+            <label for="remember" class="pure-checkbox">
+              <input type="checkbox" id="remember"> Remember me</label>
+            <button type="submit" class="pure-button pure-button-primary">Sign-in</button>
+            <button class="pure-button pure-button-primary">Register</button>
+          </fieldset>
+        </form>
+      </section>
+    </card>
+  </main>
+  <footer>
 
-    <button id="registerButton">Register</button>
-    <button id="forgotButton">Forgot Password</button>
-  </div>
+  </footer>
 
-  <div style="display: none;" id="loggedPanel">
-    <button id="signoutButton">Sign-out</button>
 
-    <p>Current Discord: <span style="font-weight: bold;" id="discordDisp">Still needs to be set.</span></p>
-
-    <form id="discordForm">
-      <label for="discordInput">Update Discord username:</label>
-      <input id="discordInput" type="text">
-      <input type="submit" value="Submit">
-    </form>
-
-  </div>
-
-  <div style="display: none;" id="adminPanel">
-    <p>Users awaiting approval:</p>
-    <table id="pendUserTable">
-      <tr>
-        <th>Nobody!</th>
-      </tr>
-    </table>
-  </div>
-
-  <div style="display: none;" id="approvedPanel">
-    <p>Current organization: <span style="font-weight: bold;" id="orgDisp">Still needs to be set.</span></p>
-
-    <form id="orgNameForm">
-      <label for="orgNameInput">Update organization name:</label>
-      <input id="orgNameInput" type="text">
-      <input type="submit" value="Submit">
-    </form>
-
-    <form id="orgLogoForm">
-      <label for="orgLogoInput">Update org logo:</label>
-      <input id="orgLogoInput" type="file">
-      <img id="orgLogoPreview">
-      <input type="submit" value="Submit">
-    </form>
-
-    <div id="currentTeamsPanel">
-      <table id="BSTeamTable">
-        <caption>Your Beat Saber Teams</caption>
-        <tr>
-          <th>Team</th>
-          <th>Player</th>
-          <th>Provided Image</th>
-          <th>Provided Email</th>
-          <th>Verified</th>
-        </tr>
-        <tbody id="BSTeamTableBody">
-          <tr>
-            <td colspan="5">No teams!</td>
-          </tr>
-        </tbody>
-      </table>
-      <table id="EATeamTable">
-        <caption>Your Echo Arena Teams</caption>
-        <tr>
-          <th>Team</th>
-          <th>Player</th>
-          <th>Provided Image</th>
-          <th>Provided Email</th>
-          <th>Verified</th>
-        </tr>
-        <tbody id="EATeamTableBody">
-          <tr>
-            <td colspan="5">No teams!</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <button style="display: block;" id="createTeamButton">Create New Team</button>
-
-    <div style="display: none;" id="teamCreationPanel">
-      <form id="teamCreationForm">
-        <label for="gameSelect">Select game:</label>
-        <select id="gameSelect">
-          <option value="Beat Saber">Beat Saber</option>
-          <option value="Echo Arena">Echo Arena</option>
-        </select>
-        <label for="teamNameInput">Team name:</label>
-        <input id="teamNameInput" type="text">
-        <button id="saveTeamButton" type="submit">Save Team</button>
-        <button id="teamCreationCancel">Cancel</button>
-      </form>
-    </div>
-
-    <button style="display: block;" id="addPlayerButton">Add New Player</button>
-
-    <div style="display: none;" id="addPlayerPanel">
-      <form id="addPlayerForm">
-        <label for="teamSelect">Select team:</label>
-        <select id="teamSelect">
-          <option>No teams yet!</option>
-        </select>
-        <label for="addPlayerNameInput">Player name:</label>
-        <input id="addPlayerNameInput" type="text">
-        <label for="addPlayerMailInput">Player email:</label>
-        <input id="addPlayerMailInput" type="email">
-        <label for="addPlayerImageInput">Player verification:</label>
-        <input id="addPlayerImageInput" type="file">
-        <img id="playerImagePreview">
-        <button id="savePlayerButton" type="submit">Save Player</button>
-        <button id="addPlayerCancel">Cancel</button>
-      </form>
-    </div>
-  </div>
-  </div>
-
-  <!-- <script>
-    document.addEventListener('DOMContentLoaded', function () {
-
-      const auth = firebase.auth();
-      const db = firebase.database();
-      const stor = firebase.storage();
-      var currentUser;
-      var currentUserData;
-
-      const alphaNumRegex = /^[a-z0-9\s]+$/i;
-      const emailRegex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/
-
-      auth.setPersistence(firebase.auth.Auth.Persistence.SESSION)
-        .catch((error) => {
-          alert(error.message);
-        });
-
-      document.getElementById("registerButton").addEventListener("click", function (event) {
-        auth.createUserWithEmailAndPassword(document.getElementById("mailInput").value, document.getElementById("passInput").value)
-          .then((userCredential) => {
-            // auth.currentUser.sendEmailVerification().then(function () {
-            //   alert("Sent verification email. Please confirm your email address.")
-            // }).catch(function (error) {
-            //   alert(error.message);
-            // });
-            db.ref(userCredential.user.uid).set({
-              approved: false,
-              admin: false,
-            });
-          })
-          .catch((error) => {
-            alert(error.message);
-          });
-      });
-
-      document.getElementById("signinButton").addEventListener("click", function (event) {
-        event.preventDefault();
-        auth.signInWithEmailAndPassword(document.getElementById("mailInput").value, document.getElementById("passInput").value)
-          .catch((error) => {
-            alert(error.message);
-          });
-      });
-
-      document.getElementById("forgotButton").addEventListener("click", function (event) {
-        auth.sendPasswordResetEmail(document.getElementById("mailInput").value).then(function () {
-          alert("Sent password reset email.");
-        }).catch(function (error) {
-          alert(error.message);
-        });
-      });
-
-      document.getElementById("signoutButton").addEventListener("click", function (event) {
-        auth.signOut()
-          .catch((error) => {
-            alert(error.message);
-          });
-      });
-
-      function populateGameTable(dbSnapshotData, game, tableBodyID) {
-        if (dbSnapshotData[game]) {
-          let teams = dbSnapshotData[game];
-          let gameTableBody = document.getElementById(tableBodyID);
-          gameTableBody.innerHTML = "";
-          for (const team in teams) {
-            let rows = 0;
-            let bodyTarget = "";
-            if (teams[team] === "No players yet!") {
-              rows = 1;
-              bodyTarget = "<tr><td colspan=\"4\">No players yet!</td></tr>";
-            } else {
-              for (const player in teams[team]) {
-                bodyTarget += "<tr><td>" + player + "</td><td><img id=\"" +  + "\" src=\"\"></td><td>" + (teams[team][player].email ? teams[team][player].email : "Not provided.") + "</td><td>" + (teams[team][player].verified ? "Yes" : "No") + "</td><td style=\"text-decoration: underline;\" id=\"" + game + "/" + team + "/" + player + "\">(Delete Player)</td</tr>";
-                rows++;
-              }
-            }
-            gameTableBody.innerHTML += bodyTarget.slice(0, 4) + "<td rowspan=" + rows + ">" + team + "<br><span style=\"text-decoration: underline;\" id=\"" + game + "/" + team + "\">(Delete Team)</span></td>" + bodyTarget.slice(4);
-            if (bodyTarget !== "<tr><td colspan=\"4\">No players yet!</td></tr>") {
-              for (const player in teams[team]) {
-                document.getElementById(game + "/" + team + "/" + player).addEventListener("click", function (event) {
-                  try {
-                    Object.keys(teams[team][1]);
-                    db.ref(currentUser.uid + "/" + game + "/" + team).update({ [player]: null, });
-                  } catch (err) {
-                    db.ref(currentUser.uid + "/" + game).update({ [team]: "No players yet!", });
-                  }
-                  drawCurrentTeams();
-                });
-              }
-            }
-            document.getElementById(game + "/" + team).addEventListener("click", function (event) {
-              db.ref(currentUser.uid + "/" + game).update({ [team]: null });
-              drawCurrentTeams();
-            });
-          }
-          return;
-        } else {
-          document.getElementById(tableBodyID).innerHTML = "<tr><td colspan=\"5\">No teams!</td></tr>";
-        }
-      }
-
-      function populateTeamSelect(dbSnapshotData, selectElemID) {
-        let selectElem = document.getElementById(selectElemID);
-        selectElem.innerHTML = "";
-        function tempInternal(game) {
-          if (dbSnapshotData[game]) {
-            if (selectElem.innerHTML === "<option>No teams yet!</option>") {
-              selectElem.innerHTML = "";
-            }
-            let teams = dbSnapshotData[game];
-            let optionsTarget = "";
-            for (const team in teams) {
-              optionsTarget += "<option value=\"" + game + "/" + team + "\">" + game + ": " + team + "</option>";
-            }
-            selectElem.innerHTML += optionsTarget;
-          } else if (selectElem.innerHTML === "") {
-            selectElem.innerHTML = "<option>No teams yet!</option>";
-          }
-        }
-        tempInternal("Beat Saber");
-        tempInternal("Echo Arena");
-      }
-
-      function drawCurrentTeams() {
-        db.ref(currentUser.uid).once('value').then((snapshot) => {
-          populateGameTable(snapshot.val(), "Beat Saber", "BSTeamTableBody");
-          populateGameTable(snapshot.val(), "Echo Arena", "EATeamTableBody");
-          populateTeamSelect(snapshot.val(), "teamSelect");
-        });
-      }
-
-      auth.onAuthStateChanged(function (user) {
-        document.getElementById("loginForm").reset();
-        document.getElementById("discordForm").reset();
-        if (user) {
-          currentUser = user;
-          db.ref(user.uid).once('value').then((snapshot) => {
-            currentUserData = snapshot.val();
-            try {
-              document.getElementById("welcomeMsg").innerHTML = "Welcome " + currentUserData.discord.match(discordDispRegex) + "!";
-              document.getElementById("discordDisp").innerHTML = currentUserData.discord;
-            } catch (err) {
-              document.getElementById("welcomeMsg").innerHTML = "Welcome! Please set your Discord username."
-            }
-            document.getElementById("unLoggedPanel").style.display = "none";
-            document.getElementById("loggedPanel").style.display = "block";
-            if (currentUserData.approved && currentUserData.org) {
-              document.getElementById("orgDisp").innerHTML = currentUserData.org;
-              document.getElementById("approvedPanel").style.display = "block";
-              drawCurrentTeams();
-            } else if (currentUserData.approved) {
-              document.getElementById("approvedPanel").style.display = "block";
-              drawCurrentTeams();
-            } else if (!currentUserData.Admin) {
-              document.getElementById("welcomeMsg").innerHTML += " You're still waiting on approval."
-            }
-            if (currentUserData.admin) {
-              document.getElementById("adminPanel").style.display = "block";
-            }
-          });
-        } else {
-          currentUser = null;
-          document.getElementById("welcomeMsg").innerHTML = "Login to access options & manage your teams.";
-          document.getElementById("unLoggedPanel").style.display = "block";
-          document.getElementById("loggedPanel").style.display = "none";
-          document.getElementById("approvedPanel").style.display = "none";
-          document.getElementById("adminPanel").style.display = "none";
-          document.getElementById("teamCreationPanel").style.display = "none";
-          document.getElementById("addPlayerPanel").style.display = "none";
-        }
-
-      });
-      const discordForm = document.getElementById("discordForm");
-      const discordSubRegex = /^[^@#:`]{2,32}#\d{4}$/u;
-      const discordDispRegex = /^[^@#:`]{2,32}/u;
-
-      discordForm.addEventListener("submit", function (event) {
-        event.preventDefault();
-        let discordAttempt = document.getElementById("discordInput").value;
-        if (discordSubRegex.test(discordAttempt)) {
-          db.ref(currentUser.uid).update({
-            discord: discordAttempt,
-          });
-          discordForm.reset();
-          document.getElementById("welcomeMsg").innerHTML = "Welcome " + discordAttempt.match(discordDispRegex) + "!";
-          if (!currentUserData.approved) {
-            document.getElementById("welcomeMsg").innerHTML += " You're still waiting on approval."
-          }
-          document.getElementById("discordDisp").innerHTML = discordAttempt;
-        } else {
-          alert("The Discord username is badly formatted.");
-        }
-      });
-
-      const orgNameForm = document.getElementById("orgNameForm");
-
-      orgNameForm.addEventListener("submit", function (event) {
-        event.preventDefault();
-        let orgNameAttempt = document.getElementById("orgNameInput").value;
-        if (alphaNumRegex.test(orgNameAttempt) && orgNameAttempt) {
-          db.ref(currentUser.uid).update({
-            org: orgNameAttempt,
-          });
-          orgNameForm.reset();
-          document.getElementById("orgDisp").innerHTML = orgNameAttempt;
-        } else if (!orgNameAttempt) {
-          alert("Please provide an organization name.");
-        } else {
-          alert("Please keep organization names alphanumeric.");
-        }
-      });
-
-      const orgLogoForm = document.getElementById("orgLogoForm");
-      const orgLogoInput = document.getElementById("orgLogoInput");
-
-      orgLogoInput.addEventListener("change", function (event) {
-        let orgLogoAttempt = orgLogoInput.files[0];
-        document.getElementById("orgLogoPreview").src = URL.createObjectURL(orgLogoAttempt);
-      });
-
-      orgLogoForm.addEventListener("submit", function (event) {
-        event.preventDefault();
-        let logoUpload = stor.ref(currentUser.uid + "/orgLogo").put(orgLogoInput.files[0]);
-        orgLogoForm.reset();
-        document.getElementById("orgLogoPreview").src = "";
-        // document.getElementById("orgDisp").innerHTML = orgNameAttempt;
-        // } else if (!orgNameAttempt) {
-        //   alert("Please provide an organization name.");
-        // } else {
-        //   alert("Please keep organization names alphanumeric.");
-        // }
-      });
-
-      document.getElementById("createTeamButton").addEventListener("click", function (event) {
-        event.preventDefault();
-        teamCreationForm.reset();
-        document.getElementById("teamCreationPanel").style.display = "block";
-      });
-
-      document.getElementById("teamCreationCancel").addEventListener("click", function (event) {
-        event.preventDefault();
-        teamCreationForm.reset();
-        document.getElementById("teamCreationPanel").style.display = "none";
-      });
-
-      document.getElementById("saveTeamButton").addEventListener("click", function (event) {
-        event.preventDefault();
-        let teamNameAttempt = document.getElementById("teamNameInput").value;
-        if (teamNameAttempt && alphaNumRegex.test(teamNameAttempt)) {
-          db.ref(currentUser.uid + "/" + document.getElementById("gameSelect").value)
-            .update({ [teamNameAttempt]: "No players yet!", });
-          document.getElementById("teamCreationPanel").style.display = "none";
-          drawCurrentTeams();
-        } else if (!teamNameAttempt) {
-          alert("Please provide a team name.")
-        } else {
-          alert("Please keep team names alphanumeric.");
-        }
-      });
-
-      document.getElementById("addPlayerButton").addEventListener("click", function (event) {
-        event.preventDefault();
-        addPlayerForm.reset();
-        document.getElementById("playerImagePreview").src = "";
-        document.getElementById("addPlayerPanel").style.display = "block";
-      });
-
-      document.getElementById("addPlayerCancel").addEventListener("click", function (event) {
-        event.preventDefault();
-        document.getElementById("addPlayerPanel").style.display = "none";
-      });
-
-      const addPlayerImageInput = document.getElementById("addPlayerImageInput");
-
-      addPlayerImageInput.addEventListener("change", function (event) {
-        let addPlayerImageAttempt = addPlayerImageInput.files[0];
-        document.getElementById("playerImagePreview").src = URL.createObjectURL(addPlayerImageAttempt);
-      });
-
-      document.getElementById("savePlayerButton").addEventListener("click", function (event) {
-        event.preventDefault();
-        let playerNameAttempt = document.getElementById("addPlayerNameInput").value;
-        let playerMailAttempt = document.getElementById("addPlayerMailInput").value;
-        let team = document.getElementById("teamSelect").value;
-        let addPlayerImageAttempt = document.getElementById("addPlayerImageInput");
-        if (playerNameAttempt && alphaNumRegex.test(playerNameAttempt) && playerMailAttempt && emailRegex.test(playerMailAttempt)) {
-          db.ref(currentUser.uid + "/" + team)
-            .update({ [playerNameAttempt]: { "verified": false, "email": playerMailAttempt } });
-          let playerImageUpload = stor.ref(currentUser.uid + "/" + team + "/" + playerNameAttempt).put(addPlayerImageAttempt.files[0]);
-          document.getElementById("addPlayerPanel").style.display = "none";
-          drawCurrentTeams();
-        } else if (!playerNameAttempt) {
-          alert("Please provide a player name.");
-        } else if (!alphaNumRegex.test(playerNameAttempt)) {
-          alert("Please keep player names alphanumeric.");
-        } else if (!playerMailAttempt) {
-          alert("Please provide a player email.");
-        } else if (!emailRegex.test(playerMailAttempt)) {
-          alert("Email is badly formatted.");
-        }
-      });
-    });
-  </script> -->
 </body>
 
 </html>
