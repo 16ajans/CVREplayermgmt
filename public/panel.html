@@ -65,15 +65,69 @@
               <input type="file" id="logoInput" required="" disabled="">
             </div>
             <div class="pure-controls">
-              <button type="submit" id="orgSubmitButton" class="pure-button pure-button-primary" disabled="">Save</button>
+              <button type="submit" id="orgSubmitButton" class="pure-button pure-button-primary"
+                disabled="">Save</button>
             </div>
           </fieldset>
         </form>
       </card>
     </row>
     <row class="pure-g">
-      <card class="pure-u-1-2"></card>
-      <card class="pure-u-1-2"></card>
+      <card class="pure-u-1-2">
+        <table class="pure-table">
+          <caption>Beat Saber Teams</caption>
+          <thead>
+            <tr>
+              <td>Team</td>
+              <td>Player</td>
+              <td>Email</td>
+              <td>Verification Image</td>
+              <td>Verified</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="5">No teams yet!</td>
+            </tr>
+          </tbody>
+        </table>
+      </card>
+      <card class="pure-u-1-2">
+        <table class="pure-table">
+          <caption>Echo Arena Teams</caption>
+          <thead>
+            <tr>
+              <td>Team</td>
+              <td>Player</td>
+              <td>Email</td>
+              <td>Verification Image</td>
+              <td>Verified</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="5">No teams yet!</td>
+            </tr>
+          </tbody>
+        </table>
+        <form class="pure-form">
+          <fieldset>
+            <legend>Add Player</legend>
+            <input type="text" placeholder="Player Name" required="">
+            <input type="email" placeholder="Player Email" required="">
+            <label for="playerImgInput">Player Verification Image</label>
+            <input type="file" id="playerImgInput" required="">
+            <button type="submit">Save</button>
+          </fieldset>
+        </form>
+        <form class="pure-form">
+          <fieldset>
+            <legend>Add Team</legend>
+            <input type="text" placeholder="Team Name" required="">
+            <button type="submit">Save</button>
+          </fieldset>
+        </form>
+      </card>
     </row>
   </main>
   <footer>
@@ -96,7 +150,7 @@
           currentUser = user;
           db.ref(currentUser.uid).once("value").then((snapshot) => {
             currentUserData = snapshot.val();
-              document.getElementById("discordInput").placeholder = currentUserData.discord;
+            document.getElementById("discordInput").placeholder = currentUserData.discord;
             if (currentUserData.approved) {
               docuement.getElementById("orgNameInput").removeAttribute("disabled");
               docuement.getElementById("logoInput").removeAttribute("disabled");
