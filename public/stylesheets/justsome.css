@@ -64,3 +64,8 @@ footer {
 .pure-button-primary {
   background: #703893;
 }
+
+a:link {
+  color: #703893;
+  text-decoration: none
+}
