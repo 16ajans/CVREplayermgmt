@@ -17,6 +17,29 @@
 
   <script defer src="/__/firebase/init.js?useEmulator=true"></script>
 
+  <style>
+    #modalWrapper {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgb(0, 0, 0);
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    #forgotModal {
+      height: 100%;
+    }
+
+    #forgotForm {
+      padding: 1rem;
+      background-color: white;
+    }
+  </style>
+
 </head>
 
 <body>
@@ -32,11 +55,11 @@
       <img class="pure-img" src="assets/echo.jpg">
     </section>
     <section class="pure-u-1-2 PUTTHECONTENTINTHEMIDDLE">
-      <form class="pure-form pure-form-stacked">
+      <form id="loginForm" class="pure-form pure-form-stacked">
         <fieldset>
           <input type="email" id="emailInput" placeholder="Email Address" required="" autocomplete="email">
           <input type="password" id="passwordInput" placeholder="Password" required="" autocomplete="current-password">
-          <a href="js or something">Forgot your password?</a><br>
+          <span id="forgotLink" class="link">Forgot your password?</span><br>
           <label for="rememberCheck" class="pure-checkbox">
             <input type="checkbox" id="rememberCheck"> Remember me</label>
           <button type="submit" id="loginButton" class="pure-button pure-button-primary">Login</button>
@@ -49,6 +72,18 @@
     <section class="pure-u-1-2 logoContainer">
       <a href="http://discord.gg/JXbmZjp"><img class="pure-img discordLogo" src="assets/Discord-Logo-White.png"></a>
   </footer>
+
+  <wrapper id="modalWrapper">
+    <modal id="forgotModal" class="PUTTHECONTENTINTHEMIDDLE">
+      <form id="forgotForm" class="pure-form pure-form-stacked">
+        <fieldset>
+          <input type="email" id="emailReset" placeholder="Email Address" required="" autocomplete="email">
+          <button type="submit" id="resetButton" class="pure-button pure-button-primary">Send reset email</button>
+          <button id="cancelButton" class="pure-button">Cancel</button>
+        </fieldset>
+      </form>
+    </modal>
+  </wrapper>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -80,35 +115,48 @@
         }
       }
 
-      document.getElementById("registerButton").addEventListener("click", function (event) {
+      document.getElementById("loginForm").addEventListener("submit", function (event) {
         event.preventDefault();
-        auth.createUserWithEmailAndPassword(document.getElementById("emailInput").value, document.getElementById("passwordInput").value)
-          .then((userCredential) => {
-            return persistHandler(document.getElementById("rememberCheck").checked);
-          })
-          .catch((error) => {
-            alert(error.message);
-          });
+        console.log(event.submitter.id);
+        if (event.submitter.id === "registerButton") {
+          auth.createUserWithEmailAndPassword(document.getElementById("emailInput").value, document.getElementById("passwordInput").value)
+            .then((userCredential) => {
+              return persistHandler(document.getElementById("rememberCheck").checked);
+            })
+            .catch((error) => {
+              alert(error.message);
+            });
+        } else {
+          auth.signInWithEmailAndPassword(document.getElementById("emailInput").value, document.getElementById("passwordInput").value)
+            .then((userCredential) => {
+              return persistHandler(document.getElementById("rememberCheck").checked);
+            })
+            .catch((error) => {
+              alert(error.message);
+            });
+        }
       });
 
-      document.getElementById("loginButton").addEventListener("click", function (event) {
-        event.preventDefault();
-        auth.signInWithEmailAndPassword(document.getElementById("emailInput").value, document.getElementById("passwordInput").value)
-          .then((userCredential) => {
-            return persistHandler(document.getElementById("rememberCheck").checked);
-          })
-          .catch((error) => {
-            alert(error.message);
-          });
+      var modalWrapper = document.getElementById("modalWrapper");
+
+      document.getElementById("forgotLink").addEventListener("click", function (event) {
+        modalWrapper.style.display = "block";
+      });
+      document.getElementById("cancelButton").addEventListener("click", function (event) {
+        modalWrapper.style.display = "none";
+        document.getElementById("forgotForm").reset();
       });
 
-      // document.getElementById("forgotButton").addEventListener("click", function (event) {
-      //   auth.sendPasswordResetEmail(document.getElementById("mailInput").value).then(function () {
-      //     alert("Sent password reset email.");
-      //   }).catch(function (error) {
-      //     alert(error.message);
-      //   });
-      // });
+      document.getElementById("forgotForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        auth.sendPasswordResetEmail(document.getElementById("emailReset").value).then(function () {
+          alert("Password reset email sent.");
+          modalWrapper.style.display = "none";
+          document.getElementById("forgotForm").reset();
+        }).catch(function (error) {
+          alert(error.message);
+        });
+      });
 
     });
   </script>
