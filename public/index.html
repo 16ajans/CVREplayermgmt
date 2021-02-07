@@ -28,6 +28,7 @@
       height: 100%;
       background-color: rgb(0, 0, 0);
       background-color: rgba(0, 0, 0, 0.4);
+      animation: fadein 0.25s;
     }
 
     #forgotModal {
@@ -37,6 +38,20 @@
     #forgotForm {
       padding: 1rem;
       background-color: white;
+    }
+
+    @keyframes fadein {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    #emailReset {
+      width: 100%;
     }
   </style>
 
@@ -76,6 +91,7 @@
   <wrapper id="modalWrapper">
     <modal id="forgotModal" class="PUTTHECONTENTINTHEMIDDLE">
       <form id="forgotForm" class="pure-form pure-form-stacked">
+        <h2>Forgot Password</h2>
         <fieldset>
           <input type="email" id="emailReset" placeholder="Email Address" required="" autocomplete="email">
           <button type="submit" id="resetButton" class="pure-button pure-button-primary">Send reset email</button>
