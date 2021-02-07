@@ -41,7 +41,7 @@
     <h1>Welcome!</h1>
     <row class="pure-g">
       <card class="pure-u-1-2 PUTTHECONTENTINTHEMIDDLE">
-        <form class="pure-form pure-form-aligned">
+        <form id="discordForm" class="pure-form pure-form-aligned">
           <fieldset>
             <div class="pure-control-group">
               <label for="discordInput">Discord Username</label>
@@ -58,14 +58,14 @@
           <fieldset>
             <div class="pure-control-group">
               <label for="orgNameInput">Organization Name</label>
-              <input type="text" id="orgNameInput" placeholder="School of Hard Knocks" required="">
+              <input type="text" id="orgNameInput" placeholder="School of Hard Knocks" required="" disabled="">
             </div>
             <div class="pure-control-group">
               <label for="logoInput">Organization Logo</label>
-              <input type="file" id="logoInput" required="">
+              <input type="file" id="logoInput" required="" disabled="">
             </div>
             <div class="pure-controls">
-              <button type="submit" class="pure-button pure-button-primary">Save</button>
+              <button type="submit" id="orgSubmitButton" class="pure-button pure-button-primary" disabled="">Save</button>
             </div>
           </fieldset>
         </form>
@@ -82,13 +82,27 @@
   </footer>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener("DOMContentLoaded", function () {
 
       const auth = firebase.auth();
+      const db = firebase.database();
+      var currentUser;
+      var currentUserData;
 
       auth.onAuthStateChanged(function (user) {
         if (!user) {
           window.location.replace("/");
+        } else {
+          currentUser = user;
+          db.ref(currentUser.uid).once("value").then((snapshot) => {
+            currentUserData = snapshot.val();
+              document.getElementById("discordInput").placeholder = currentUserData.discord;
+            if (currentUserData.approved) {
+              docuement.getElementById("orgNameInput").removeAttribute("disabled");
+              docuement.getElementById("logoInput").removeAttribute("disabled");
+              docuement.getElementById("orgSubmitButton").removeAttribute("disabled");
+            }
+          });
         }
       });
 
@@ -98,6 +112,24 @@
           .catch((error) => {
             alert(error.message);
           });
+      });
+
+      const discordRegex = /^[^@#:`]{2,32}#\d{4}$/u;
+      const discordForm = document.getElementById("discordForm");
+      const discordInput = document.getElementById("discordInput");
+
+      discordForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        let discordAttempt = discordInput.value;
+        if (discordRegex.test(discordAttempt)) {
+          db.ref(currentUser.uid).update({
+            discord: discordAttempt,
+          });
+          discordForm.reset();
+          discordInput.placeholder = discordAttempt;
+        } else {
+          alert("Discord username is badly formatted.");
+        }
       });
 
     });
