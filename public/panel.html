@@ -157,7 +157,19 @@
       <a href="http://discord.gg/JXbmZjp"><img class="pure-img discordLogo" src="assets/Discord-Logo-White.png"></a>
   </footer>
 
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
 
+      const auth = firebase.auth();
+
+      auth.onAuthStateChanged(function (user) {
+        if (!user) {
+          window.location.replace("/");
+        }
+      });
+
+    });
+  </script>
 </body>
 
 </html>
