@@ -116,3 +116,21 @@ footer {
     opacity: 1;
   }
 }
+
+/* table css */
+
+.tableContainer {
+  overflow-x: auto;
+}
+
+td:nth-child(1) {
+  width: 100px;
+  }
+
+td:nth-child(2) {
+  width: 200px;
+}
+
+td:nth-child(3) {
+  width: 300px;
+ }
