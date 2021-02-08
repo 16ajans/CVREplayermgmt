@@ -30,6 +30,21 @@ main {
   flex: 1 0 auto;
 }
 
+.PUTTHECONTENTINTHEMIDDLE {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.SPACETHECONTENTAPART {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-content: space-between;
+}
+
+/* login page */
+
 main > section {
   height: 100%;
 }
@@ -39,15 +54,7 @@ main > section > img {
   object-fit: cover;
 }
 
-footer {
-  flex-shrink: 0;
-}
-
-.PUTTHECONTENTINTHEMIDDLE {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+/* footer */
 
 .logoContainer {
   position: relative;
@@ -61,11 +68,51 @@ footer {
   width: 3rem;
 }
 
+footer {
+  flex-shrink: 0;
+}
+
+/* colors and theming */
+
 .pure-button-primary {
   background: #703893;
 }
 
-.link {
+.pruple {
   color: #703893;
   text-decoration: none
+}
+
+/* modal bits */
+
+.modalWrapper {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+  animation: fadein 0.25s;
+}
+
+.modalContainer {
+  height: 100%;
+}
+
+.modalContent {
+  padding: 1rem;
+  background-color: white;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }

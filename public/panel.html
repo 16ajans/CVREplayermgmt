@@ -20,7 +20,7 @@
   <script defer src="/__/firebase/init.js?useEmulator=true"></script>
 
   <style>
-    h1 {
+    #welcomeMsg {
       text-align: center;
       width: 100%;
     }
@@ -35,10 +35,10 @@
       <img class="pure-img" src="assets/CVRE.png">
       <h1>Player Manager</h1>
     </section>
-    <button id="logoutButton" class="pure-button">Logout</button>
+    <button type="button" id="logoutButton" class="pure-button">Logout</button>
   </header>
   <main>
-    <h1>Welcome!</h1>
+    <h1 id="welcomeMsg">Welcome!</h1>
     <row class="pure-g">
       <card class="pure-u-1-2 PUTTHECONTENTINTHEMIDDLE">
         <form id="discordForm" class="pure-form pure-form-aligned">
@@ -134,6 +134,21 @@
     <section class="pure-u-1-2 logoContainer">
       <a href="http://discord.gg/JXbmZjp"><img class="pure-img discordLogo" src="assets/Discord-Logo-White.png"></a>
   </footer>
+
+  <wrapper class="modalWrapper">
+    <modal class="modalContainer PUTTHECONTENTINTHEMIDDLE">
+      <form class="modalContent pure-form pure-form-stacked">
+        <fieldset>
+          <legend>Create New Team</legend>
+          <select>
+            <option>Beat Saber</option>
+            <option>Echo Arena</option>
+          </select>
+        </fieldset>
+      </form>
+    </modal>
+  </wrapper>
+
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {

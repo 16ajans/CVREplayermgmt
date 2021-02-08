@@ -18,40 +18,12 @@
   <script defer src="/__/firebase/init.js?useEmulator=true"></script>
 
   <style>
-    #modalWrapper {
-      display: none;
-      position: fixed;
-      z-index: 1;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgb(0, 0, 0);
-      background-color: rgba(0, 0, 0, 0.4);
-      animation: fadein 0.25s;
-    }
-
-    #forgotModal {
-      height: 100%;
-    }
-
-    #forgotForm {
-      padding: 1rem;
-      background-color: white;
-    }
-
-    @keyframes fadein {
-      from {
-        opacity: 0;
-      }
-
-      to {
-        opacity: 1;
-      }
-    }
-
     #emailReset {
       width: 100%;
+    }
+
+    .almosthalfwidth {
+      width: 48%;
     }
   </style>
 
@@ -74,11 +46,13 @@
         <fieldset>
           <input type="email" id="emailInput" placeholder="Email Address" required="" autocomplete="email">
           <input type="password" id="passwordInput" placeholder="Password" required="" autocomplete="current-password">
-          <span id="forgotLink" class="link">Forgot your password?</span><br>
+          <span id="forgotLink" class="pruple">Forgot your password?</span><br>
           <label for="rememberCheck" class="pure-checkbox">
             <input type="checkbox" id="rememberCheck"> Remember me</label>
-          <button type="submit" id="loginButton" class="pure-button pure-button-primary">Login</button>
-          <button id="registerButton" class="pure-button">Register</button>
+          <div class="SPACETHECONTENTAPART">
+            <button type="submit" id="loginButton" class="pure-button pure-button-primary almosthalfwidth">Login</button>
+            <button type="button" id="registerButton" class="pure-button almosthalfwidth">Register</button>
+          </div>
         </fieldset>
       </form>
     </section>
@@ -86,16 +60,17 @@
   <footer>
     <section class="pure-u-1-2 logoContainer">
       <a href="http://discord.gg/JXbmZjp"><img class="pure-img discordLogo" src="assets/Discord-Logo-White.png"></a>
+    </section>
   </footer>
 
-  <wrapper id="modalWrapper">
-    <modal id="forgotModal" class="PUTTHECONTENTINTHEMIDDLE">
-      <form id="forgotForm" class="pure-form pure-form-stacked">
-        <h2>Forgot Password</h2>
+  <wrapper id="forgotModalWrapper" class="modalWrapper">
+    <modal class="modalContainer PUTTHECONTENTINTHEMIDDLE">
+      <form id="forgotForm" class="modalContent pure-form pure-form-stacked">
         <fieldset>
+          <legend>Forgot Password</legend>
           <input type="email" id="emailReset" placeholder="Email Address" required="" autocomplete="email">
           <button type="submit" id="resetButton" class="pure-button pure-button-primary">Send reset email</button>
-          <button id="cancelButton" class="pure-button">Cancel</button>
+          <button type="button" id="cancelButton" class="pure-button">Cancel</button>
         </fieldset>
       </form>
     </modal>
@@ -153,13 +128,13 @@
         }
       });
 
-      var modalWrapper = document.getElementById("modalWrapper");
+      var forgotModalWrapper = document.getElementById("forgotModalWrapper");
 
       document.getElementById("forgotLink").addEventListener("click", function (event) {
-        modalWrapper.style.display = "block";
+        forgotModalWrapper.style.display = "block";
       });
       document.getElementById("cancelButton").addEventListener("click", function (event) {
-        modalWrapper.style.display = "none";
+        forgotModalWrapper.style.display = "none";
         document.getElementById("forgotForm").reset();
       });
 
@@ -167,7 +142,7 @@
         event.preventDefault();
         auth.sendPasswordResetEmail(document.getElementById("emailReset").value).then(function () {
           alert("Password reset email sent.");
-          modalWrapper.style.display = "none";
+          forgotModalWrapper.style.display = "none";
           document.getElementById("forgotForm").reset();
         }).catch(function (error) {
           alert(error.message);
