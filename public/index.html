@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CVRE Player Manager</title>
+  <title>Player Manager</title>
   <link rel="icon" type="image/png" href="assets/favicon.png">
 
   <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.5/build/pure-min.css"
@@ -51,7 +51,7 @@
             <input type="checkbox" id="rememberCheck"> Remember me</label>
           <div class="SPACETHECONTENTAPART">
             <button type="submit" id="loginButton" class="pure-button pure-button-primary almosthalfwidth">Login</button>
-            <button type="button" id="registerButton" class="pure-button almosthalfwidth">Register</button>
+            <button type="submit" id="registerButton" class="pure-button almosthalfwidth">Register</button>
           </div>
         </fieldset>
       </form>
@@ -63,9 +63,9 @@
     </section>
   </footer>
 
-  <wrapper id="forgotModalWrapper" class="modalWrapper">
-    <modal class="modalContainer PUTTHECONTENTINTHEMIDDLE">
-      <form id="forgotForm" class="modalContent pure-form pure-form-stacked">
+  <wrapper id="forgotModalWrapper">
+    <modal class="PUTTHECONTENTINTHEMIDDLE">
+      <form id="forgotForm" class="pure-form pure-form-stacked">
         <fieldset>
           <legend>Forgot Password</legend>
           <input type="email" id="emailReset" placeholder="Email Address" required="" autocomplete="email">
@@ -108,7 +108,6 @@
 
       document.getElementById("loginForm").addEventListener("submit", function (event) {
         event.preventDefault();
-        console.log(event.submitter.id);
         if (event.submitter.id === "registerButton") {
           auth.createUserWithEmailAndPassword(document.getElementById("emailInput").value, document.getElementById("passwordInput").value)
             .then((userCredential) => {

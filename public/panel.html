@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CVRE Player Manager</title>
+  <title>Player Manager</title>
   <link rel="icon" type="image/png" href="assets/favicon.png">
 
   <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.5/build/pure-min.css"
@@ -54,22 +54,9 @@
         </form>
       </card>
       <card class="pure-u-1-2 PUTTHECONTENTINTHEMIDDLE">
-        <form class="pure-form pure-form-aligned">
-          <fieldset>
-            <div class="pure-control-group">
-              <label for="orgNameInput">Organization Name</label>
-              <input type="text" id="orgNameInput" placeholder="School of Hard Knocks" required="" disabled="">
-            </div>
-            <div class="pure-control-group">
-              <label for="logoInput">Organization Logo</label>
-              <input type="file" id="logoInput" required="" disabled="">
-            </div>
-            <div class="pure-controls">
-              <button type="submit" id="orgSubmitButton" class="pure-button pure-button-primary"
-                disabled="">Save</button>
-            </div>
-          </fieldset>
-        </form>
+        <button type="button" class="pure-button pure-button-primary">Create New Organization</button>
+        <button type="button" class="pure-button pure-button-primary">Create New Team</button>
+        <button type="button" class="pure-button pure-button-primary">Create New Player</button>
       </card>
     </row>
     <row class="pure-g">
@@ -78,6 +65,7 @@
           <caption>Beat Saber Teams</caption>
           <thead>
             <tr>
+              <td>Organization</td>
               <td>Team</td>
               <td>Player</td>
               <td>Email</td>
@@ -87,7 +75,7 @@
           </thead>
           <tbody>
             <tr>
-              <td colspan="5">No teams yet!</td>
+              <td colspan="6">No teams yet!</td>
             </tr>
           </tbody>
         </table>
@@ -97,6 +85,7 @@
           <caption>Echo Arena Teams</caption>
           <thead>
             <tr>
+              <td>Organization</td>
               <td>Team</td>
               <td>Player</td>
               <td>Email</td>
@@ -106,27 +95,10 @@
           </thead>
           <tbody>
             <tr>
-              <td colspan="5">No teams yet!</td>
+              <td colspan="6">No teams yet!</td>
             </tr>
           </tbody>
         </table>
-        <!-- <form class="pure-form">
-          <fieldset>
-            <legend>Add Player</legend>
-            <input type="text" placeholder="Player Name" required="">
-            <input type="email" placeholder="Player Email" required="">
-            <label for="playerImgInput">Player Verification Image</label>
-            <input type="file" id="playerImgInput" required="">
-            <button type="submit">Save</button>
-          </fieldset>
-        </form>
-        <form class="pure-form">
-          <fieldset>
-            <legend>Add Team</legend>
-            <input type="text" placeholder="Team Name" required="">
-            <button type="submit">Save</button>
-          </fieldset>
-        </form> -->
       </card>
     </row>
   </main>
@@ -135,20 +107,59 @@
       <a href="http://discord.gg/JXbmZjp"><img class="pure-img discordLogo" src="assets/Discord-Logo-White.png"></a>
   </footer>
 
-  <wrapper class="modalWrapper">
-    <modal class="modalContainer PUTTHECONTENTINTHEMIDDLE">
-      <form class="modalContent pure-form pure-form-stacked">
+  <wrapper id="createOrgModal">
+    <modal class="PUTTHECONTENTINTHEMIDDLE">
+      <form id="orgForm" class="pure-form pure-form-stacked">
+        <fieldset>
+          <label for="orgNameInput">Organization Name</label>
+          <input type="text" id="orgNameInput" placeholder="School of Hard Knocks" required="">
+          <label for="orgLogoInput">Organization Logo</label>
+          <input type="file" id="orgLogoInput" required="">
+          <button type="submit" id="orgSubmitButton" class="pure-button pure-button-primary">Save</button>
+          <button type="button" class="pure-button">Cancel</button>
+        </fieldset>
+      </form>
+    </modal>
+  </wrapper>
+
+  <wrapper id="createTeamModal">
+    <modal class="PUTTHECONTENTINTHEMIDDLE">
+      <form id="createTeamForm" class="pure-form pure-form-stacked">
         <fieldset>
           <legend>Create New Team</legend>
           <select>
             <option>Beat Saber</option>
             <option>Echo Arena</option>
           </select>
+          <input type="text" placeholder="Team Name" required="">
+          <button type="submit" class="pure-button pure-button-primary">Save</button>
+          <button type="button" class="pure-button">Cancel</button>
         </fieldset>
       </form>
     </modal>
   </wrapper>
 
+  <wrapper id="createPlayerModal">
+    <modal class="PUTTHECONTENTINTHEMIDDLE">
+      <form id="createPlayerForm" class="pure-form pure-form-stacked">
+        <fieldset>
+          <legend>Create New Player</legend>
+          <select>
+            <option>Beat Saber</option>
+            <option>Echo Arena</option>
+          </select>
+          <select>
+            <option>No Teams!</option>
+          </select>
+          <input type="text" placeholder="Player Name" required="">
+          <input type="email" placeholder="Player Email" required="">
+          <input type="file" required="">
+          <button type="submit" class="pure-button pure-button-primary">Save</button>
+          <button type="button" class="pure-button">Cancel</button>
+        </fieldset>
+      </form>
+    </modal>
+  </wrapper>
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -167,9 +178,9 @@
             currentUserData = snapshot.val();
             document.getElementById("discordInput").placeholder = currentUserData.discord;
             if (currentUserData.approved) {
-              docuement.getElementById("orgNameInput").removeAttribute("disabled");
-              docuement.getElementById("logoInput").removeAttribute("disabled");
-              docuement.getElementById("orgSubmitButton").removeAttribute("disabled");
+              document.getElementById("orgNameInput").removeAttribute("disabled");
+              document.getElementById("orgLogoInput").removeAttribute("disabled");
+              document.getElementById("orgSubmitButton").removeAttribute("disabled");
             }
           });
         }
@@ -199,6 +210,71 @@
         } else {
           alert("Discord username is badly formatted.");
         }
+      });
+
+      var createOrgForm = document.getElementById("createOrgForm");
+      const orgNameInput = document.getElementById("orgNameInput");
+      const orgLogoInput = document.getElementById("orLogoInput");
+
+      createOrgForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        let orgNameAttempt = orgNameInput.value;
+        let orgLogoAttempt = orgLogoInput.files[0];
+        if (true) {
+          db.ref(currentUser.uid).update({
+            orgName: orgNameAttempt,
+          });
+          let logoUpload = stor.ref(currentUser.uid + "/orgLogo").put(orgLogoAttempt);
+          createOrgForm.reset();
+          orgNameInput.placeholder = orgNameAttempt;
+        }
+      });
+
+      var createOrgModalWrapper = document.getElementById("createOrgModalWrapper");
+
+      document.getElementById("").addEventListener("click", function (event) {
+        createOrgModalWrapper.style.display = "block";
+      });
+      document.getElementById("").addEventListener("click", function (event) {
+        createOrgModalWrapper.style.display = "none";
+        createOrgForm.reset();
+      });
+
+      createOrgForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+      });
+
+      var createTeamModalWrapper = document.getElementById("createTeamModalWrapper");
+      var createTeamForm = document.getElementById("createTeamForm");
+
+      document.getElementById("").addEventListener("click", function (event) {
+        createTeamModalWrapper.style.display = "block";
+      });
+      document.getElementById("").addEventListener("click", function (event) {
+        createTeamModalWrapper.style.display = "none";
+        createTeamForm.reset();
+      });
+
+      createTeamForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+      });
+
+      var createPlayerModalWrapper = document.getElementById("createPlayerModal");
+      var createPlayerForm = document.getElementById("createPlayerForm");
+
+      document.getElementById("").addEventListener("click", function (event) {
+        createPlayerModalWrapper.style.display = "block";
+      });
+      document.getElementById("").addEventListener("click", function (event) {
+        createPlayerModalWrapper.style.display = "none";
+        createPlayerForm.reset();
+      });
+
+      createPlayerForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+
       });
 
     });
