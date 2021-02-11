@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Player Manager</title>
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+
+  <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.5/build/pure-min.css"
+    integrity="sha384-LTIDeidl25h2dPxrB2Ekgc9c7sEC3CWGM6HeFmuDNUjX76Ert4Z4IY714dhZHPLd" crossorigin="anonymous">
+  <link rel="stylesheet" href="stylesheets/justsome.css">
+
+  <script defer src="/__/firebase/8.2.5/firebase-app.js"></script>
+  <script defer src="/__/firebase/8.2.5/firebase-auth.js"></script>
+  <script defer src="/__/firebase/8.2.5/firebase-database.js"></script>
+  <script defer src="/__/firebase/8.2.5/firebase-storage.js"></script>
+
+  <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+
+  <style>
+    #welcomeMsg {
+      text-align: center;
+      width: 100%;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <header>
+    <section>
+      <img class="pure-img" src="assets/CVRE.png">
+      <h1>Player Manager</h1>
+    </section>
+    <button type="button" id="logoutButton" class="pure-button">Logout</button>
+  </header>
+  <main>
+    <h1 id="welcomeMsg">Welcome!</h1>
+    <row class="pure-g">
+      <card class="pure-u-1-2 PUTTHECONTENTINTHEMIDDLE">
+        <form id="discordForm" class="pure-form pure-form-aligned">
+          <fieldset>
+            <div class="pure-control-group">
+              <label for="discordInput">Discord Username</label>
+              <input type="text" id="discordInput" placeholder="Wumpus#0001" required="">
+            </div>
+            <div class="pure-controls">
+              <button type="submit" class="pure-button pure-button-primary">Save</button>
+            </div>
+          </fieldset>
+        </form>
+      </card>
+      <card class="pure-u-1-2 PUTTHECONTENTINTHEMIDDLE">
+        <button type="button" id="newOrgButton" class="pure-button pure-button-primary" disabled="">Create New
+          Organization</button>
+        <button type="button" id="newTeamButton" class="pure-button pure-button-primary" disabled="">Create New
+          Team</button>
+        <button type="button" id="newPlayerButton" class="pure-button pure-button-primary" disabled="">Create New
+          Player</button>
+      </card>
+    </row>
+    <row class="pure-g">
+      <card class="pure-u-1-2 PUTTHECONTENTINTHEMIDDLE tableContainer">
+        <table class="pure-table">
+          <caption>Beat Saber Teams</caption>
+          <thead>
+            <tr>
+              <td>Organization</td>
+              <td>Team</td>
+              <td>Player</td>
+              <td>Email</td>
+              <td>Verification Image</td>
+              <td>Verified</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="6">No teams yet!</td>
+            </tr>
+          </tbody>
+        </table>
+      </card>
+      <card class="pure-u-1-2 PUTTHECONTENTINTHEMIDDLE tableContainer">
+        <table class="pure-table">
+          <caption>Echo Arena Teams</caption>
+          <thead>
+            <tr>
+              <td>Organization</td>
+              <td>Team</td>
+              <td>Player</td>
+              <td>Email</td>
+              <td>Verification Image</td>
+              <td>Verified</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="6">No teams yet!</td>
+            </tr>
+          </tbody>
+        </table>
+      </card>
+    </row>
+  </main>
+  <footer>
+    <section class="pure-u-1-2 logoContainer">
+      <a href="http://discord.gg/JXbmZjp"><img class="pure-img discordLogo" src="assets/Discord-Logo-White.png"></a>
+  </footer>
+
+  <wrapper id="createOrgModal">
+    <modal class="PUTTHECONTENTINTHEMIDDLE">
+      <form id="createOrgForm" class="pure-form pure-form-stacked">
+        <fieldset>
+          <legend>Create New Organization</legend>
+          <input type="text" id="orgNameInput" placeholder="Organization Name" required="">
+          <label for="orgLogoInput">Organization Logo</label>
+          <input type="file" id="orgLogoInput" required="">
+          <div class="SPACETHECONTENTAPART">
+            <button type="submit" class="pure-button pure-button-primary almosthalfwidth">Save</button>
+            <button type="button" id="orgCancelButton" class="pure-button almosthalfwidth">Cancel</button>
+          </div>
+        </fieldset>
+      </form>
+    </modal>
+  </wrapper>
+
+  <wrapper id="createTeamModal">
+    <modal class="PUTTHECONTENTINTHEMIDDLE">
+      <form id="createTeamForm" class="pure-form pure-form-stacked">
+        <fieldset>
+          <legend>Create New Team</legend>
+          <select id="teamOrgSelect">
+            <option value="false">No Organizations!</option>
+          </select>
+          <select id="teamGameSelect">
+            <option value="Beat Saber">Beat Saber</option>
+            <option value="Echo Arena">Echo Arena</option>
+          </select>
+          <input type="text" id="teamNameInput" placeholder="Team Name" required="">
+          <div class="SPACETHECONTENTAPART">
+            <button type="submit" class="pure-button pure-button-primary almosthalfwidth">Save</button>
+            <button type="button" id="teamCancelButton" class="pure-button almosthalfwidth">Cancel</button>
+          </div>
+        </fieldset>
+      </form>
+    </modal>
+  </wrapper>
+
+  <wrapper id="createPlayerModal">
+    <modal class="PUTTHECONTENTINTHEMIDDLE">
+      <form id="createPlayerForm" class="pure-form pure-form-stacked">
+        <fieldset>
+          <legend>Create New Player</legend>
+          <select id="playerOrgSelect">
+            <option value="false">No Organizations!</option>
+          </select>
+          <select id="playerTeamSelect">
+            <option value="false">Select an organization!</option>
+          </select>
+          <input type="text" id="playerNameInput" placeholder="Player Name" required="">
+          <input type="email" id="playerEmailInput" placeholder="Player Email" required="">
+          <input type="file" id="playerImageInput" required="">
+          <div class="SPACETHECONTENTAPART">
+            <button type="submit" class="pure-button pure-button-primary almosthalfwidth">Save</button>
+            <button type="button" id="playerCancelButton" class="pure-button almosthalfwidth">Cancel</button>
+          </div>
+        </fieldset>
+      </form>
+    </modal>
+  </wrapper>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+      const auth = firebase.auth();
+      const db = firebase.database();
+      const stor = firebase.storage();
+      var currentUser;
+      var currentUserData;
+
+      auth.onAuthStateChanged(function (user) {
+        if (!user) {
+          window.location.replace("/");
+        } else {
+          currentUser = user;
+          db.ref(currentUser.uid).once("value").then((snapshot) => {
+            currentUserData = snapshot.val();
+            if (!currentUserData) {
+              currentUserData = {};
+            } else {
+              document.getElementById("discordInput").placeholder = currentUserData.discord;
+              if (currentUserData.approved) {
+                document.getElementById("newOrgButton").removeAttribute("disabled");
+                document.getElementById("newTeamButton").removeAttribute("disabled");
+                document.getElementById("newPlayerButton").removeAttribute("disabled");
+              }
+            }
+          });
+        }
+      });
+
+      document.getElementById("logoutButton").addEventListener("click", function (event) {
+        event.preventDefault();
+        auth.signOut()
+          .catch((error) => {
+            alert(error.message);
+          });
+      });
+
+      const discordRegex = /^[^@#:`]{2,32}#\d{4}$/u;
+      const discordForm = document.getElementById("discordForm");
+      const discordInput = document.getElementById("discordInput");
+
+      discordForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        let discordAttempt = discordInput.value;
+        if (discordRegex.test(discordAttempt)) {
+          db.ref(currentUser.uid).update({
+            discord: discordAttempt,
+          });
+          discordInput.placeholder = discordAttempt;
+          currentUserData.discord = discordAttempt;
+          discordForm.reset();
+        } else {
+          alert("Discord username is badly formatted.");
+        }
+      });
+
+      const createOrgModal = document.getElementById("createOrgModal");
+      const createOrgForm = document.getElementById("createOrgForm");
+
+      const orgNameInput = document.getElementById("orgNameInput");
+      const orgLogoInput = document.getElementById("orgLogoInput");
+
+      document.getElementById("newOrgButton").addEventListener("click", function (event) {
+        createOrgModal.style.display = "block";
+      });
+      document.getElementById("orgCancelButton").addEventListener("click", function (event) {
+        createOrgModal.style.display = "none";
+        createOrgForm.reset();
+      });
+
+      createOrgForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        let orgNameAttempt = orgNameInput.value;
+        let orgLogoAttempt = orgLogoInput.files[0];
+        let currentOrgList = (typeof (currentUserData["orgList"]) !== "undefined") ? currentUserData["orgList"] : [];
+        currentOrgList.push(orgNameAttempt);
+        db.ref(currentUser.uid).update({
+          orgList: currentOrgList,
+        });
+        stor.ref(currentUser.uid).child("orgLogos/" + orgNameAttempt).put(orgLogoAttempt);
+        currentUserData["orgList"] = currentOrgList;
+        console.log(currentUserData["orgList"]);
+        createOrgModal.style.display = "none";
+        createOrgForm.reset();
+      });
+
+      const createTeamModal = document.getElementById("createTeamModal");
+      const createTeamForm = document.getElementById("createTeamForm");
+
+      const teamOrgSelect = document.getElementById("teamOrgSelect");
+      const teamGameSelect = document.getElementById("teamGameSelect");
+      const teamNameInput = document.getElementById("teamNameInput");
+
+      document.getElementById("newTeamButton").addEventListener("click", function (event) {
+        createTeamModal.style.display = "block";
+        // let newOptions = "";
+        // for (const org of currentUserData["orgList"]) {
+        //   newOptions += "<option value=\"" + org + "\">" + org + "</option>";
+        // }
+        // teamOrgSelect.innerHTML = newOptions;
+      });
+      document.getElementById("teamCancelButton").addEventListener("click", function (event) {
+        createTeamModal.style.display = "none";
+        createTeamForm.reset();
+      });
+
+      createTeamForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        // let teamOrg = teamOrgSelect.value;
+        // let teamGame = teamGameSelect.value;
+        // let teamNameAttempt = teamNameInput.value;
+        // if (teamOrg !== "false") {
+        //   db.ref(currentUser.uid + "/" + teamGame + "/" + teamOrg + "/" + teamNameAttempt).update({
+        //     players: false,
+        //   });
+        //   currentUserData[teamGame] = { [teamOrg]: { [teamNameAttempt]: false } };
+        //   createTeamModal.style.display = "none";
+        //   createTeamForm.reset();
+        // } else {
+        //   alert("You must have at least one organization before you can create teams!")
+        // }
+      });
+
+      const eduRegex = /(\.edu)$/i;
+
+      const createPlayerModal = document.getElementById("createPlayerModal");
+      const createPlayerForm = document.getElementById("createPlayerForm");
+
+      const playerOrgSelect = document.getElementById("playerOrgSelect");
+      const playerTeamSelect = document.getElementById("playerTeamSelect");
+      const playerNameInput = document.getElementById("playerNameInput");
+      const playerEmailInput = document.getElementById("playerEmailInput");
+      const playerImageInput = document.getElementById("playerImageInput");
+
+      document.getElementById("newPlayerButton").addEventListener("click", function (event) {
+        createPlayerModal.style.display = "block";
+      //   let newOptions = "";
+      //   for (const org of currentUserData["orgList"]) {
+      //     newOptions += "<option value=\"" + org + "\">" + org + "</option>";
+      //   }
+      //   playerOrgSelect.innerHTML = newOptions;
+      //   newOptions = "";
+      //   try {
+      //     for (const team in currentUserData["Beat Saber"][playerOrgSelect.value]) {
+      //       newOptions += "<option value=\"Beat Saber/" + playerOrgSelect.value + "/" + team + "\">Beat Saber: " + team + "</option>";
+      //     }
+      //   } catch (err) { }
+      //   try {
+      //     for (const team in currentUserData["Echo Arena"][playerOrgSelect.value]) {
+      //       newOptions += "<option value=\"Echo Arena/" + playerOrgSelect.value + "/" + team + "\">Echo Arena: " + team + "</option>";
+      //     }
+      //   } catch (err) { }
+      //   if (newOptions) {
+      //     playerTeamSelect.innerHTML = newOptions;
+      //   } else {
+      //     playerTeamSelect.innerHTML = "<option value=\"false\">No Teams!</option>"
+      //   }
+      });
+      document.getElementById("playerCancelButton").addEventListener("click", function (event) {
+        createPlayerModal.style.display = "none";
+        createPlayerForm.reset();
+      });
+
+      playerOrgSelect.addEventListener("change", function (event) {
+        // let newOptions = "";
+        // try {
+        //   for (const team in currentUserData["Beat Saber"][playerOrgSelect.value]) {
+        //     newOptions += "<option value=\"Beat Saber/" + playerOrgSelect.value + "/" + team + "\">Beat Saber: " + team + "</option>";
+        //   }
+        // } catch (err) { }
+        // try {
+        //   for (const team in currentUserData["Echo Arena"][playerOrgSelect.value]) {
+        //     newOptions += "<option value=\"Echo Arena/" + playerOrgSelect.value + "/" + team + "\">Echo Arena: " + team + "</option>";
+        //   }
+        // } catch (err) { }
+        // if (newOptions) {
+        //   playerTeamSelect.innerHTML = newOptions;
+        // } else {
+        //   playerTeamSelect.innerHTML = "<option value=\"false\">No Teams!</option>"
+        // }
+      });
+
+      createPlayerForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        // let playerOrg = playerOrgSelect.value;
+        // let playerTeam = playerTeamSelect.value;
+        // let playerNameAttempt = playerNameInput.value;
+        // let playerEmailAttempt = playerEmailInput.value;
+        // let playerImageAttempt = playerImageInput.files[0];
+        // if (playerOrg !== "false") {
+        //   if (playerTeam !== "false") {
+        //     if (eduRegex.test(playerEmailAttempt)) {
+        //       console.log(currentUserData[playerTeam]);
+        //       // db.ref(currentUser.uid + "/" + playerTeam + "/" )
+        //     } else {
+        //       alert("Please provide a player email ending in \".edu\"");
+        //     }
+        //   } else {
+        //     alert("You must have at least one team before you can create players!")
+        //   }
+        // } else {
+        //   alert("You must have at least one organization before you can create players!")
+        // }
+
+      });
+
+    });
+  </script>
+</body>
+
+</html>
