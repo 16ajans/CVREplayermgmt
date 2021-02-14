@@ -401,7 +401,9 @@
               currentUserData = { "roster": false, };
               document.getElementById("welcomeMsg").innerHTML += " You will not be able to manage your roster until your account is reviewed and approved. Please be patient.";
             } else {
-              document.getElementById("discordInput").placeholder = currentUserData.discord;
+              if (currentUserData.discord) {
+                document.getElementById("discordInput").placeholder = currentUserData.discord;
+              }
               if (currentUserData.approved) {
                 document.getElementById("orgSet").removeAttribute("disabled");
                 document.getElementById("teamSet").removeAttribute("disabled");
