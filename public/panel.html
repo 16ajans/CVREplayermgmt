@@ -20,7 +20,7 @@
   <script defer src="/__/firebase/init.js?useEmulator=true"></script>
 
   <style>
-    #welcomeMsg {
+    .centerwide {
       text-align: center;
       width: 100%;
     }
@@ -83,7 +83,9 @@
     <button type="button" id="logoutButton" class="pure-button">Logout</button>
   </header>
   <main>
-    <h1 id="welcomeMsg" class="pure-u-1">Welcome!</h1>
+    <h1 id="welcomeMsg" class="centerwide">Welcome!</h1>
+    <p class="centerwide">Click on a(n) org/team/player name to delete it.<br>Creating a(n) org/team/player with the
+      same name as another in the same location <span style="font-weight: bold;">will</span> overwrite the previous.</p>
     <div class="pure-g">
       <form id="captainInfoForm" class="pure-form pure-form-aligned pure-u-1-2">
         <fieldset>
@@ -397,12 +399,15 @@
                 roster: false,
               })
               currentUserData = { "roster": false, };
+              document.getElementById("welcomeMsg").innerHTML += " You will not be able to manage your roster until your account is reviewed and approved. Please be patient.";
             } else {
               document.getElementById("discordInput").placeholder = currentUserData.discord;
               if (currentUserData.approved) {
                 document.getElementById("orgSet").removeAttribute("disabled");
                 document.getElementById("teamSet").removeAttribute("disabled");
                 document.getElementById("playerSet").removeAttribute("disabled");
+              } else {
+                document.getElementById("welcomeMsg").innerHTML += " You will not be able to manage your roster until your account is reviewed and approved. Please be patient.";
               }
             }
             refreshOrgSelects();
@@ -452,7 +457,7 @@
         db.ref(currentUser.uid + "/roster").update({
           [orgNameAttempt]: false,
         });
-        // stor.ref(currentUser.uid).child("orgLogos/" + orgNameAttempt).put(orgLogoAttempt);
+        stor.ref(currentUser.uid).child("orgLogos/" + orgNameAttempt).put(orgLogoAttempt);
         if (!currentUserData["roster"]) {
           currentUserData["roster"] = {};
         }
@@ -522,7 +527,7 @@
                 email: playerEmailAttempt,
                 verified: false,
               });
-              // stor.ref(currentUser.uid).child("playerImgs/" + playerOrg + "/" + playerTeam + "/" + playerNameAttempt).put(playerImageAttempt);
+              stor.ref(currentUser.uid).child("playerImgs/" + playerOrg + "/" + playerGame + "/" + playerTeam + "/" + playerNameAttempt).put(playerImageAttempt);
               if (!currentUserData["roster"][playerOrg][playerGame][playerTeam]["players"]) {
                 currentUserData["roster"][playerOrg][playerGame][playerTeam]["players"] = {};
               }
