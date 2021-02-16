@@ -12,14 +12,21 @@ header,
 footer,
 header > section {
   background-color: #703893;
-  height: 4rem;
   display: flex;
-  justify-content: space-between;
+  height: 4rem;
   color: white;
+}
+header,
+footer {
+  justify-content: space-between;
 }
 
 header > section > img {
   max-height: 100%;
+  padding: 0.5rem;
+}
+header > section > h1 {
+  margin: auto 0rem;
 }
 
 header > button {
