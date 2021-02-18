@@ -78,7 +78,8 @@ footer {
   background: #703893;
 }
 
-.pruple {
+.pruple,
+a {
   color: #703893;
   text-decoration: none
 }

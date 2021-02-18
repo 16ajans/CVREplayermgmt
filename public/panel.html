@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Player Manager</title>
   <link rel="icon" type="image/png" href="assets/favicon.png">
 
-  <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.5/build/pure-min.css"
-    integrity="sha384-LTIDeidl25h2dPxrB2Ekgc9c7sEC3CWGM6HeFmuDNUjX76Ert4Z4IY714dhZHPLd" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.5/build/pure-min.css">
+  <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.5/build/grids-responsive-min.css">
   <link rel="stylesheet" href="stylesheets/justsome.css">
 
   <script defer src="/__/firebase/8.2.5/firebase-app.js"></script>
@@ -25,52 +25,27 @@
       width: 100%;
     }
 
-    /* table css */
-
-    /* .tableContainer {
-      overflow-x: auto;
-    } */
-
     table {
-      /* width: 100%; */
       display: block;
       max-width: fit-content;
       margin: 0 auto;
       overflow-x: auto;
     }
 
+    tbody {
+      vertical-align: top;
+    }
+
     /* @media (min-width: 100rem) { */
     main {
-      margin-left: 3rem;
-      margin-right: 3rem;
+      margin: 0rem 3rem 3rem 3rem;
     }
 
-    /* }  */
-
-    /* th:nth-child(1) {
-      width: 100px;
-    }
-
-    th:nth-child(2) {
-      width: 200px;
-    }
-
-    th:nth-child(3) {
-      width: 300px;
-    } */
-
-    form {
-      max-width: fit-content;
-      margin: 0rem auto;
-    }
-
-    a {
-      background-color: #FFFFFF;
-      color: #000000;
-      text-decoration: none
+    .pure-g>* {
+      margin: 0 auto;
+      text-align: center;
     }
   </style>
-
 </head>
 
 <body>
@@ -82,12 +57,11 @@
     </section>
     <button type="button" id="logoutButton" class="pure-button">Logout</button>
   </header>
+
   <main>
     <h1 id="welcomeMsg" class="centerwide">Welcome!</h1>
-    <p class="centerwide">Click on a(n) org/team/player name to delete it.<br>Creating a(n) org/team/player with the
-      same name as another in the same location <span style="font-weight: bold;">will</span> overwrite the previous.</p>
     <div class="pure-g">
-      <form id="captainInfoForm" class="pure-form pure-form-aligned pure-u-1-2">
+      <form id="captainInfoForm" class="pure-form pure-form-aligned pure-u-1 pure-u-md-1-2 pure-u-xl-1-3">
         <fieldset>
           <legend>Captain Information</legend>
           <div class="pure-control-group">
@@ -98,97 +72,88 @@
             <button type="submit" class="pure-button pure-button-primary">Save</button>
           </div>
         </fieldset>
+        <p>Click on a team or player name to delete it.<br><br>Creating a team with the
+          same name and game as another <span style="font-weight: bold;">will</span> overwrite it.<br>Creating a player
+          with the
+          same name and team as another <span style="font-weight: bold;">will</span> overwrite them.</p>
       </form>
-      <form id="createOrgForm" class="pure-form pure-form-aligned pure-u-1-2">
-        <fieldset id="orgSet" disabled>
-          <legend>Create New Organization</legend>
-          <div class="pure-control-group">
-            <label for="orgNameInput">Organization Name</label>
-            <input type="text" id="orgNameInput" placeholder="School of Hard Knocks" required="">
-          </div>
-          <div class="pure-control-group">
-            <label for="orgLogoInput">Organization Logo</label>
-            <input type="file" id="orgLogoInput" required="">
-          </div>
-          <div class="pure-controls">
-            <button type="submit" class="pure-button pure-button-primary">Save</button>
-          </div>
-        </fieldset>
-      </form>
-      <form id="createTeamForm" class="pure-form pure-form-aligned pure-u-1-2">
+      <form id="createTeamForm" class="pure-form pure-form-aligned pure-u-1 pure-u-md-1-2 pure-u-xl-1-3">
         <fieldset id="teamSet" disabled>
           <legend>Create New Team</legend>
           <div class="pure-control-group">
-            <label for="teamOrgSelect">Team Organization</label>
-            <select id="teamOrgSelect">
-              <option value="false">No Organizations!</option>
-            </select>
-          </div>
-          <div class="pure-control-group">
             <label for="teamGameSelect">Team Game</label>
-            <select id="teamGameSelect">
+            <select id="teamGameSelect" class="weirdWidth">
               <option value="Beat Saber">Beat Saber</option>
               <option value="Echo Arena">Echo Arena</option>
             </select>
           </div>
           <div class="pure-control-group">
             <label for="teamNameInput">Team Name</label>
-            <input type="text" id="teamNameInput" placeholder="The Rockin' Randos" required="">
+            <input type="text" id="teamNameInput" placeholder="The Arm Swingers" required="">
+          </div>
+          <div class="pure-control-group">
+            <label for="teamLogoInput">Team Logo</label>
+            <input type="file" id="teamLogoInput" class="weirdWidth" required="">
           </div>
           <div class="pure-controls">
             <button type="submit" class="pure-button pure-button-primary">Save</button>
           </div>
         </fieldset>
       </form>
-      <form id="createPlayerForm" class="pure-form pure-form-aligned pure-u-1-2">
+      <form id="createPlayerForm" class="pure-form pure-form-aligned pure-u-1 pure-u-md-1-2 pure-u-xl-1-3">
         <fieldset id="playerSet" disabled>
           <legend>Create New Player</legend>
           <div class="pure-control-group">
-            <label for="playerOrgSelect">Player Organization</label>
-            <select id="playerOrgSelect">
-              <option value="false">No Organizations!</option>
-            </select>
-          </div>
-          <div class="pure-control-group">
             <label for="playerTeamSelect">Player Team</label>
-            <select id="playerTeamSelect">
-              <option value="false">Select an organization!</option>
+            <select id="playerTeamSelect" class="weirdWidth">
+              <option value="false">No Teams!</option>
             </select>
           </div>
           <div class="pure-control-group">
             <label for="playerNameInput">Player Name</label>
-            <input type="text" id="playerNameInput" placeholder="Randy" required="">
+            <input type="text" id="playerNameInput" placeholder="Randy Smith" required="">
+          </div>
+          <div class="pure-control-group">
+            <label for="playerTafInput">Player Gamertag</label>
+            <input type="text" id="playerTagInput" placeholder="Xx_Randy_xX" required="">
           </div>
           <div class="pure-control-group">
             <label for="playerEmailInput">Player Email</label>
-            <input type="email" id="playerEmailInput" placeholder="randy3@uni.edu" required="">
+            <input type="email" id="playerEmailInput" placeholder="randy3@vruni.edu" required="">
+          </div>
+          <div class="pure-control-group">
+            <label for="playerSchoolInput">Player School</label>
+            <input type="text" id="playerSchoolInput" placeholder="VR Esports University" required="">
           </div>
           <div class="pure-control-group">
             <label for="playerImageInput">Verification Image</label>
-            <input type="file" id="playerImageInput" required="">
+            <input type="file" id="playerImageInput" class="weirdWidth" required="">
           </div>
           <div class="pure-controls">
             <button type="submit" class="pure-button pure-button-primary">Save</button>
           </div>
         </fieldset>
+        <p>Please provide an image of the player's <br><span style="font-weight: bold;">current student ID</span> under
+          "Verification Image".</p>
       </form>
     </div>
     <div>
       <table class="pure-table">
         <thead>
           <tr>
-            <th>Org</th>
             <th>Game</th>
             <th>Team</th>
             <th>Player Name</th>
-            <th>Email</th>
+            <th>Player Gamertag</th>
+            <th>Player Email</th>
+            <th>Player School</th>
             <th>Verification Image</th>
             <th>Verified</th>
           </tr>
         </thead>
         <tbody id="theBOD">
           <tr>
-            <td colspan="7">Nothing yet!</td>
+            <td colspan="8">Nothing yet!</td>
           </tr>
         </tbody>
       </table>
@@ -203,189 +168,17 @@
   <script>
     document.addEventListener("DOMContentLoaded", function () {
 
+      let newWidth = document.getElementById("playerEmailInput").offsetWidth;
+      let weirdElements = document.getElementsByClassName("weirdWidth");
+      [...weirdElements].forEach(element => {
+        element.style.width = newWidth + "px";
+      });
+
       const auth = firebase.auth();
       const db = firebase.database();
       const stor = firebase.storage();
       var currentUser;
       var currentUserData;
-
-      const teamOrgSelect = document.getElementById("teamOrgSelect");
-      const playerOrgSelect = document.getElementById("playerOrgSelect");
-
-      function appendTD(parent, text) {
-        let td = document.createElement("td");
-        td.appendChild(document.createTextNode(text));
-        return parent.appendChild(td);
-      }
-
-      function itstimetorrrrrrremove(org, game, team, player) {
-        if (player) {
-          if (Object.keys(currentUserData["roster"][org][game][team]["players"]).length === 1) {
-            db.ref(currentUser.uid + "/roster/" + org + "/" + game + "/" + team).update({
-              players: false,
-            })
-            currentUserData["roster"][org][game][team]["players"] = false;
-          } else {
-            db.ref(currentUser.uid + "/roster/" + org + "/" + game + "/" + team + "/players").update({
-              [player]: null,
-            })
-            delete currentUserData["roster"][org][game][team]["players"][player];
-          }
-        } else if (team) {
-          if (Object.keys(currentUserData["roster"][org][game]).length === 1 && Object.keys(currentUserData["roster"][org]).length === 1) {
-            db.ref(currentUser.uid + "/roster").update({
-              [org]: false,
-            })
-            currentUserData["roster"][org] = false;
-          } else {
-            db.ref(currentUser.uid + "/roster/" + org + "/" + game).update({
-              [team]: null,
-            })
-            delete currentUserData["roster"][org][game][team];
-          }
-        } else if (org) {
-          if (Object.keys(currentUserData["roster"]).length === 1) {
-            db.ref(currentUser.uid).update({
-              roster: false,
-            })
-            currentUserData["roster"] = false;
-          } else {
-            db.ref(currentUser.uid + "/roster").update({
-              [org]: null,
-            })
-            delete currentUserData["roster"][org];
-          }
-        }
-        generateTable();
-      }
-
-      function generateTable() {
-        let roster = currentUserData["roster"];
-        let tableBod = document.getElementById("theBOD");
-        if (roster) {
-          tableBod.innerHTML = "";
-          for (let orgIndex = 0; orgIndex < Object.keys(roster).length; orgIndex++) {
-            let org = Object.keys(roster)[orgIndex];
-            let tr = document.createElement("tr");
-            td = document.createElement("td");
-            let link = document.createElement("a");
-            link.setAttribute("href", "#");
-            link.setAttribute("title", "Click to delete.");
-            link.appendChild(document.createTextNode(org));
-            link.addEventListener("click", function (event) {
-              itstimetorrrrrrremove(org, false, false, false)
-            });
-            td.appendChild(link);
-            tr.appendChild(td);
-            for (let gameIndex = 0; gameIndex < Object.keys(roster[org]).length; gameIndex++) {
-              let game = Object.keys(roster[org])[gameIndex];
-              if (gameIndex !== 0) {
-                tableBod.appendChild(tr);
-                tr = document.createElement("tr");
-                appendTD(tr, "");
-              }
-              appendTD(tr, game);
-              for (let teamIndex = 0; teamIndex < Object.keys(roster[org][game]).length; teamIndex++) {
-                let team = Object.keys(roster[org][game])[teamIndex];
-                if (teamIndex !== 0) {
-                  tableBod.appendChild(tr);
-                  tr = document.createElement("tr");
-                  appendTD(tr, "");
-                  appendTD(tr, "");
-                }
-                td = document.createElement("td");
-                let link = document.createElement("a");
-                link.setAttribute("href", "#");
-                link.setAttribute("title", "Click to delete.");
-                link.appendChild(document.createTextNode(team));
-                link.addEventListener("click", function (event) {
-                  itstimetorrrrrrremove(org, game, team, false)
-                });
-                td.appendChild(link);
-                tr.appendChild(td);
-                for (let playerIndex = 0; playerIndex < Object.keys(roster[org][game][team]["players"]).length; playerIndex++) {
-                  let player = Object.keys(roster[org][game][team]["players"])[playerIndex];
-                  if (playerIndex !== 0) {
-                    tableBod.appendChild(tr);
-                    tr = document.createElement("tr");
-                    appendTD(tr, "");
-                    appendTD(tr, "");
-                    appendTD(tr, "");
-                  }
-                  td = document.createElement("td");
-                  link = document.createElement("a");
-                  link.setAttribute("href", "#");
-                  link.setAttribute("title", "Click to delete.");
-                  link.appendChild(document.createTextNode(player));
-                  link.addEventListener("click", function (event) {
-                    itstimetorrrrrrremove(org, game, team, player)
-                  });
-                  td.appendChild(link);
-                  tr.appendChild(td);
-                  appendTD(tr, roster[org][game][team]["players"][player]["email"]);
-                  appendTD(tr, "image?");
-                  // appendTD(tr, roster[org][game][team]["players"][player]["verified"])
-                  td = document.createElement("td");
-                  let span = document.createElement("span");
-                  if (roster[org][game][team]["players"][player]["verified"]) {
-                    span.setAttribute("style", "color:green;font-weight:bold;")
-                    span.appendChild(document.createTextNode("YES"));
-                  } else {
-                    span.setAttribute("style", "color:red;font-weight:bold;")
-                    span.appendChild(document.createTextNode("NO"));
-                  }
-                  td.appendChild(span);
-                  tr.appendChild(td);
-                }
-              }
-            }
-            tableBod.appendChild(tr);
-          }
-        } else {
-          tableBod.innerHTML = "<tr><td colspan=\"7\">Nothing yet!</td></tr>"
-        }
-      }
-
-      function refreshOrgSelects() {
-        if (currentUserData["roster"]) {
-          teamOrgSelect.innerHTML = "";
-          playerOrgSelect.innerHTML = "";
-          for (let org in currentUserData["roster"]) {
-            let option = document.createElement("option");
-            option.appendChild(document.createTextNode(org));
-            option.setAttribute("value", org);
-            playerOrgSelect.appendChild(option);
-
-            option = document.createElement("option");
-            option.appendChild(document.createTextNode(org));
-            option.setAttribute("value", org);
-            teamOrgSelect.appendChild(option);
-          }
-        } else {
-          teamOrgSelect.innerHTML = "<option value=\"false\">No Organizations!</option>";
-          playerOrgSelect.innerHTML = "<option value=\"false\">No Organizations!</option>";
-        }
-      }
-      function refreshTeamSelects() {
-        if (playerOrgSelect.value) {
-          let selectTeamInner = "";
-          // for (let team in currentUserData["roster"][playerOrgSelect.value]) {
-          //   selectTeamInner += "<option value=\"Beat Saber/" + team + "\">" + currentUserData["roster"][playerOrgSelect.value][team]["game"] + ": " + team + "</option>";
-          // }
-          for (let game in currentUserData["roster"][playerOrgSelect.value]) {
-            for (let team in currentUserData["roster"][playerOrgSelect.value][game]) {
-              selectTeamInner += "<option value=\"" + game + "/" + team + "\">" + game + ": " + team + "</option>";
-            }
-          }
-          if (selectTeamInner === "") {
-            playerTeamSelect.innerHTML = "<option value=\"false\">No Teams!</option>";
-          } else {
-            playerTeamSelect.innerHTML = selectTeamInner;
-          }
-        } else {
-          playerTeamSelect.innerHTML = "<option value=\"false\">Select an organization!</option>";
-        }
-      }
 
       auth.onAuthStateChanged(function (user) {
         if (!user) {
@@ -405,20 +198,17 @@
                 document.getElementById("discordInput").placeholder = currentUserData.discord;
               }
               if (currentUserData.approved) {
-                document.getElementById("orgSet").removeAttribute("disabled");
                 document.getElementById("teamSet").removeAttribute("disabled");
                 document.getElementById("playerSet").removeAttribute("disabled");
               } else {
                 document.getElementById("welcomeMsg").innerHTML += " You will not be able to manage your roster until your account is reviewed and approved. Please be patient.";
               }
             }
-            refreshOrgSelects();
-            refreshTeamSelects();
-            generateTable();
+            refreshTeamSelect();
+            refreshTable();
           });
         }
       });
-
       document.getElementById("logoutButton").addEventListener("click", function (event) {
         event.preventDefault();
         auth.signOut()
@@ -426,6 +216,135 @@
             alert(error.message);
           });
       });
+
+      function delet(game, team, player) {
+        if (player) {
+          if (Object.keys(currentUserData["roster"][game][team]["players"]).length === 1) {
+            db.ref(currentUser.uid + "/roster/" + game + "/" + team).update({
+              players: false,
+            })
+            currentUserData["roster"][game][team]["players"] = false;
+          } else {
+            db.ref(currentUser.uid + "/roster/" + game + "/" + team + "/players").update({
+              [player]: null,
+            })
+            delete currentUserData["roster"][game][team]["players"][player];
+          }
+        } else if (team) {
+          if (Object.keys(currentUserData["roster"][game]).length === 1 && Object.keys(currentUserData["roster"]).length === 1) {
+            db.ref(currentUser.uid).update({
+              roster: false,
+            })
+            currentUserData["roster"] = false;
+          } else if (Object.keys(currentUserData["roster"][game]).length === 1) {
+            db.ref(currentUser.uid + "/roster").update({
+              [game]: null,
+            })
+            delete currentUserData["roster"][game];
+          } else {
+            db.ref(currentUser.uid + "/roster/" + game).update({
+              [team]: null,
+            })
+            delete currentUserData["roster"][game][team];
+          }
+          refreshTeamSelect();
+        }
+        refreshTable();
+      }
+
+      function refreshTable() {
+        let roster = currentUserData["roster"];
+        let tableBod = document.getElementById("theBOD");
+        if (roster) {
+          tableBod.innerHTML = "";
+          for (let gameIndex = 0; gameIndex < Object.keys(roster).length; gameIndex++) {
+            let game = Object.keys(roster)[gameIndex];
+            let gameRows = 0;
+            let tr = document.createElement("tr");
+            let td = document.createElement("td");
+            td.appendChild(document.createTextNode(game));
+            td.setAttribute("id", game);
+            tr.appendChild(td);
+            for (let teamIndex = 0; teamIndex < Object.keys(roster[game]).length; teamIndex++) {
+              let team = Object.keys(roster[game])[teamIndex];
+              if (teamIndex !== 0) {
+                tableBod.appendChild(tr);
+                gameRows++;
+                tr = document.createElement("tr");
+              }
+              td = document.createElement("td");
+              td.setAttribute("id", team);
+              let link = document.createElement("a");
+              link.setAttribute("href", "#");
+              link.setAttribute("title", "Click to delete.");
+              link.appendChild(document.createTextNode(team));
+              link.addEventListener("click", function (event) {
+                delet(game, team, false);
+              });
+              td.appendChild(link);
+              td.appendChild(document.createElement("br"));
+              let img = document.createElement("img");
+              img.setAttribute("alt", team + " Logo");
+              stor.ref("teamLogos/" + currentUser.uid).child(game + "/" + team).getDownloadURL().then((url) => {
+                img.setAttribute("src", url);
+              });
+              td.appendChild(img);
+              td.setAttribute("rowspan", Object.keys(roster[game][team]["players"]).length ? Object.keys(roster[game][team]["players"]).length : 1);
+              tr.appendChild(td);
+              if (roster[game][team]["players"]) {
+                for (let playerIndex = 0; playerIndex < Object.keys(roster[game][team]["players"]).length; playerIndex++) {
+                  let player = Object.keys(roster[game][team]["players"])[playerIndex];
+                  if (playerIndex !== 0) {
+                    tableBod.appendChild(tr);
+                    gameRows++;
+                    tr = document.createElement("tr");
+                  }
+                  td = document.createElement("td");
+                  td.setAttribute("id", player);
+                  link = document.createElement("a");
+                  link.setAttribute("href", "#");
+                  link.setAttribute("title", "Click to delete.");
+                  link.appendChild(document.createTextNode(player));
+                  link.addEventListener("click", function (event) {
+                    delet(game, team, player);
+                  });
+                  td.appendChild(link);
+                  tr.appendChild(td);
+                  let playerData = roster[game][team]["players"][player];
+                  td = document.createElement("td");
+                  td.appendChild(document.createTextNode(playerData["tag"]));
+                  tr.appendChild(td);
+                  td = document.createElement("td");
+                  td.appendChild(document.createTextNode(playerData["email"]));
+                  tr.appendChild(td);
+                  td = document.createElement("td");
+                  td.appendChild(document.createTextNode(playerData["school"]));
+                  tr.appendChild(td);
+                  td = document.createElement("td");
+                  // td.appendChild(document.createTextNode(playerData["img"]));
+                  tr.appendChild(td);
+                  td = document.createElement("td");
+                  let span = document.createElement("span");
+                  span.setAttribute("style", playerData["verified"] ? "font-weight:bold;color:green" : "font-weight:bold;color:red");
+                  span.appendChild(document.createTextNode(playerData["verified"] ? "YES" : "NO"));
+                  td.appendChild(span);
+                  tr.appendChild(td);
+                }
+              } else {
+                td = document.createElement("td");
+                td.setAttribute("colspan", 6);
+                td.appendChild(document.createTextNode("No Players!"));
+                tr.appendChild(td);
+              }
+            }
+            tableBod.appendChild(tr);
+            gameRows++;
+            document.getElementById(game).setAttribute("rowspan", gameRows);
+          }
+        } else {
+          tableBod.innerHTML = "<tr><td colspan=\"8\">Nothing yet!</td></tr>"
+        }
+      }
 
       const discordRegex = /^[^@#:`]{2,32}#\d{4}$/u;
 
@@ -447,105 +366,115 @@
         }
       });
 
-      const createOrgForm = document.getElementById("createOrgForm");
-
-      const orgNameInput = document.getElementById("orgNameInput");
-      const orgLogoInput = document.getElementById("orgLogoInput");
-
-      createOrgForm.addEventListener("submit", function (event) {
-        event.preventDefault();
-        let orgNameAttempt = orgNameInput.value;
-        let orgLogoAttempt = orgLogoInput.files[0];
-        db.ref(currentUser.uid + "/roster").update({
-          [orgNameAttempt]: false,
-        });
-        stor.ref(currentUser.uid).child("orgLogos/" + orgNameAttempt).put(orgLogoAttempt);
-        if (!currentUserData["roster"]) {
-          currentUserData["roster"] = {};
-        }
-        currentUserData["roster"][orgNameAttempt] = false;
-        createOrgForm.reset();
-        refreshOrgSelects();
-        generateTable();
-      });
+      const imgRegex = /image/i;
 
       const createTeamForm = document.getElementById("createTeamForm");
-
       const teamGameSelect = document.getElementById("teamGameSelect");
       const teamNameInput = document.getElementById("teamNameInput");
+      const teamLogoInput = document.getElementById("teamLogoInput");
 
       createTeamForm.addEventListener("submit", function (event) {
         event.preventDefault();
-        let teamOrg = teamOrgSelect.value;
         let teamGame = teamGameSelect.value;
         let teamNameAttempt = teamNameInput.value;
-        if (teamOrg !== "false") {
-          db.ref(currentUser.uid + "/roster/" + teamOrg + "/" + teamGame + "/" + teamNameAttempt).update({
-            players: false,
-            game: teamGame,
-          });
-          if (!currentUserData["roster"][teamOrg]) {
-            currentUserData["roster"][teamOrg] = {};
+        let teamLogoAttempt = teamLogoInput.files[0];
+        if (teamLogoAttempt.size < 1000000) {
+          if (imgRegex.test(teamLogoAttempt.type)) {
+            db.ref(currentUser.uid + "/roster/" + teamGame + "/" + teamNameAttempt).update({
+              players: false,
+            });
+            if (!currentUserData["roster"]) {
+              currentUserData["roster"] = {};
+            }
+            if (!currentUserData["roster"][teamGame]) {
+              currentUserData["roster"][teamGame] = {};
+            }
+            currentUserData["roster"][teamGame][teamNameAttempt] = { "players": false, };
+            stor.ref("teamLogos/" + currentUser.uid).child(teamGame + "/" + teamNameAttempt).put(teamLogoAttempt)
+              .then((val) => {
+                refreshTable();
+              });
+            createTeamForm.reset();
+            refreshTeamSelect();
+          } else {
+            alert("Provided file is not an image.");
           }
-          if (!currentUserData["roster"][teamOrg][teamGame]) {
-            currentUserData["roster"][teamOrg][teamGame] = {};
-          }
-          currentUserData["roster"][teamOrg][teamGame][teamNameAttempt] = { "players": false, "game": teamGame };
-          createTeamForm.reset();
-          refreshTeamSelects();
-          generateTable();
         } else {
-          alert("You must have at least one organization before you can create teams!")
+          alert("Please keep images under 1 megabyte in size.")
         }
       });
+
+      playerTeamSelect = document.getElementById("playerTeamSelect");
+
+      function addTeamOptions(game) {
+        for (let team in currentUserData["roster"][game]) {
+          let option = document.createElement("option");
+          option.appendChild(document.createTextNode(game + ": " + team));
+          option.setAttribute("value", game + "/" + team);
+          playerTeamSelect.appendChild(option);
+        }
+      }
+
+      function refreshTeamSelect() {
+        if (currentUserData["roster"]) {
+          playerTeamSelect.innerHTML = "";
+          currentUserData["roster"]["Beat Saber"] ? addTeamOptions("Beat Saber") : null;
+          currentUserData["roster"]["Echo Arena"] ? addTeamOptions("Echo Arena") : null;
+        } else {
+          playerTeamSelect.innerHTML = "<option value=\"false\">No Teams!</option>";
+        }
+      }
 
       const eduRegex = /(\.edu)$/i;
 
       const createPlayerForm = document.getElementById("createPlayerForm");
 
-      const playerTeamSelect = document.getElementById("playerTeamSelect");
       const playerNameInput = document.getElementById("playerNameInput");
+      const playerTagInput = document.getElementById("playerTagInput");
       const playerEmailInput = document.getElementById("playerEmailInput");
+      const playerSchoolInput = document.getElementById("playerSchoolInput");
       const playerImageInput = document.getElementById("playerImageInput");
-
-      playerOrgSelect.addEventListener("change", function (event) {
-        refreshTeamSelects();
-      });
 
       createPlayerForm.addEventListener("submit", function (event) {
         event.preventDefault();
-        let playerOrg = playerOrgSelect.value;
-        let playerGameTeam = playerTeamSelect.value;
-        let FFS = playerGameTeam.split("/");
-        let playerTeam = FFS[1];
-        let playerGame = FFS[0];
+        let temp = playerTeamSelect.value.split("/");
+        let playerGame = temp[0];
+        let playerTeam = temp[1];
         let playerNameAttempt = playerNameInput.value;
+        let playerTagAttempt = playerTagInput.value;
         let playerEmailAttempt = playerEmailInput.value;
+        let playerSchoolAttempt = playerSchoolInput.value;
         let playerImageAttempt = playerImageInput.files[0];
-        if (playerOrg !== "false") {
-          if (playerTeam !== "false") {
-            if (eduRegex.test(playerEmailAttempt)) {
-              db.ref(currentUser.uid + "/roster/" + playerOrg + "/" + playerGame + "/" + playerTeam + "/players/" + playerNameAttempt).update({
-                email: playerEmailAttempt,
-                verified: false,
-              });
-              stor.ref(currentUser.uid).child("playerImgs/" + playerOrg + "/" + playerGame + "/" + playerTeam + "/" + playerNameAttempt).put(playerImageAttempt);
-              if (!currentUserData["roster"][playerOrg][playerGame][playerTeam]["players"]) {
-                currentUserData["roster"][playerOrg][playerGame][playerTeam]["players"] = {};
+        if (playerGame !== "false") {
+          if (eduRegex.test(playerEmailAttempt)) {
+            if (playerImageAttempt.size < 1000000) {
+              if (imgRegex.test(playerImageAttempt.type)) {
+                db.ref(currentUser.uid + "/roster/" + playerGame + "/" + playerTeam + "/players/" + playerNameAttempt).update({
+                  tag: playerTagAttempt,
+                  email: playerEmailAttempt,
+                  school: playerSchoolAttempt,
+                });
+                if (!currentUserData["roster"][playerGame][playerTeam]["players"]) {
+                  currentUserData["roster"][playerGame][playerTeam]["players"] = {};
+                }
+                currentUserData["roster"][playerGame][playerTeam]["players"][playerNameAttempt] = { tag: playerTagAttempt, email: playerEmailAttempt, school: playerSchoolAttempt, };
+                stor.ref("playerImgs/" + currentUser.uid).child(playerGame + "/" + playerTeam + "/" + playerNameAttempt).put(playerImageAttempt)
+                  .then((val) => {
+                    refreshTable();
+                  });
+                createPlayerForm.reset();
+              } else {
+                alert("Provided file is not an image.");
               }
-              currentUserData["roster"][playerOrg][playerGame][playerTeam]["players"][playerNameAttempt] = { "email": playerEmailAttempt, "verified": false };
-              createPlayerForm.reset();
-              generateTable();
             } else {
-              alert("Please provide a player email ending in \".edu\"");
+              alert("Please keep images under 1 megabyte in size.");
             }
           } else {
-            alert("You must have at least one team before you can create players!")
+            alert("Please provide a player email ending in \".edu\"");
           }
         } else {
-          alert("You must have at least one organization before you can create players!")
+          alert("You must have at least one team before you can create players!");
         }
-
       });
 
     });
