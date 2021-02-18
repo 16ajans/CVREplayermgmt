@@ -36,7 +36,6 @@
       vertical-align: top;
     }
 
-    /* @media (min-width: 100rem) { */
     main {
       margin: 0rem 3rem 3rem 3rem;
     }
@@ -46,14 +45,122 @@
       text-align: center;
     }
 
+    @media only screen and (max-width: 480px) {
+
+      select,
+      input[type="file"] {
+        display: block !important;
+      }
+
+      header>section>h1 {
+        font-size: 1em;
+      }
+
+      main {
+        margin: 0rem 1rem 1rem 1rem;
+      }
+    }
+
     td>img {
       max-width: 8rem;
       max-height: 5.25rem;
       object-fit: contain;
     }
+
     td>.logo {
       max-width: 4rem;
       margin-top: 0.25rem;
+    }
+
+    td>img:not(.logo):hover {
+      opacity: 0.7;
+    }
+  </style>
+  <style>
+    /* The Modal (background) */
+    .modal {
+      display: none;
+      /* Hidden by default */
+      position: fixed;
+      /* Stay in place */
+      z-index: 1;
+      /* Sit on top */
+      padding-top: 100px;
+      /* Location of the box */
+      left: 0;
+      top: 0;
+      width: 100%;
+      /* Full width */
+      height: 100%;
+      /* Full height */
+      overflow: auto;
+      /* Enable scroll if needed */
+      background-color: rgb(0, 0, 0);
+      /* Fallback color */
+      background-color: rgba(0, 0, 0, 0.9);
+      /* Black w/ opacity */
+    }
+
+    /* Modal Content (image) */
+    .modal-content {
+      margin: auto;
+      display: block;
+      width: 80%;
+      max-width: 700px;
+    }
+
+    /* Caption of Modal Image */
+    #caption {
+      margin: auto;
+      display: block;
+      width: 80%;
+      max-width: 700px;
+      text-align: center;
+      color: #ccc;
+      padding: 10px 0;
+      height: 150px;
+    }
+
+    /* Add Animation */
+    .modal-content,
+    #caption {
+      animation-name: zoom;
+      animation-duration: 0.6s;
+    }
+
+    @keyframes zoom {
+      from {
+        transform: scale(0.1)
+      }
+
+      to {
+        transform: scale(1)
+      }
+    }
+
+    /* The Close Button */
+    .close {
+      position: absolute;
+      top: 15px;
+      right: 35px;
+      color: #f1f1f1;
+      font-size: 40px;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: #bbb;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    /* 100% Image Width on Smaller Screens */
+    @media only screen and (max-width: 700px) {
+      .modal-content {
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -175,6 +282,25 @@
       <a href="http://discord.gg/JXbmZjp"><img class="pure-img discordLogo" src="assets/Discord-Logo-White.png"></a>
   </footer>
 
+  <div id="modal" class="modal">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="img01">
+    <div id="caption"></div>
+  </div>
+
+  <script>
+    var modal = document.getElementById("modal");
+
+    function showModal(thumb) {
+      modal.style.display = "block";
+      document.getElementById("img01").src = thumb.src;
+      document.getElementById("caption").innerHTML = thumb.alt;
+    }
+
+    document.getElementsByClassName("close")[0].onclick = function () {
+      modal.style.display = "none";
+    }
+  </script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
 
@@ -335,9 +461,12 @@
                   tr.appendChild(td);
                   td = document.createElement("td");
                   let img = document.createElement("img");
-                  img.setAttribute("alt", player + " verification image");
+                  img.setAttribute("alt", player + " Verification Image");
                   stor.ref("playerImgs/" + currentUser.uid).child(game + "/" + team + "/" + player).getDownloadURL().then((url) => {
                     img.setAttribute("src", url);
+                  });
+                  img.addEventListener("click", function (event) {
+                    showModal(this);
                   });
                   td.appendChild(img);
                   tr.appendChild(td);
