@@ -45,6 +45,16 @@
       margin: 0 auto;
       text-align: center;
     }
+
+    td>img {
+      max-width: 8rem;
+      max-height: 5.25rem;
+      object-fit: contain;
+    }
+    td>.logo {
+      max-width: 4rem;
+      margin-top: 0.25rem;
+    }
   </style>
 </head>
 
@@ -138,7 +148,7 @@
       </form>
     </div>
     <div>
-      <table class="pure-table">
+      <table class="pure-table pure-table-horizontal">
         <thead>
           <tr>
             <th>Game</th>
@@ -230,6 +240,7 @@
             })
             delete currentUserData["roster"][game][team]["players"][player];
           }
+          stor.ref("playerImgs/" + currentUser.uid).child(game + "/" + team + "/" + player).delete();
         } else if (team) {
           if (Object.keys(currentUserData["roster"][game]).length === 1 && Object.keys(currentUserData["roster"]).length === 1) {
             db.ref(currentUser.uid).update({
@@ -247,6 +258,7 @@
             })
             delete currentUserData["roster"][game][team];
           }
+          stor.ref("teamLogos/" + currentUser.uid).child(game + "/" + team).delete();
           refreshTeamSelect();
         }
         refreshTable();
@@ -283,12 +295,13 @@
               });
               td.appendChild(link);
               td.appendChild(document.createElement("br"));
-              let img = document.createElement("img");
-              img.setAttribute("alt", team + " Logo");
+              let logo = document.createElement("img");
+              logo.setAttribute("alt", team + " Logo");
               stor.ref("teamLogos/" + currentUser.uid).child(game + "/" + team).getDownloadURL().then((url) => {
-                img.setAttribute("src", url);
+                logo.setAttribute("src", url);
               });
-              td.appendChild(img);
+              logo.setAttribute("class", "logo");
+              td.appendChild(logo);
               td.setAttribute("rowspan", Object.keys(roster[game][team]["players"]).length ? Object.keys(roster[game][team]["players"]).length : 1);
               tr.appendChild(td);
               if (roster[game][team]["players"]) {
@@ -321,7 +334,12 @@
                   td.appendChild(document.createTextNode(playerData["school"]));
                   tr.appendChild(td);
                   td = document.createElement("td");
-                  // td.appendChild(document.createTextNode(playerData["img"]));
+                  let img = document.createElement("img");
+                  img.setAttribute("alt", player + " verification image");
+                  stor.ref("playerImgs/" + currentUser.uid).child(game + "/" + team + "/" + player).getDownloadURL().then((url) => {
+                    img.setAttribute("src", url);
+                  });
+                  td.appendChild(img);
                   tr.appendChild(td);
                   td = document.createElement("td");
                   let span = document.createElement("span");
