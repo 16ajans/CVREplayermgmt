@@ -227,15 +227,15 @@
             </select>
           </div>
           <div class="pure-control-group">
-            <label for="playerNameInput">Player Name</label>
-            <input type="text" id="playerNameInput" placeholder="Randy Smith" required="">
-          </div>
-          <div class="pure-control-group">
             <label for="playerTafInput">Player Gamertag</label>
             <input type="text" id="playerTagInput" placeholder="Xx_Randy_xX" required="">
           </div>
           <div class="pure-control-group">
-            <label for="playerEmailInput">Player Email</label>
+            <label for="playerNameInput">Player Legal Name</label>
+            <input type="text" id="playerNameInput" placeholder="Randy Smith" required="">
+          </div>
+          <div class="pure-control-group">
+            <label for="playerEmailInput">Player School Email</label>
             <input type="email" id="playerEmailInput" placeholder="randy3@vruni.edu" required="">
           </div>
           <div class="pure-control-group">
@@ -525,7 +525,7 @@
         let teamGame = teamGameSelect.value;
         let teamNameAttempt = teamNameInput.value;
         let teamLogoAttempt = teamLogoInput.files[0];
-        if (teamLogoAttempt.size < 1000000) {
+        if (teamLogoAttempt.size < 5000000) {
           if (imgRegex.test(teamLogoAttempt.type)) {
             db.ref(currentUser.uid + "/roster/" + teamGame + "/" + teamNameAttempt).update({
               players: false,
@@ -594,7 +594,7 @@
         let playerImageAttempt = playerImageInput.files[0];
         if (playerGame !== "false") {
           // if (eduRegex.test(playerEmailAttempt)) {
-          if (playerImageAttempt.size < 1000000) {
+          if (playerImageAttempt.size < 5000000) {
             if (imgRegex.test(playerImageAttempt.type)) {
               db.ref(currentUser.uid + "/roster/" + playerGame + "/" + playerTeam + "/players/" + playerNameAttempt).update({
                 tag: playerTagAttempt,
