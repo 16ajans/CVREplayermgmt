@@ -572,7 +572,7 @@
         }
       }
 
-      const eduRegex = /(\.edu)$/i;
+      // const eduRegex = /(\.edu)$/i;
 
       const createPlayerForm = document.getElementById("createPlayerForm");
 
@@ -593,32 +593,32 @@
         let playerSchoolAttempt = playerSchoolInput.value;
         let playerImageAttempt = playerImageInput.files[0];
         if (playerGame !== "false") {
-          if (eduRegex.test(playerEmailAttempt)) {
-            if (playerImageAttempt.size < 1000000) {
-              if (imgRegex.test(playerImageAttempt.type)) {
-                db.ref(currentUser.uid + "/roster/" + playerGame + "/" + playerTeam + "/players/" + playerNameAttempt).update({
-                  tag: playerTagAttempt,
-                  email: playerEmailAttempt,
-                  school: playerSchoolAttempt,
-                });
-                if (!currentUserData["roster"][playerGame][playerTeam]["players"]) {
-                  currentUserData["roster"][playerGame][playerTeam]["players"] = {};
-                }
-                currentUserData["roster"][playerGame][playerTeam]["players"][playerNameAttempt] = { tag: playerTagAttempt, email: playerEmailAttempt, school: playerSchoolAttempt, };
-                stor.ref("playerImgs/" + currentUser.uid).child(playerGame + "/" + playerTeam + "/" + playerNameAttempt).put(playerImageAttempt)
-                  .then((val) => {
-                    refreshTable();
-                  });
-                createPlayerForm.reset();
-              } else {
-                alert("Provided file is not an image.");
+          // if (eduRegex.test(playerEmailAttempt)) {
+          if (playerImageAttempt.size < 1000000) {
+            if (imgRegex.test(playerImageAttempt.type)) {
+              db.ref(currentUser.uid + "/roster/" + playerGame + "/" + playerTeam + "/players/" + playerNameAttempt).update({
+                tag: playerTagAttempt,
+                email: playerEmailAttempt,
+                school: playerSchoolAttempt,
+              });
+              if (!currentUserData["roster"][playerGame][playerTeam]["players"]) {
+                currentUserData["roster"][playerGame][playerTeam]["players"] = {};
               }
+              currentUserData["roster"][playerGame][playerTeam]["players"][playerNameAttempt] = { tag: playerTagAttempt, email: playerEmailAttempt, school: playerSchoolAttempt, };
+              stor.ref("playerImgs/" + currentUser.uid).child(playerGame + "/" + playerTeam + "/" + playerNameAttempt).put(playerImageAttempt)
+                .then((val) => {
+                  refreshTable();
+                });
+              createPlayerForm.reset();
             } else {
-              alert("Please keep images under 1 megabyte in size.");
+              alert("Provided file is not an image.");
             }
           } else {
-            alert("Please provide a player email ending in \".edu\"");
+            alert("Please keep images under 1 megabyte in size.");
           }
+          // } else {
+          //   alert("Please provide a player email ending in \".edu\"");
+          // }
         } else {
           alert("You must have at least one team before you can create players!");
         }
