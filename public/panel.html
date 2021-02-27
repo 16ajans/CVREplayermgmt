@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -188,7 +189,8 @@
             <button type="submit" class="pure-button pure-button-primary">Save</button>
           </div>
         </fieldset>
-        <h3>Click on a team or player name to delete it.</h3><p><br>Creating a team with the
+        <h3>Click on a team or player name to delete it.</h3>
+        <p><br>Creating a team with the
           same name and game as another <span style="font-weight: bold;">will</span> overwrite it.<br>Creating a player
           with the
           same name and team as another <span style="font-weight: bold;">will</span> overwrite them.</p>
@@ -249,7 +251,8 @@
             <button type="submit" class="pure-button pure-button-primary">Save</button>
           </div>
         </fieldset>
-        <p>Please provide an image <span style="font-weight: bold;">proving the player's<br>current enrollment</span> under
+        <p>Please provide an image <span style="font-weight: bold;">proving the player's<br>current enrollment</span>
+          under
           "Verification Image".</p>
       </form>
     </div>
@@ -319,29 +322,39 @@
         if (!user) {
           window.location.replace("/");
         } else {
-          currentUser = user;
-          db.ref(currentUser.uid).once("value").then((snapshot) => {
-            currentUserData = snapshot.val();
-            if (!currentUserData) {
-              db.ref(currentUser.uid).update({
-                roster: false,
-              })
-              currentUserData = { "roster": false, };
-              document.getElementById("welcomeMsg").innerHTML += " You will not be able to manage your roster until your account is reviewed and approved. Please be patient.";
-            } else {
-              if (currentUserData.discord) {
-                document.getElementById("discordInput").placeholder = currentUserData.discord;
-              }
-              if (currentUserData.approved) {
-                document.getElementById("teamSet").removeAttribute("disabled");
-                document.getElementById("playerSet").removeAttribute("disabled");
+          currentUser.getIdTokenResult()
+            .then((idTokenResult) => {
+              if (!!idTokenResult.claims.admin) {
+                window.location.replace("admin.html");
               } else {
-                document.getElementById("welcomeMsg").innerHTML += " You will not be able to manage your roster until your account is reviewed and approved. Please be patient.";
+                db.ref(currentUser.uid).once("value").then((snapshot) => {
+                  currentUserData = snapshot.val();
+                  if (!currentUserData) {
+                    currentUser = user;
+                    db.ref(currentUser.uid).update({
+                      roster: false,
+                    })
+                    currentUserData = { "roster": false, };
+                    document.getElementById("welcomeMsg").innerHTML += " You will not be able to manage your roster until your account is reviewed and approved. Please be patient.";
+                  } else {
+                    if (currentUserData.discord) {
+                      document.getElementById("discordInput").placeholder = currentUserData.discord;
+                    }
+                    if (currentUserData.approved) {
+                      document.getElementById("teamSet").removeAttribute("disabled");
+                      document.getElementById("playerSet").removeAttribute("disabled");
+                    } else {
+                      document.getElementById("welcomeMsg").innerHTML += " You will not be able to manage your roster until your account is reviewed and approved. Please be patient.";
+                    }
+                  }
+                  refreshTeamSelect();
+                  refreshTable();
+                });
               }
-            }
-            refreshTeamSelect();
-            refreshTable();
-          });
+            })
+            .catch((error) => {
+              console.log(error);
+            });
         }
       });
       document.getElementById("logoutButton").addEventListener("click", function (event) {

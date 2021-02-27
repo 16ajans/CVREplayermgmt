@@ -125,7 +125,19 @@
 
       auth.onAuthStateChanged(function (user) {
         if (user) {
-          window.location.replace("panel.html");
+          user.getIdTokenResult()
+            .then((idTokenResult) => {
+              // Confirm the user is an Admin.
+              if (!!idTokenResult.claims.admin) {
+                // Show admin UI.
+                window.location.replace("admin.html");
+              } else {
+                window.location.replace("panel.html");
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+            });
         }
       });
 

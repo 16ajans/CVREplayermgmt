@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -19,22 +20,60 @@
   <script defer src="/__/firebase/init.js?useEmulator=true"></script>
 
 </head>
+
 <body>
   <header>
     <section>
       <img class="pure-img" src="assets/CVRE.png">
-      <h1>Player Manager</h1>
+      <h1>ADMIN | Player Manager</h1>
     </section>
     <button type="button" id="logoutButton" class="pure-button">Logout</button>
   </header>
   <main>
 
+
+
   </main>
   <section class="pure-u-1-2 logoContainer">
     <a href="http://discord.gg/JXbmZjp"><img class="pure-img discordLogo" src="assets/Discord-Logo-White.png"></a>
-</footer>
-<script>
-  
-</script>
+    </footer>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+
+        const auth = firebase.auth();
+        const db = firebase.database();
+        const stor = firebase.storage();
+        var currentUser;
+
+        auth.onAuthStateChanged(function (user) {
+          if (!user) {
+            window.location.replace("/");
+          } else {
+            user.getIdTokenResult()
+              .then((idTokenResult) => {
+                // Confirm the user is an Admin.
+                if (!!idTokenResult.claims.admin) {
+                  // Show admin UI.
+                  showAdminUI();
+                } else {
+                  window.location.replace("/");
+                }
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+            currentUser = user;
+          }
+        });
+        document.getElementById("logoutButton").addEventListener("click", function (event) {
+          event.preventDefault();
+          auth.signOut()
+            .catch((error) => {
+              alert(error.message);
+            });
+        });
+      });
+    </script>
 </body>
+
 </html>
