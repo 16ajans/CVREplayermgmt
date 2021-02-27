@@ -10,6 +10,7 @@
 
   <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.5/build/pure-min.css"
     integrity="sha384-LTIDeidl25h2dPxrB2Ekgc9c7sEC3CWGM6HeFmuDNUjX76Ert4Z4IY714dhZHPLd" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.5/build/grids-responsive-min.css">
   <link rel="stylesheet" href="stylesheets/justsome.css">
 
   <script defer src="/__/firebase/8.2.5/firebase-app.js"></script>
@@ -66,6 +67,26 @@
       min-height: 100%;
       object-fit: cover;
     }
+
+    @media only screen and (max-width: 35.5em) {
+
+      select,
+      input[type="file"] {
+        display: block !important;
+      }
+
+      header>section>h1 {
+        font-size: 1em;
+      }
+
+      main {
+        margin: 0rem 1rem 1rem 1rem;
+      }
+
+      #leftBeef {
+        display: none;
+      }
+    }
   </style>
 
 </head>
@@ -79,10 +100,10 @@
     </section>
   </header>
   <main class="pure-g">
-    <section class="pure-u-1-2">
+    <section class="pure-u-1-2" id="leftBeef">
       <img class="pure-img" src="assets/echo.jpg">
     </section>
-    <section class="pure-u-1-2 PUTTHECONTENTINTHEMIDDLE">
+    <section class="pure-u-1 pure-u-sm-1-2 PUTTHECONTENTINTHEMIDDLE">
       <form id="loginForm" class="pure-form pure-form-stacked">
         <fieldset>
           <input type="email" id="emailInput" placeholder="Email Address" required="" autocomplete="email">
@@ -103,6 +124,7 @@
     <section class="pure-u-1-2 logoContainer">
       <a href="http://discord.gg/JXbmZjp"><img class="pure-img discordLogo" src="assets/Discord-Logo-White.png"></a>
     </section>
+    <p>Message haazman#0001 with questions, issues, and bugs.</p>
   </footer>
 
   <wrapper id="forgotModalWrapper">

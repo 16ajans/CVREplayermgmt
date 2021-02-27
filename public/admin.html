@@ -19,6 +19,25 @@
 
   <script defer src="/__/firebase/init.js?useEmulator=true"></script>
 
+  <style>
+    main {
+      margin: 3rem;
+    }
+
+    @media only screen and (max-width: 35.5em) {
+
+      main {
+        margin: 1rem;
+      }
+    }
+
+    @media only screen and (max-width: 48em) {
+
+      header>section>h1 {
+        font-size: 1em;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -30,50 +49,111 @@
     <button type="button" id="logoutButton" class="pure-button">Logout</button>
   </header>
   <main>
+    <button type="button" id="panelButton" class="pure-button">Goto Captain Panel</button>
 
-
+    <dl id="userList">
+      <dt>No users.</dt>
+    </dl>
 
   </main>
-  <section class="pure-u-1-2 logoContainer">
-    <a href="http://discord.gg/JXbmZjp"><img class="pure-img discordLogo" src="assets/Discord-Logo-White.png"></a>
-    </footer>
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
+  <footer>
+    <section class="pure-u-1-2 logoContainer">
+      <a href="http://discord.gg/JXbmZjp"><img class="pure-img discordLogo" src="assets/Discord-Logo-White.png"></a>
+    </section>
+    <p>Message haazman#0001 with questions, issues, and bugs.</p>
+  </footer>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
 
-        const auth = firebase.auth();
-        const db = firebase.database();
-        const stor = firebase.storage();
-        var currentUser;
+      const auth = firebase.auth();
+      const db = firebase.database();
+      const stor = firebase.storage();
+      var currentUser;
+      var theWholeAssDB;
 
-        auth.onAuthStateChanged(function (user) {
-          if (!user) {
-            window.location.replace("/");
-          } else {
-            user.getIdTokenResult()
-              .then((idTokenResult) => {
-                // Confirm the user is an Admin.
-                if (!!idTokenResult.claims.admin) {
-                  // Show admin UI.
-                  showAdminUI();
-                } else {
-                  window.location.replace("/");
-                }
-              })
-              .catch((error) => {
-                console.log(error);
-              });
-            currentUser = user;
-          }
-        });
-        document.getElementById("logoutButton").addEventListener("click", function (event) {
-          event.preventDefault();
-          auth.signOut()
+      auth.onAuthStateChanged(function (user) {
+        if (!user) {
+          window.location.replace("/");
+        } else {
+          user.getIdTokenResult()
+            .then((idTokenResult) => {
+              // Confirm the user is an Admin.
+              if (!!idTokenResult.claims.admin) {
+                // Show admin UI.
+                populateUserList();
+              } else {
+                window.location.replace("panel.html");
+              }
+            })
             .catch((error) => {
-              alert(error.message);
+              console.log(error);
             });
-        });
+          currentUser = user;
+        }
       });
-    </script>
+      document.getElementById("logoutButton").addEventListener("click", function (event) {
+        event.preventDefault();
+        auth.signOut()
+          .catch((error) => {
+            alert(error.message);
+          });
+      });
+      document.getElementById("panelButton").addEventListener("click", function (event) {
+        event.preventDefault();
+        window.location.replace("panel.html");
+      });
+
+      const userList = document.getElementById("userList");
+
+      function populateUserList() {
+        db.ref("/").once("value").then((snapshot) => {
+          theWholeAssDB = snapshot.val();
+          if (theWholeAssDB) {
+            userList.innerHTML = "";
+            for (let uid in theWholeAssDB) {
+              let dt = document.createElement("dt");
+              dt.appendChild(document.createTextNode("UID: " + uid))
+              userList.appendChild(dt);
+
+              let dd = document.createElement("dd");
+              dd.appendChild(document.createTextNode("Discord: "));
+              let span = document.createElement("span");
+              span.setAttribute("style", "font-weight:bold;");
+              span.appendChild(document.createTextNode(theWholeAssDB[uid]["discord"] ? theWholeAssDB[uid]["discord"] : "Not provided"));
+              dd.appendChild(span);
+              userList.appendChild(dd);
+
+              dd = document.createElement("dd");
+              dd.appendChild(document.createTextNode("Approved: "));
+              span = document.createElement("span");
+              span.setAttribute("style", theWholeAssDB[uid]["approved"] ? "font-weight:bold;color:green" : "font-weight:bold;color:red");
+              span.appendChild(document.createTextNode(theWholeAssDB[uid]["approved"] ? "YES" : "NO"));
+              dd.appendChild(span);
+              userList.appendChild(dd);
+
+              dd = document.createElement("dd");
+              let button = document.createElement("button");
+              button.setAttribute("type", "button");
+              button.setAttribute("class", "pure-button");
+              button.setAttribute("id", uid);
+              button.appendChild(document.createTextNode("Toggle Approval"));
+              button.addEventListener("click", function (event) {
+                toggleVerification(uid);
+              });
+              dd.appendChild(button);
+              userList.appendChild(dd);
+            }
+          }
+        })
+      }
+      function toggleVerification(uid) {
+        db.ref(uid).update({
+          approved: (!theWholeAssDB[uid]["approved"]),
+        });
+        populateUserList();
+      }
+    });
+  </script>
 </body>
 
 </html>

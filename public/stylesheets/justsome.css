@@ -21,6 +21,10 @@ footer {
   justify-content: space-between;
 }
 
+footer > p {
+  margin: 0.5rem;
+}
+
 header > section > img {
   max-height: 100%;
   padding: 0.5rem;
@@ -29,7 +33,8 @@ header > section > h1 {
   margin: auto 0rem;
 }
 
-header > button {
+header > button,
+header > div > button {
   margin: 1rem;
 }
 

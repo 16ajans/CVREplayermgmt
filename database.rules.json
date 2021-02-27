@@ -1,6 +1,17 @@
 {
   "rules": {
-    ".read": true,
-    ".write": "now < 1614232800000",  // 2021-2-25
+    ".read": "auth.token.admin == true",
+    "$uid": {
+      ".read": "$uid === auth.uid",
+      "approved": {
+        ".write": "auth.token.admin == true"
+      },
+      "roster": {
+        ".write": "data.parent().child('approved').val() == true"
+      },
+      "discord": {
+        ".write": "$uid === auth.uid"
+      }
+    }
   }
 }

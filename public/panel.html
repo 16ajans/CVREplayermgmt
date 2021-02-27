@@ -45,7 +45,7 @@
       text-align: center;
     }
 
-    @media only screen and (max-width: 480px) {
+    @media only screen and (max-width: 35.5em) {
 
       select,
       input[type="file"] {
@@ -282,6 +282,8 @@
   <footer>
     <section class="pure-u-1-2 logoContainer">
       <a href="http://discord.gg/JXbmZjp"><img class="pure-img discordLogo" src="assets/Discord-Logo-White.png"></a>
+    </section>
+    <p>Message haazman#0001 with questions, issues, and bugs.</p>
   </footer>
 
   <div id="modal" class="modal">
@@ -322,39 +324,29 @@
         if (!user) {
           window.location.replace("/");
         } else {
-          currentUser.getIdTokenResult()
-            .then((idTokenResult) => {
-              if (!!idTokenResult.claims.admin) {
-                window.location.replace("admin.html");
-              } else {
-                db.ref(currentUser.uid).once("value").then((snapshot) => {
-                  currentUserData = snapshot.val();
-                  if (!currentUserData) {
-                    currentUser = user;
-                    db.ref(currentUser.uid).update({
-                      roster: false,
-                    })
-                    currentUserData = { "roster": false, };
-                    document.getElementById("welcomeMsg").innerHTML += " You will not be able to manage your roster until your account is reviewed and approved. Please be patient.";
-                  } else {
-                    if (currentUserData.discord) {
-                      document.getElementById("discordInput").placeholder = currentUserData.discord;
-                    }
-                    if (currentUserData.approved) {
-                      document.getElementById("teamSet").removeAttribute("disabled");
-                      document.getElementById("playerSet").removeAttribute("disabled");
-                    } else {
-                      document.getElementById("welcomeMsg").innerHTML += " You will not be able to manage your roster until your account is reviewed and approved. Please be patient.";
-                    }
-                  }
-                  refreshTeamSelect();
-                  refreshTable();
-                });
+          currentUser = user;
+          db.ref(currentUser.uid).once("value").then((snapshot) => {
+            currentUserData = snapshot.val();
+            if (!currentUserData) {
+              db.ref(currentUser.uid).update({
+                roster: false,
+              })
+              currentUserData = { "roster": false, };
+              document.getElementById("welcomeMsg").innerHTML += " You will not be able to manage your roster until you add your discord username and are approved. Please be patient.";
+            } else {
+              if (currentUserData.discord) {
+                document.getElementById("discordInput").placeholder = currentUserData.discord;
               }
-            })
-            .catch((error) => {
-              console.log(error);
-            });
+              if (currentUserData.approved) {
+                document.getElementById("teamSet").removeAttribute("disabled");
+                document.getElementById("playerSet").removeAttribute("disabled");
+              } else {
+                document.getElementById("welcomeMsg").innerHTML += " You will not be able to manage your roster until you add your discord username and are approved. Please be patient.";
+              }
+            }
+            refreshTeamSelect();
+            refreshTable();
+          });
         }
       });
       document.getElementById("logoutButton").addEventListener("click", function (event) {
