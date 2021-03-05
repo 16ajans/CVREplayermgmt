@@ -37,6 +37,113 @@
         font-size: 1em;
       }
     }
+
+    dd {
+      margin-bottom: 1rem;
+    }
+  </style>
+  <style>
+    td>img {
+      max-width: 8rem;
+      max-height: 5.25rem;
+      object-fit: contain;
+    }
+
+    td>.logo {
+      max-width: 4rem;
+      margin-top: 0.25rem;
+    }
+
+    td>img:not(.logo):hover {
+      opacity: 0.7;
+    }
+  </style>
+  <style>
+    /* The Modal (background) */
+    .modal {
+      display: none;
+      /* Hidden by default */
+      position: fixed;
+      /* Stay in place */
+      z-index: 1;
+      /* Sit on top */
+      padding-top: 100px;
+      /* Location of the box */
+      left: 0;
+      top: 0;
+      width: 100%;
+      /* Full width */
+      height: 100%;
+      /* Full height */
+      overflow: auto;
+      /* Enable scroll if needed */
+      background-color: rgb(0, 0, 0);
+      /* Fallback color */
+      background-color: rgba(0, 0, 0, 0.9);
+      /* Black w/ opacity */
+    }
+
+    /* Modal Content (image) */
+    .modal-content {
+      margin: auto;
+      display: block;
+      width: 80%;
+      max-width: 700px;
+    }
+
+    /* Caption of Modal Image */
+    #caption {
+      margin: auto;
+      display: block;
+      width: 80%;
+      max-width: 700px;
+      text-align: center;
+      color: #ccc;
+      padding: 10px 0;
+      height: 150px;
+    }
+
+    /* Add Animation */
+    .modal-content,
+    #caption {
+      animation-name: zoom;
+      animation-duration: 0.6s;
+    }
+
+    @keyframes zoom {
+      from {
+        transform: scale(0.1)
+      }
+
+      to {
+        transform: scale(1)
+      }
+    }
+
+    /* The Close Button */
+    .close {
+      position: absolute;
+      top: 15px;
+      right: 35px;
+      color: #f1f1f1;
+      font-size: 40px;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: #bbb;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    /* 100% Image Width on Smaller Screens */
+    @media only screen and (max-width: 700px) {
+      .modal-content {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 
@@ -62,6 +169,26 @@
     </section>
     <p>Message haazman#0001 with questions, issues, and bugs.</p>
   </footer>
+
+  <div id="modal" class="modal">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="img01">
+    <div id="caption"></div>
+  </div>
+
+  <script>
+    var modal = document.getElementById("modal");
+
+    function showModal(thumb) {
+      modal.style.display = "block";
+      document.getElementById("img01").src = thumb.src;
+      document.getElementById("caption").innerHTML = thumb.alt;
+    }
+
+    document.getElementsByClassName("close")[0].onclick = function () {
+      modal.style.display = "none";
+    }
+  </script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
 
@@ -105,6 +232,119 @@
 
       const userList = document.getElementById("userList");
 
+      function refreshTable(roster, tableBod, puid) {
+        // let roster = currentUserData["roster"];
+        // let tableBod = document.getElementById("theBOD");
+        if (roster) {
+          tableBod.innerHTML = "";
+          for (let gameIndex = 0; gameIndex < Object.keys(roster).length; gameIndex++) {
+            let game = Object.keys(roster)[gameIndex];
+            let tr = document.createElement("tr");
+            let td = document.createElement("td");
+            td.appendChild(document.createTextNode(game));
+
+            let rowwwws = 0;
+            for (let teamIndex = 0; teamIndex < Object.keys(roster[game]).length; teamIndex++) {
+              let team = Object.keys(roster[game])[teamIndex];
+              if (roster[game][team]["players"]) {
+                rowwwws += Object.keys(roster[game][team]["players"]).length;
+              } else {
+                rowwwws++;
+              }
+            }
+
+            td.setAttribute("rowspan", rowwwws);
+            tr.appendChild(td);
+            for (let teamIndex = 0; teamIndex < Object.keys(roster[game]).length; teamIndex++) {
+              let team = Object.keys(roster[game])[teamIndex];
+              if (teamIndex !== 0) {
+                tableBod.appendChild(tr);
+                tr = document.createElement("tr");
+              }
+              td = document.createElement("td");
+              td.appendChild(document.createTextNode(team));
+              td.appendChild(document.createElement("br"));
+              let logo = document.createElement("img");
+              logo.setAttribute("alt", team + " Logo");
+              stor.ref("teamLogos/" + puid).child(game + "/" + team).getDownloadURL().then((url) => {
+                logo.setAttribute("src", url);
+              });
+              logo.setAttribute("class", "logo");
+              td.appendChild(logo);
+              td.setAttribute("rowspan", Object.keys(roster[game][team]["players"]).length ? Object.keys(roster[game][team]["players"]).length : 1);
+              tr.appendChild(td);
+              if (roster[game][team]["players"]) {
+                for (let playerIndex = 0; playerIndex < Object.keys(roster[game][team]["players"]).length; playerIndex++) {
+                  let player = Object.keys(roster[game][team]["players"])[playerIndex];
+                  if (playerIndex !== 0) {
+                    tableBod.appendChild(tr);
+                    tr = document.createElement("tr");
+                  }
+                  td = document.createElement("td");
+                  td.appendChild(document.createTextNode(player));
+                  tr.appendChild(td);
+                  let playerData = roster[game][team]["players"][player];
+                  td = document.createElement("td");
+                  td.appendChild(document.createTextNode(playerData["tag"]));
+                  tr.appendChild(td);
+                  td = document.createElement("td");
+                  td.appendChild(document.createTextNode(playerData["email"]));
+                  tr.appendChild(td);
+                  td = document.createElement("td");
+                  td.appendChild(document.createTextNode(playerData["school"]));
+                  tr.appendChild(td);
+                  td = document.createElement("td");
+                  let img = document.createElement("img");
+                  img.setAttribute("alt", player + " Verification Image");
+                  stor.ref("playerImgs/" + puid).child(game + "/" + team + "/" + player).getDownloadURL().then((url) => {
+                    img.setAttribute("src", url);
+                  });
+                  img.addEventListener("click", function (event) {
+                    showModal(this);
+                  });
+                  td.appendChild(img);
+                  tr.appendChild(td);
+                  td = document.createElement("td");
+                  let span = document.createElement("span");
+                  span.setAttribute("style", playerData["verified"] ? "font-weight:bold;color:green" : "font-weight:bold;color:red");
+                  span.appendChild(document.createTextNode(playerData["verified"] ? "YES" : "NO"));
+                  td.appendChild(span);
+                  tr.appendChild(td);
+
+                  td = document.createElement("td");
+                  let button = document.createElement("button");
+                  button.setAttribute("type", "button");
+                  button.setAttribute("class", "pure-button");
+                  button.setAttribute("id", puid);
+                  button.appendChild(document.createTextNode("Toggle Verification"));
+                  button.addEventListener("click", function (event) {
+                    toggleVerification(puid, game, team, player);
+                  });
+                  td.appendChild(button);
+                  tr.appendChild(td);
+                }
+              } else {
+                td = document.createElement("td");
+                td.setAttribute("colspan", 6);
+                td.appendChild(document.createTextNode("No Players!"));
+                tr.appendChild(td);
+              }
+            }
+            tableBod.appendChild(tr);
+          }
+        } else {
+          tableBod.innerHTML = "<tr><td colspan=\"8\">Nothing yet!</td></tr>"
+        }
+        // console.log(tableBod);
+      }
+      function toggleVerification(vuid, game, team, player) {
+        db.ref(vuid + "/roster/" + game + "/" + team + "/players/" + player).update({
+          verified: (!theWholeAssDB[vuid]["roster"][game][team]["players"][player]["verified"])
+        });
+        theWholeAssDB[vuid]["roster"][game][team]["players"][player]["verified"] = !theWholeAssDB[vuid]["roster"][game][team]["players"][player]["verified"];
+        refreshTable(theWholeAssDB[vuid]["roster"], document.getElementById(vuid + "TBABLE"), vuid);
+      }
+
       function populateUserList() {
         db.ref("/").once("value").then((snapshot) => {
           theWholeAssDB = snapshot.val();
@@ -114,7 +354,6 @@
               let dt = document.createElement("dt");
               dt.appendChild(document.createTextNode("UID: " + uid))
               userList.appendChild(dt);
-
               let dd = document.createElement("dd");
               dd.appendChild(document.createTextNode("Discord: "));
               let span = document.createElement("span");
@@ -138,18 +377,36 @@
               button.setAttribute("id", uid);
               button.appendChild(document.createTextNode("Toggle Approval"));
               button.addEventListener("click", function (event) {
-                toggleVerification(uid);
+                toggleApproval(uid);
               });
               dd.appendChild(button);
               userList.appendChild(dd);
+
+              if (theWholeAssDB[uid]["approved"]) {
+                dd = document.createElement("dd");
+                let table = document.createElement("table");
+                table.setAttribute("class", "pure-table pure-table-horizontal");
+                let tHead = document.createElement("thead");
+                tHead.innerHTML = "<tr><th>Game</th><th>Team</th><th>Player Name</th><th>Player Gamertag</th><th>Player Email</th><th>Player School</th><th>Verification Image</th><th>Verified</th><th>The Cool Admin Button</th></tr>";
+                table.appendChild(tHead);
+
+                let tBody = document.createElement("tbody");
+                tBody.setAttribute("id", uid + "TBABLE");
+                refreshTable(theWholeAssDB[uid]["roster"], tBody, uid);
+                table.appendChild(tBody);
+
+                dd.appendChild(table);
+                userList.appendChild(dd);
+              }
             }
           }
         })
       }
-      function toggleVerification(uid) {
-        db.ref(uid).update({
-          approved: (!theWholeAssDB[uid]["approved"]),
+      function toggleApproval(auid) {
+        db.ref(auid).update({
+          approved: (!theWholeAssDB[auid]["approved"]),
         });
+        theWholeAssDB[auid]["approved"] = !theWholeAssDB[auid]["approved"]
         populateUserList();
       }
     });
