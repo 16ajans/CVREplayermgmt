@@ -248,12 +248,11 @@
             <input type="file" id="playerImageInput" class="weirdWidth" required="">
           </div>
           <div class="pure-controls">
+            <h3>Please provide an image <span style="font-weight: bold;">including the student's name and proof of
+                CURRENT enrollment (showing a date).</span></h3>
             <button type="submit" class="pure-button pure-button-primary">Save</button>
           </div>
         </fieldset>
-        <p>Please provide an image <span style="font-weight: bold;">proving the player's<br>current enrollment</span>
-          under
-          "Verification Image".</p>
       </form>
     </div>
     <div>
@@ -358,7 +357,7 @@
       });
 
       function delet(game, team, player) {
-        if (player) {
+        if (player && confirm("Remove the player " + player + " from your roster?")) {
           if (Object.keys(currentUserData["roster"][game][team]["players"]).length === 1) {
             db.ref(currentUser.uid + "/roster/" + game + "/" + team).update({
               players: false,
@@ -371,7 +370,7 @@
             delete currentUserData["roster"][game][team]["players"][player];
           }
           stor.ref("playerImgs/" + currentUser.uid).child(game + "/" + team + "/" + player).delete();
-        } else if (team) {
+        } else if (team && confirm("Remove the team " + team + " from your roster?")) {
           if (Object.keys(currentUserData["roster"][game]).length === 1 && Object.keys(currentUserData["roster"]).length === 1) {
             db.ref(currentUser.uid).update({
               roster: false,
