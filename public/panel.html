@@ -357,38 +357,42 @@
       });
 
       function delet(game, team, player) {
-        if (player && confirm("Remove the player " + player + " from your roster?")) {
-          if (Object.keys(currentUserData["roster"][game][team]["players"]).length === 1) {
-            db.ref(currentUser.uid + "/roster/" + game + "/" + team).update({
-              players: false,
-            })
-            currentUserData["roster"][game][team]["players"] = false;
-          } else {
-            db.ref(currentUser.uid + "/roster/" + game + "/" + team + "/players").update({
-              [player]: null,
-            })
-            delete currentUserData["roster"][game][team]["players"][player];
+        if (player) {
+          if (confirm("Remove player " + player + " from your roster?")) {
+            if (Object.keys(currentUserData["roster"][game][team]["players"]).length === 1) {
+              db.ref(currentUser.uid + "/roster/" + game + "/" + team).update({
+                players: false,
+              })
+              currentUserData["roster"][game][team]["players"] = false;
+            } else {
+              db.ref(currentUser.uid + "/roster/" + game + "/" + team + "/players").update({
+                [player]: null,
+              })
+              delete currentUserData["roster"][game][team]["players"][player];
+            }
+            stor.ref("playerImgs/" + currentUser.uid).child(game + "/" + team + "/" + player).delete();
           }
-          stor.ref("playerImgs/" + currentUser.uid).child(game + "/" + team + "/" + player).delete();
-        } else if (team && confirm("Remove the team " + team + " from your roster?")) {
-          if (Object.keys(currentUserData["roster"][game]).length === 1 && Object.keys(currentUserData["roster"]).length === 1) {
-            db.ref(currentUser.uid).update({
-              roster: false,
-            })
-            currentUserData["roster"] = false;
-          } else if (Object.keys(currentUserData["roster"][game]).length === 1) {
-            db.ref(currentUser.uid + "/roster").update({
-              [game]: null,
-            })
-            delete currentUserData["roster"][game];
-          } else {
-            db.ref(currentUser.uid + "/roster/" + game).update({
-              [team]: null,
-            })
-            delete currentUserData["roster"][game][team];
+        } else if (team) {
+          if (confirm("Remove team " + team + " from your roster?")) {
+            if (Object.keys(currentUserData["roster"][game]).length === 1 && Object.keys(currentUserData["roster"]).length === 1) {
+              db.ref(currentUser.uid).update({
+                roster: false,
+              })
+              currentUserData["roster"] = false;
+            } else if (Object.keys(currentUserData["roster"][game]).length === 1) {
+              db.ref(currentUser.uid + "/roster").update({
+                [game]: null,
+              })
+              delete currentUserData["roster"][game];
+            } else {
+              db.ref(currentUser.uid + "/roster/" + game).update({
+                [team]: null,
+              })
+              delete currentUserData["roster"][game][team];
+            }
+            stor.ref("teamLogos/" + currentUser.uid).child(game + "/" + team).delete();
+            refreshTeamSelect();
           }
-          stor.ref("teamLogos/" + currentUser.uid).child(game + "/" + team).delete();
-          refreshTeamSelect();
         }
         refreshTable();
       }
