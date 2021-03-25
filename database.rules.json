@@ -2,7 +2,7 @@
   "rules": {
     ".read": "auth.token.admin == true",
     "$uid": {
-      ".read": "$uid === auth.uid",
+      ".read": true,
       "approved": {
         ".write": "auth.token.admin == true"
       },
