@@ -37,17 +37,21 @@
         font-size: 1em;
       }
     }
+
+    div {
+      padding-bottom: 1rem;
+    }
+
+    table {
+      width: 90%;
+    }
   </style>
   <style>
     td>img {
       max-width: 8rem;
-      max-height: 5.25rem;
-      object-fit: contain;
-    }
-
-    td>.logo {
-      max-width: 4rem;
+      max-height: 8rem;
       margin-top: 0.25rem;
+      object-fit: contain;
     }
   </style>
 </head>
@@ -61,7 +65,22 @@
     <button type="button" id="loginButton" class="pure-button">Login</button>
   </header>
   <main>
-
+    <h1>Echo Arena Teams</h1>
+    <hr>
+    <br>
+    <div id="daEAGrid" class="pure-g">
+      <div class="pure-u-1 pure-u-md-1-2 pure-u-xl-1-3">
+        No Teams.
+      </div>
+    </div>
+    <h1>Beat Saber Teams</h1>
+    <hr>
+    <br>
+    <div id="daBSGrid" class="pure-g">
+      <div class="pure-u-1 pure-u-md-1-2 pure-u-xl-1-3">
+        No Teams.
+      </div>
+    </div>
   </main>
   <footer>
     <section class="pure-u-1-2 logoContainer">
@@ -79,8 +98,150 @@
 
       document.getElementById("loginButton").addEventListener("click", function (event) {
         event.preventDefault();
-        window.location.replace("/");
+        window.location.replace("login.html");
       });
+
+      function refreshTable(roster, tableBod, puid, game) {
+        // let roster = currentUserData["roster"];
+        // let tableBod = document.getElementById("theBOD");
+        if (roster) {
+          tableBod.innerHTML = "";
+          let tr = document.createElement("tr");
+          let td = document.createElement("td");
+
+          let rowwwws = 0;
+          for (let teamIndex = 0; teamIndex < Object.keys(roster).length; teamIndex++) {
+            let team = Object.keys(roster)[teamIndex];
+            if (roster[team]["players"]) {
+              rowwwws += Object.keys(roster[team]["players"]).length;
+            } else {
+              rowwwws++;
+            }
+          }
+          for (let teamIndex = 0; teamIndex < Object.keys(roster).length; teamIndex++) {
+            let team = Object.keys(roster)[teamIndex];
+            if (teamIndex !== 0) {
+              tableBod.appendChild(tr);
+              tr = document.createElement("tr");
+            }
+            td = document.createElement("td");
+            td.appendChild(document.createTextNode(team));
+            td.appendChild(document.createElement("br"));
+            let logo = document.createElement("img");
+            logo.setAttribute("alt", team + " Logo");
+            stor.ref("teamLogos/" + puid).child(game + "/" + team).getDownloadURL().then((url) => {
+              logo.setAttribute("src", url);
+            });
+            logo.setAttribute("class", "logo");
+            td.appendChild(logo);
+            td.setAttribute("rowspan", Object.keys(roster[team]["players"]).length ? Object.keys(roster[team]["players"]).length : 1);
+            tr.appendChild(td);
+            if (roster[team]["players"]) {
+              for (let playerIndex = 0; playerIndex < Object.keys(roster[team]["players"]).length; playerIndex++) {
+                let player = Object.keys(roster[team]["players"])[playerIndex];
+                if (playerIndex !== 0) {
+                  tableBod.appendChild(tr);
+                  tr = document.createElement("tr");
+                }
+                let playerData = roster[team]["players"][player];
+                td = document.createElement("td");
+                td.appendChild(document.createTextNode(playerData["tag"]));
+                tr.appendChild(td);
+                // td = document.createElement("td");
+                // td.appendChild(document.createTextNode(playerData["school"]));
+                // tr.appendChild(td);
+                // change colspans
+              }
+            } else {
+              td = document.createElement("td");
+              td.setAttribute("colspan", 1);
+              td.appendChild(document.createTextNode("No Players!"));
+              tr.appendChild(td);
+            }
+          }
+          tableBod.appendChild(tr);
+        } else {
+          tableBod.innerHTML = "<tr><td colspan=\"2\">Nothing yet!</td></tr>"
+        }
+        // console.log(tableBod);
+      }
+
+      const daEAGrid = document.getElementById("daEAGrid");
+      const daBSGrid = document.getElementById("daBSGrid");
+
+      function drawThemTables() {
+        db.ref("/").once("value").then((snapshot) => {
+          theWholeAssDB = snapshot.val();
+          if (theWholeAssDB) {
+            daEAGrid.innerHTML = "";
+            daBSGrid.innerHTML = "";
+            for (let uid in theWholeAssDB) {
+              if (theWholeAssDB[uid]["roster"]) {
+                if (theWholeAssDB[uid]["roster"]["Echo Arena"]) {
+                  let gridUnit = document.createElement("div");
+                  gridUnit.setAttribute("class", "pure-u-1 pure-u-md-1-2 pure-u-xl-1-3");
+
+                  let table = document.createElement("table");
+                  table.setAttribute("class", "pure-table pure-table-horizontal");
+                  // let tHead = document.createElement("thead");
+                  // tHead.innerHTML = "<tr><th>Team</th><th>Player Tag</th></tr>";
+                  // // <th>Player School</th>
+                  // table.appendChild(tHead);
+
+                  let tBody = document.createElement("tbody");
+                  tBody.setAttribute("id", uid + "TBABLE");
+                  refreshTable(theWholeAssDB[uid]["roster"]["Echo Arena"], tBody, uid, "Echo Arena");
+                  table.appendChild(tBody);
+
+                  gridUnit.appendChild(table);
+
+                  gridUnit.appendChild(document.createTextNode("Captain's Discord: "));
+                  let span = document.createElement("span");
+                  span.setAttribute("style", "font-weight:bold;");
+                  span.appendChild(document.createTextNode(theWholeAssDB[uid]["discord"] ? theWholeAssDB[uid]["discord"] : "Not provided"));
+                  gridUnit.appendChild(span);
+
+                  daEAGrid.appendChild(gridUnit);
+                }
+                if (theWholeAssDB[uid]["roster"]["Beat Saber"]) {
+                  let gridUnit = document.createElement("div");
+                  gridUnit.setAttribute("class", "pure-u-1 pure-u-md-1-2 pure-u-xl-1-3");
+
+                  let table = document.createElement("table");
+                  table.setAttribute("class", "pure-table pure-table-horizontal");
+                  // let tHead = document.createElement("thead");
+                  // tHead.innerHTML = "<tr><th>Team</th><th>Player Tag</th></tr>";
+                  // // <th>Player School</th>
+                  // table.appendChild(tHead);
+
+                  let tBody = document.createElement("tbody");
+                  tBody.setAttribute("id", uid + "TBABLE");
+                  refreshTable(theWholeAssDB[uid]["roster"]["Beat Saber"], tBody, uid, "Beat Saber");
+                  table.appendChild(tBody);
+
+                  gridUnit.appendChild(table);
+
+                  gridUnit.appendChild(document.createTextNode("Captain's Discord: "));
+                  let span = document.createElement("span");
+                  span.setAttribute("style", "font-weight:bold;");
+                  span.appendChild(document.createTextNode(theWholeAssDB[uid]["discord"] ? theWholeAssDB[uid]["discord"] : "Not provided"));
+                  gridUnit.appendChild(span);
+
+                  daBSGrid.appendChild(gridUnit);
+                }
+              }
+            }
+            if (!daEAGrid.innerHTML) {
+              daEAGrid.innerHTML = "No Teams."
+            }
+            if (!daBSGrid.innerHTML) {
+              daBSGrid.innerHTML = "No Teams."
+            }
+          }
+        })
+      }
+
+      drawThemTables();
     });
   </script>
 </body>

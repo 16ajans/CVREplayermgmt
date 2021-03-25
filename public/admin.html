@@ -200,7 +200,7 @@
 
       auth.onAuthStateChanged(function (user) {
         if (!user) {
-          window.location.replace("/");
+          window.location.replace("login.html");
         } else {
           user.getIdTokenResult()
             .then((idTokenResult) => {
@@ -325,7 +325,7 @@
                 }
               } else {
                 td = document.createElement("td");
-                td.setAttribute("colspan", 6);
+                td.setAttribute("colspan", 7);
                 td.appendChild(document.createTextNode("No Players!"));
                 tr.appendChild(td);
               }
@@ -333,7 +333,7 @@
             tableBod.appendChild(tr);
           }
         } else {
-          tableBod.innerHTML = "<tr><td colspan=\"8\">Nothing yet!</td></tr>"
+          tableBod.innerHTML = "<tr><td colspan=\"9\">Nothing yet!</td></tr>"
         }
         // console.log(tableBod);
       }
