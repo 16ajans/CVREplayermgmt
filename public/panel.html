@@ -157,6 +157,7 @@
 
     /* 100% Image Width on Smaller Screens */
     @media only screen and (max-width: 700px) {
+
       .modalImg,
       #modalContent {
         width: 100%;
@@ -288,18 +289,28 @@
   <div id="modal" class="modal">
     <span class="close">&times;</span>
     <div id="modalContent">
-    <img class="modalImg" id="modalImg">
-    <div id="modalImgCaption"></div>
-  </div>
+      <img class="modalImg" id="modalImg">
+      <div id="modalImgCaption"></div>
+    </div>
   </div>
 
   <script>
     var modal = document.getElementById("modal");
 
-    function showModal(thumb) {
+    function showModalImg(thumb) {
       modal.style.display = "block";
       document.getElementById("modalImg").src = thumb.src;
       document.getElementById("modalImgCaption").innerHTML = thumb.alt;
+    }
+
+    function showTeamEditModal(cuid, game, team) {
+
+      let form = document.createElement("form");
+      form.setAttribute("id", "editTeamForm");
+      form.setAttribute("class", "pure-form pure-form-stacked");
+      let fieldset = document.createElement("fieldset");
+      
+
     }
 
     document.getElementsByClassName("close")[0].onclick = function () {
@@ -475,7 +486,7 @@
                     img.setAttribute("src", url);
                   });
                   img.addEventListener("click", function (event) {
-                    showModal(this);
+                    showModalImg(this);
                   });
                   td.appendChild(img);
                   tr.appendChild(td);
