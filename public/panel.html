@@ -67,9 +67,19 @@
       object-fit: contain;
     }
 
-    td>.logo {
+    .logoDiv {
+      /* text-align: right !important; */
+      width: 100%;
+    }
+
+    .logo {
       max-width: 4rem;
       margin-top: 0.25rem;
+    }
+
+    .bigLogo {
+      max-width: 8rem;
+      margin-top: 1rem;
     }
 
     td>img:not(.logo):hover {
@@ -190,7 +200,7 @@
             <button type="submit" class="pure-button pure-button-primary">Save</button>
           </div>
         </fieldset>
-        <h3>Click on a team or player name to delete it.</h3>
+        <h3>Click on a team or player name to edit it/them.</h3>
         <p><br>Creating a team with the
           same name and game as another <span style="font-weight: bold;">will</span> overwrite it.<br>Creating a player
           with the
@@ -198,7 +208,7 @@
       </form>
       <form id="createTeamForm" class="pure-form pure-form-aligned pure-u-1 pure-u-md-1-2 pure-u-xl-1-3">
         <fieldset id="teamSet" disabled>
-          <legend>Create New Team</legend>
+          <legend id="teamFormLegend">Create New Team</legend>
           <div class="pure-control-group">
             <label for="teamGameSelect">Team Game</label>
             <select id="teamGameSelect" class="weirdWidth">
@@ -213,15 +223,20 @@
           <div class="pure-control-group">
             <label for="teamLogoInput">Team Logo</label>
             <input type="file" id="teamLogoInput" class="weirdWidth" required="">
+            <div class="logoDiv">
+              <img id="teamLogoPreview" class="bigLogo" alt="Team Logo Preview" style="display: none;">
+            </div>
           </div>
           <div class="pure-controls">
-            <button type="submit" class="pure-button pure-button-primary">Save</button>
+            <button id="newTeamButton" class="pure-button">New</button>
+            <button id="saveTeamButton" class="pure-button pure-button-primary">Save</button>
+            <button id="deleteTeamButton" class="pure-button" style="display: none;">Delete</button>
           </div>
         </fieldset>
       </form>
       <form id="createPlayerForm" class="pure-form pure-form-aligned pure-u-1 pure-u-md-1-2 pure-u-xl-1-3">
         <fieldset id="playerSet" disabled>
-          <legend>Create New Player</legend>
+          <legend id="playerFormLegend">Create New Player</legend>
           <div class="pure-control-group">
             <label for="playerTeamSelect">Player Team</label>
             <select id="playerTeamSelect" class="weirdWidth">
@@ -251,7 +266,9 @@
           <div class="pure-controls">
             <h3>Please provide an image <span style="font-weight: bold;">including the student's name and proof of
                 CURRENT enrollment (showing a date).</span></h3>
-            <button type="submit" class="pure-button pure-button-primary">Save</button>
+            <!-- <button id="newPlayerButton" class="pure-button">New</button> -->
+            <button id="savePlayerButton" class="pure-button pure-button-primary">Save</button>
+            <!-- <button id="deletePlayerButton" class="pure-button" style="display: none;">Delete</button> -->
           </div>
         </fieldset>
       </form>
@@ -359,6 +376,30 @@
           });
       });
 
+      const teamFormLegend = document.getElementById("teamFormLegend");
+      const playerFormLegend = document.getElementById("playerFormLegend");
+      const teamLogoPreview = document.getElementById("teamLogoPreview");
+
+      function edit(game, team, player) {
+        if (player) {
+          alert("I ain't write that yet.");
+        } else {
+          currentlyEditingTeamGame = game;
+          currentlyEditingTeam = team;
+          teamFormLegend.innerHTML = "CURRENTLY EDITING Team: ";
+          teamFormLegend.appendChild(document.createTextNode(team));
+          teamEditData = currentUserData["roster"][game][team];
+          teamGameSelect.value = game;
+          teamNameInput.value = team;
+          teamNameInput.placeholder = team;
+          stor.ref("teamLogos/" + currentUser.uid).child(game + "/" + team).getDownloadURL().then((url) => {
+            teamLogoPreview.src = url;
+            teamLogoPreview.style.display = "inline";
+          });
+          deleteTeamButton.style.display = "inline-block";
+        }
+      }
+
       function delet(game, team, player) {
         if (player) {
           if (confirm("Remove player " + player + " from your roster?")) {
@@ -424,10 +465,10 @@
               td.setAttribute("id", team);
               let link = document.createElement("a");
               link.setAttribute("href", "#");
-              link.setAttribute("title", "Click to delete.");
+              link.setAttribute("title", "Click to edit.");
               link.appendChild(document.createTextNode(team));
               link.addEventListener("click", function (event) {
-                delet(game, team, false);
+                edit(game, team, false);
               });
               td.appendChild(link);
               td.appendChild(document.createElement("br"));
@@ -452,10 +493,10 @@
                   td.setAttribute("id", player);
                   link = document.createElement("a");
                   link.setAttribute("href", "#");
-                  link.setAttribute("title", "Click to delete.");
+                  link.setAttribute("title", "Click to edit.");
                   link.appendChild(document.createTextNode(player));
                   link.addEventListener("click", function (event) {
-                    delet(game, team, player);
+                    edit(game, team, player);
                   });
                   td.appendChild(link);
                   tr.appendChild(td);
@@ -526,31 +567,81 @@
       const imgRegex = /image/i;
 
       const createTeamForm = document.getElementById("createTeamForm");
+      const newTeamButton = document.getElementById("newTeamButton");
+      const saveTeamButton = document.getElementById("saveTeamButton");
+      const deleteTeamButton = document.getElementById("deleteTeamButton");
+      var currentlyEditingTeamGame = "";
+      var currentlyEditingTeam = "";
+      var teamEditData = false;
       const teamGameSelect = document.getElementById("teamGameSelect");
       const teamNameInput = document.getElementById("teamNameInput");
       const teamLogoInput = document.getElementById("teamLogoInput");
 
-      createTeamForm.addEventListener("submit", function (event) {
+      teamLogoInput.addEventListener("input", function (event) {
+        let teamLogoAttempt = teamLogoInput.files[0];
+        if (teamLogoAttempt) {
+          let reader = new FileReader();
+
+          reader.onload = function () {
+            teamLogoPreview.src = reader.result;
+          }
+
+          reader.readAsDataURL(teamLogoAttempt);
+          teamLogoPreview.style.display = "inline";
+        } else {
+          teamLogoPreview.src = "";
+          teamLogoPreview.style.display = "none";
+        }
+      });
+
+      function clearTeamForm() {
+        teamEditData = false;
+        currentlyEditingTeamGame = "";
+        currentlyEditingTeam = "";
+        teamFormLegend.innerHTML = "Create New Team";
+        teamGameSelect.value = "Beat Saber";
+        teamNameInput.placeholder = "The Arm Swingers";
+        deleteTeamButton.style.display = "none";
+        teamLogoPreview.style.display = "none";
+        createTeamForm.reset();
+      };
+
+      newTeamButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        clearTeamForm();
+      });
+
+      deleteTeamButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        delet(currentlyEditingTeamGame, currentlyEditingTeam, false);
+        clearTeamForm();
+      });
+
+      saveTeamButton.addEventListener("click", function (event) {
         event.preventDefault();
         let teamGame = teamGameSelect.value;
         let teamNameAttempt = teamNameInput.value;
         let teamLogoAttempt = teamLogoInput.files[0];
         if (teamLogoAttempt.size < 5000000) {
           if (imgRegex.test(teamLogoAttempt.type)) {
-            db.ref(currentUser.uid + "/roster/" + teamGame + "/" + teamNameAttempt).update({
-              players: false,
-            });
-            if (!currentUserData["roster"]) {
-              currentUserData["roster"] = {};
-            }
-            if (!currentUserData["roster"][teamGame]) {
-              currentUserData["roster"][teamGame] = {};
-            }
-            currentUserData["roster"][teamGame][teamNameAttempt] = { "players": false, };
-            stor.ref("teamLogos/" + currentUser.uid).child(teamGame + "/" + teamNameAttempt).put(teamLogoAttempt)
-              .then((val) => {
-                refreshTable();
+            if (teamEditData) {
+              console.log(teamEditData);
+            } else {
+              db.ref(currentUser.uid + "/roster/" + teamGame + "/" + teamNameAttempt).update({
+                players: false,
               });
+              if (!currentUserData["roster"]) {
+                currentUserData["roster"] = {};
+              }
+              if (!currentUserData["roster"][teamGame]) {
+                currentUserData["roster"][teamGame] = {};
+              }
+              currentUserData["roster"][teamGame][teamNameAttempt] = { "players": false, };
+              stor.ref("teamLogos/" + currentUser.uid).child(teamGame + "/" + teamNameAttempt).put(teamLogoAttempt)
+                .then((val) => {
+                  refreshTable();
+                });
+            }
             createTeamForm.reset();
             refreshTeamSelect();
           } else {
@@ -585,14 +676,18 @@
       // const eduRegex = /(\.edu)$/i;
 
       const createPlayerForm = document.getElementById("createPlayerForm");
-
+      const newPlayerButton = document.getElementById("newPlayerButton");
+      const savePlayerButton = document.getElementById("savePlayerButton");
+      const deletePlayerButton = document.getElementById("deletePlayerButton");
+      var currentlyEditingPlayer = "";
+      var playerEditData = false;
       const playerNameInput = document.getElementById("playerNameInput");
       const playerTagInput = document.getElementById("playerTagInput");
       const playerEmailInput = document.getElementById("playerEmailInput");
       const playerSchoolInput = document.getElementById("playerSchoolInput");
       const playerImageInput = document.getElementById("playerImageInput");
 
-      createPlayerForm.addEventListener("submit", function (event) {
+      savePlayerButton.addEventListener("click", function (event) {
         event.preventDefault();
         let temp = playerTeamSelect.value.split("/");
         let playerGame = temp[0];
@@ -606,19 +701,23 @@
           // if (eduRegex.test(playerEmailAttempt)) {
           if (playerImageAttempt.size < 5000000) {
             if (imgRegex.test(playerImageAttempt.type)) {
-              db.ref(currentUser.uid + "/roster/" + playerGame + "/" + playerTeam + "/players/" + playerNameAttempt).update({
-                tag: playerTagAttempt,
-                email: playerEmailAttempt,
-                school: playerSchoolAttempt,
-              });
-              if (!currentUserData["roster"][playerGame][playerTeam]["players"]) {
-                currentUserData["roster"][playerGame][playerTeam]["players"] = {};
-              }
-              currentUserData["roster"][playerGame][playerTeam]["players"][playerNameAttempt] = { tag: playerTagAttempt, email: playerEmailAttempt, school: playerSchoolAttempt, };
-              stor.ref("playerImgs/" + currentUser.uid).child(playerGame + "/" + playerTeam + "/" + playerNameAttempt).put(playerImageAttempt)
-                .then((val) => {
-                  refreshTable();
+              if (playerEditData) {
+                console.log(playerEditData);
+              } else {
+                db.ref(currentUser.uid + "/roster/" + playerGame + "/" + playerTeam + "/players/" + playerNameAttempt).update({
+                  tag: playerTagAttempt,
+                  email: playerEmailAttempt,
+                  school: playerSchoolAttempt,
                 });
+                if (!currentUserData["roster"][playerGame][playerTeam]["players"]) {
+                  currentUserData["roster"][playerGame][playerTeam]["players"] = {};
+                }
+                currentUserData["roster"][playerGame][playerTeam]["players"][playerNameAttempt] = { tag: playerTagAttempt, email: playerEmailAttempt, school: playerSchoolAttempt, };
+                stor.ref("playerImgs/" + currentUser.uid).child(playerGame + "/" + playerTeam + "/" + playerNameAttempt).put(playerImageAttempt)
+                  .then((val) => {
+                    refreshTable();
+                  });
+              }
               createPlayerForm.reset();
             } else {
               alert("Provided file is not an image.");
