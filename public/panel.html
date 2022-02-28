@@ -436,6 +436,9 @@
               let link = document.createElement("a");
               link.setAttribute("href", "#");
               link.setAttribute("title", "Click to delete.");
+              let strong = document.createElement("strong");
+              strong.appendChild(document.createTextNode(`${roster[game][team].type}: `));
+              link.appendChild(strong);
               link.appendChild(document.createTextNode(team));
               link.addEventListener("click", function (event) {
                 delet(game, team, false);
@@ -541,7 +544,7 @@
       const teamNameInput = document.getElementById("teamNameInput");
       const teamLogoInput = document.getElementById("teamLogoInput");
       const pavlovTeamTypeSelect = document.getElementById("pavlovTeamTypeSelect");
-      const BSTeamTypeSelect = document.getElementById ("BSTeamTypeSelect");
+      const BSTeamTypeSelect = document.getElementById("BSTeamTypeSelect");
 
       teamGameSelect.addEventListener("change", function (event) {
         if (teamGameSelect.value === "Beat Saber") {
@@ -570,12 +573,17 @@
             if (!currentUserData["roster"][teamGame]) {
               currentUserData["roster"][teamGame] = {};
             }
-            currentUserData["roster"][teamGame][teamNameAttempt] = { "players": false, };
+            currentUserData["roster"][teamGame][teamNameAttempt] = {
+              "players": false,
+              "type": ((teamGameSelect.value === "Beat Saber") ? BSTeamTypeSelect.value : pavlovTeamTypeSelect.value)
+            };
             stor.ref("teamLogos/" + currentUser.uid).child(teamGame + "/" + teamNameAttempt).put(teamLogoAttempt)
               .then((val) => {
                 refreshTable();
               });
             createTeamForm.reset();
+            pavlovTeamTypeSelect.parentElement.style.display = "none";
+            BSTeamTypeSelect.parentElement.style.display = "block";
             refreshTeamSelect();
           } else {
             alert("Provided file is not an image.");
