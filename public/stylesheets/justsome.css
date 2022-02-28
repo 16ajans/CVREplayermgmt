@@ -13,7 +13,7 @@ body {
 header,
 footer,
 header > section {
-  background-color: #703893;
+  background-color: #6A378C;
   display: flex;
   height: 4rem;
   color: white;
@@ -82,11 +82,24 @@ footer {
 /* colors and theming */
 
 .pure-button-primary {
-  background: #703893;
+  background: #6A378C;
 }
 
 .pruple,
 a {
-  color: #703893;
+  color: #6A378C;
   text-decoration: none
+}
+
+strong {
+  color: #BFA836;
+  font-size: 1.25em;
+}
+
+.pure-table>tbody {
+  background-color: #6A378C;
+  color: white;
+}
+td>a {
+  color: #BFA836;
 }
