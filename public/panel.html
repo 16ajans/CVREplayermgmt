@@ -202,7 +202,7 @@
             <label for="teamGameSelect">Team Game</label>
             <select id="teamGameSelect" class="weirdWidth">
               <option value="Beat Saber">Beat Saber</option>
-              <option value="Echo Arena">Echo Arena</option>
+              <option value="Pavlov">Pavlov</option>
             </select>
           </div>
           <div class="pure-control-group">
@@ -573,7 +573,7 @@
         if (currentUserData["roster"]) {
           playerTeamSelect.innerHTML = "";
           currentUserData["roster"]["Beat Saber"] ? addTeamOptions("Beat Saber") : null;
-          currentUserData["roster"]["Echo Arena"] ? addTeamOptions("Echo Arena") : null;
+          currentUserData["roster"]["Pavlov"] ? addTeamOptions("Pavlov") : null;
         } else {
           playerTeamSelect.innerHTML = "<option value=\"false\">No Teams!</option>";
         }

@@ -66,7 +66,7 @@
     <button type="button" id="loginButton" class="pure-button">Login</button>
   </header>
   <main>
-    <h1>Echo Arena Teams</h1>
+    <h1>Pavlov Teams</h1>
     <hr>
     <br>
     <div id="daEAGrid" class="pure-g">
@@ -178,7 +178,7 @@
             daBSGrid.innerHTML = "";
             for (let uid in theWholeAssDB) {
               if (theWholeAssDB[uid]["roster"]) {
-                if (theWholeAssDB[uid]["roster"]["Echo Arena"]) {
+                if (theWholeAssDB[uid]["roster"]["Pavlov"]) {
                   let gridUnit = document.createElement("div");
                   gridUnit.setAttribute("class", "pure-u-1 pure-u-md-1-2 pure-u-xl-1-3");
 
@@ -191,7 +191,7 @@
 
                   let tBody = document.createElement("tbody");
                   tBody.setAttribute("id", uid + "TBABLE");
-                  refreshTable(theWholeAssDB[uid]["roster"]["Echo Arena"], tBody, uid, "Echo Arena");
+                  refreshTable(theWholeAssDB[uid]["roster"]["Pavlov"], tBody, uid, "Pavlov");
                   table.appendChild(tBody);
 
                   gridUnit.appendChild(table);
