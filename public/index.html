@@ -126,6 +126,9 @@
               tr = document.createElement("tr");
             }
             td = document.createElement("td");
+            let strong = document.createElement("strong");
+            strong.appendChild(document.createTextNode(`${roster[team].type}: `));
+            td.appendChild(strong);
             td.appendChild(document.createTextNode(team));
             td.appendChild(document.createElement("br"));
             let logo = document.createElement("img");

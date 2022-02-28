@@ -205,6 +205,20 @@
               <option value="Pavlov">Pavlov</option>
             </select>
           </div>
+          <div class="pure-control-group" style="display: none;">
+            <label for="pavlovTeamTypeSelect">Team Type</label>
+            <select id="pavlovTeamTypeSelect" class="weirdWidth">
+              <option value="Shack">Shack (Quest)</option>
+              <option value="PCVR">PCVR</option>
+            </select>
+          </div>
+          <div class="pure-control-group">
+            <label for="BSTeamTypeSelect">Team Type</label>
+            <select id="BSTeamTypeSelect" class="weirdWidth">
+              <option value="D1">D1</option>
+              <option value="D2">D2</option>
+            </select>
+          </div>
           <div class="pure-control-group">
             <label for="teamNameInput">Team Name</label>
             <input type="text" id="teamNameInput" placeholder="The Arm Swingers" required="">
@@ -422,6 +436,9 @@
               let link = document.createElement("a");
               link.setAttribute("href", "#");
               link.setAttribute("title", "Click to delete.");
+              let strong = document.createElement("strong");
+              strong.appendChild(document.createTextNode(`${roster[game][team].type}: `));
+              link.appendChild(strong);
               link.appendChild(document.createTextNode(team));
               link.addEventListener("click", function (event) {
                 delet(game, team, false);
@@ -526,6 +543,18 @@
       const teamGameSelect = document.getElementById("teamGameSelect");
       const teamNameInput = document.getElementById("teamNameInput");
       const teamLogoInput = document.getElementById("teamLogoInput");
+      const pavlovTeamTypeSelect = document.getElementById("pavlovTeamTypeSelect");
+      const BSTeamTypeSelect = document.getElementById("BSTeamTypeSelect");
+
+      teamGameSelect.addEventListener("change", function (event) {
+        if (teamGameSelect.value === "Beat Saber") {
+          pavlovTeamTypeSelect.parentElement.style.display = "none";
+          BSTeamTypeSelect.parentElement.style.display = "block";
+        } else {
+          pavlovTeamTypeSelect.parentElement.style.display = "block";
+          BSTeamTypeSelect.parentElement.style.display = "none";
+        }
+      });
 
       createTeamForm.addEventListener("submit", function (event) {
         event.preventDefault();
@@ -536,6 +565,7 @@
           if (imgRegex.test(teamLogoAttempt.type)) {
             db.ref(currentUser.uid + "/roster/" + teamGame + "/" + teamNameAttempt).update({
               players: false,
+              type: ((teamGameSelect.value === "Beat Saber") ? BSTeamTypeSelect.value : pavlovTeamTypeSelect.value)
             });
             if (!currentUserData["roster"]) {
               currentUserData["roster"] = {};
@@ -543,12 +573,17 @@
             if (!currentUserData["roster"][teamGame]) {
               currentUserData["roster"][teamGame] = {};
             }
-            currentUserData["roster"][teamGame][teamNameAttempt] = { "players": false, };
+            currentUserData["roster"][teamGame][teamNameAttempt] = {
+              "players": false,
+              "type": ((teamGameSelect.value === "Beat Saber") ? BSTeamTypeSelect.value : pavlovTeamTypeSelect.value)
+            };
             stor.ref("teamLogos/" + currentUser.uid).child(teamGame + "/" + teamNameAttempt).put(teamLogoAttempt)
               .then((val) => {
                 refreshTable();
               });
             createTeamForm.reset();
+            pavlovTeamTypeSelect.parentElement.style.display = "none";
+            BSTeamTypeSelect.parentElement.style.display = "block";
             refreshTeamSelect();
           } else {
             alert("Provided file is not an image.");
