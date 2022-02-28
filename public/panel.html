@@ -205,6 +205,20 @@
               <option value="Pavlov">Pavlov</option>
             </select>
           </div>
+          <div class="pure-control-group" style="display: none;">
+            <label for="pavlovTeamTypeSelect">Team Type</label>
+            <select id="pavlovTeamTypeSelect" class="weirdWidth">
+              <option value="Shack">Shack (Quest)</option>
+              <option value="PCVR">PCVR</option>
+            </select>
+          </div>
+          <div class="pure-control-group" style="display: none;">
+            <label for="BSTeamTypeSelect">Team Type</label>
+            <select id="BSTeamTypeSelect" class="weirdWidth">
+              <option value="D1">D1</option>
+              <option value="D2">D2</option>
+            </select>
+          </div>
           <div class="pure-control-group">
             <label for="teamNameInput">Team Name</label>
             <input type="text" id="teamNameInput" placeholder="The Arm Swingers" required="">
@@ -526,6 +540,18 @@
       const teamGameSelect = document.getElementById("teamGameSelect");
       const teamNameInput = document.getElementById("teamNameInput");
       const teamLogoInput = document.getElementById("teamLogoInput");
+      const pavlovTeamTypeSelect = document.getElementById("pavlovTeamTypeSelect").parentElement;
+      const BSTeamTypeSelect = document.getElementById ("BSTeamTypeSelect").parentElement;
+
+      teamGameSelect.addEventListener("change", function (event) {
+        if (teamGameSelect.value === "Beat Saber") {
+          pavlovTeamTypeSelect.style.display = "none";
+          BSTeamTypeSelect.style.display = "block";
+        } else {
+          pavlovTeamTypeSelect.style.display = "block";
+          BSTeamTypeSelect.style.display = "none";
+        }
+      });
 
       createTeamForm.addEventListener("submit", function (event) {
         event.preventDefault();
