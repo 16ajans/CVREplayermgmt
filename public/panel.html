@@ -212,7 +212,7 @@
               <option value="PCVR">PCVR</option>
             </select>
           </div>
-          <div class="pure-control-group" style="display: none;">
+          <div class="pure-control-group">
             <label for="BSTeamTypeSelect">Team Type</label>
             <select id="BSTeamTypeSelect" class="weirdWidth">
               <option value="D1">D1</option>
@@ -540,16 +540,16 @@
       const teamGameSelect = document.getElementById("teamGameSelect");
       const teamNameInput = document.getElementById("teamNameInput");
       const teamLogoInput = document.getElementById("teamLogoInput");
-      const pavlovTeamTypeSelect = document.getElementById("pavlovTeamTypeSelect").parentElement;
-      const BSTeamTypeSelect = document.getElementById ("BSTeamTypeSelect").parentElement;
+      const pavlovTeamTypeSelect = document.getElementById("pavlovTeamTypeSelect");
+      const BSTeamTypeSelect = document.getElementById ("BSTeamTypeSelect");
 
       teamGameSelect.addEventListener("change", function (event) {
         if (teamGameSelect.value === "Beat Saber") {
-          pavlovTeamTypeSelect.style.display = "none";
-          BSTeamTypeSelect.style.display = "block";
+          pavlovTeamTypeSelect.parentElement.style.display = "none";
+          BSTeamTypeSelect.parentElement.style.display = "block";
         } else {
-          pavlovTeamTypeSelect.style.display = "block";
-          BSTeamTypeSelect.style.display = "none";
+          pavlovTeamTypeSelect.parentElement.style.display = "block";
+          BSTeamTypeSelect.parentElement.style.display = "none";
         }
       });
 
@@ -562,6 +562,7 @@
           if (imgRegex.test(teamLogoAttempt.type)) {
             db.ref(currentUser.uid + "/roster/" + teamGame + "/" + teamNameAttempt).update({
               players: false,
+              type: ((teamGameSelect.value === "Beat Saber") ? BSTeamTypeSelect.value : pavlovTeamTypeSelect.value)
             });
             if (!currentUserData["roster"]) {
               currentUserData["roster"] = {};
