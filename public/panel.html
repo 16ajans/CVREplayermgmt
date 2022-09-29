@@ -263,6 +263,11 @@
             <label for="playerImageInput">Verification Image</label>
             <input type="file" id="playerImageInput" class="weirdWidth" required="">
           </div>
+          <div class="pure-control-group" id="SSIDdiv" style="display: none;">
+            <label for="SSIDInput">ScoreSaber ID</label>
+            <input id="SSIDInput" type="text" required>
+            <p>Enter "quest" if participating standalone.</p>
+          </div>
           <div class="pure-controls">
             <h3>Please provide an image <span style="font-weight: bold;">including the student's name and proof of
                 CURRENT enrollment (showing a date).</span></h3>
@@ -597,7 +602,16 @@
         }
       });
 
-      playerTeamSelect = document.getElementById("playerTeamSelect");
+      const playerTeamSelect = document.getElementById("playerTeamSelect");
+      const SSIDdiv = document.getElementById("SSIDdiv");
+
+      function revealSSIDdiv() {
+        if (playerTeamSelect.value.startsWith("Beat Saber")) {
+          SSIDdiv.style.display = 'block';
+        } else {
+          SSIDdiv.style.display = 'none';
+        };
+      };
 
       function addTeamOptions(game) {
         for (let team in currentUserData["roster"][game]) {
@@ -606,6 +620,7 @@
           option.setAttribute("value", game + "/" + team);
           playerTeamSelect.appendChild(option);
         }
+        revealSSIDdiv();
       }
 
       function refreshTeamSelect() {
@@ -619,6 +634,10 @@
         }
       }
 
+      playerTeamSelect.addEventListener('input', function(event) {
+        revealSSIDdiv();
+      });
+
       // const eduRegex = /(\.edu)$/i;
 
       const createPlayerForm = document.getElementById("createPlayerForm");
@@ -628,6 +647,7 @@
       const playerEmailInput = document.getElementById("playerEmailInput");
       const playerSchoolInput = document.getElementById("playerSchoolInput");
       const playerImageInput = document.getElementById("playerImageInput");
+      const SSIDInput = document.getElementById("SSIDInput");
 
       createPlayerForm.addEventListener("submit", function (event) {
         event.preventDefault();
@@ -639,6 +659,7 @@
         let playerEmailAttempt = playerEmailInput.value;
         let playerSchoolAttempt = playerSchoolInput.value;
         let playerImageAttempt = playerImageInput.files[0];
+        let SSIDInputAttempt = SSIDInput.value;
         if (playerGame !== "false") {
           // if (eduRegex.test(playerEmailAttempt)) {
           if (playerImageAttempt.size < 5000000) {
@@ -647,11 +668,12 @@
                 tag: playerTagAttempt,
                 email: playerEmailAttempt,
                 school: playerSchoolAttempt,
+                SSID: SSIDInputAttempt
               });
               if (!currentUserData["roster"][playerGame][playerTeam]["players"]) {
                 currentUserData["roster"][playerGame][playerTeam]["players"] = {};
               }
-              currentUserData["roster"][playerGame][playerTeam]["players"][playerNameAttempt] = { tag: playerTagAttempt, email: playerEmailAttempt, school: playerSchoolAttempt, };
+              currentUserData["roster"][playerGame][playerTeam]["players"][playerNameAttempt] = { tag: playerTagAttempt, email: playerEmailAttempt, school: playerSchoolAttempt, SSID: SSIDInputAttempt };
               stor.ref("playerImgs/" + currentUser.uid).child(playerGame + "/" + playerTeam + "/" + playerNameAttempt).put(playerImageAttempt)
                 .then((val) => {
                   refreshTable();
