@@ -1,237 +1,313 @@
 <!DOCTYPE html>
 
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Player Manager</title>
+    <link rel="icon" type="image/png" href="assets/favicon.png" />
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Player Manager</title>
-  <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/purecss@2.0.5/build/pure-min.css"
+      integrity="sha384-LTIDeidl25h2dPxrB2Ekgc9c7sEC3CWGM6HeFmuDNUjX76Ert4Z4IY714dhZHPLd"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/purecss@2.0.5/build/grids-responsive-min.css"
+    />
+    <link rel="stylesheet" href="stylesheets/justsome.css" />
 
-  <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.5/build/pure-min.css"
-    integrity="sha384-LTIDeidl25h2dPxrB2Ekgc9c7sEC3CWGM6HeFmuDNUjX76Ert4Z4IY714dhZHPLd" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.5/build/grids-responsive-min.css">
-  <link rel="stylesheet" href="stylesheets/justsome.css">
+    <script defer src="/__/firebase/8.2.5/firebase-app.js"></script>
+    <script defer src="/__/firebase/8.2.5/firebase-auth.js"></script>
 
-  <script defer src="/__/firebase/8.2.5/firebase-app.js"></script>
-  <script defer src="/__/firebase/8.2.5/firebase-auth.js"></script>
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
 
-  <script defer src="/__/firebase/init.js?useEmulator=true"></script>
-
-  <style>
-    #emailReset {
-      width: 100%;
-    }
-
-    /* modal bits */
-
-    wrapper {
-      display: none;
-      position: fixed;
-      z-index: 1;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgb(0, 0, 0);
-      background-color: rgba(0, 0, 0, 0.4);
-      animation: fadein 0.25s;
-    }
-
-    wrapper>modal {
-      height: 100%;
-    }
-
-    wrapper>modal>* {
-      padding: 1rem;
-      background-color: white;
-    }
-
-    @keyframes fadein {
-      from {
-        opacity: 0;
+    <style>
+      #emailReset {
+        width: 100%;
       }
 
-      to {
-        opacity: 1;
-      }
-    }
+      /* modal bits */
 
-    /* login page */
-
-    main>section {
-      height: 100%;
-    }
-
-    main>section>img {
-      min-height: 100%;
-      object-fit: cover;
-    }
-
-    @media only screen and (max-width: 35.5em) {
-
-      select,
-      input[type="file"] {
-        display: block !important;
-      }
-
-      header>section>h1 {
-        font-size: 1em;
-      }
-
-      main {
-        margin: 0rem 1rem 1rem 1rem;
-      }
-
-      #leftBeef {
+      wrapper {
         display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgb(0, 0, 0);
+        background-color: rgba(0, 0, 0, 0.4);
+        animation: fadein 0.25s;
       }
-    }
-  </style>
 
-</head>
+      wrapper > modal {
+        height: 100%;
+      }
 
-<body>
+      wrapper > modal > * {
+        padding: 1rem;
+        background-color: white;
+      }
 
-  <header>
-    <section>
-      <img class="pure-img" src="assets/CVRE.png">
-      <h1>Player Manager</h1>
-    </section>
-    <button type="button" id="teamButton" class="pure-button">Team List</button>
-  </header>
-  <main class="pure-g">
-    <section class="pure-u-1-2" id="leftBeef">
-      <img class="pure-img" src="assets/echo.jpg">
-    </section>
-    <section class="pure-u-1 pure-u-sm-1-2 PUTTHECONTENTINTHEMIDDLE">
-      <form id="loginForm" class="pure-form pure-form-stacked">
-        <fieldset>
-          <input type="email" id="emailInput" placeholder="Email Address" required="" autocomplete="email">
-          <input type="password" id="passwordInput" placeholder="Password" required="" autocomplete="current-password">
-          <span id="forgotLink" class="pruple">Forgot your password?</span><br>
-          <label for="rememberCheck" class="pure-checkbox">
-            <input type="checkbox" id="rememberCheck"> Remember me</label>
-          <div class="SPACETHECONTENTAPART">
-            <button type="submit" id="loginButton"
-              class="pure-button pure-button-primary almosthalfwidth">Login</button>
-            <button type="submit" id="registerButton" class="pure-button almosthalfwidth">Register</button>
-          </div>
-        </fieldset>
-      </form>
-    </section>
-  </main>
-  <footer>
-    <section class="pure-u-1-2 logoContainer">
-      <a href="http://discord.gg/JXbmZjp"><img class="pure-img discordLogo" src="assets/Discord-Logo-White.png"></a>
-    </section>
-    <p>Message haazman#4309 with questions, issues, and bugs.</p>
-  </footer>
-
-  <wrapper id="forgotModalWrapper">
-    <modal class="PUTTHECONTENTINTHEMIDDLE">
-      <form id="forgotForm" class="pure-form pure-form-stacked">
-        <fieldset>
-          <legend>Forgot Password</legend>
-          <input type="email" id="emailReset" placeholder="Email Address" required="" autocomplete="email">
-          <button type="submit" id="resetButton" class="pure-button pure-button-primary">Send reset email</button>
-          <button type="button" id="cancelButton" class="pure-button">Cancel</button>
-        </fieldset>
-      </form>
-    </modal>
-  </wrapper>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-
-      const auth = firebase.auth();
-
-      auth.onAuthStateChanged(function (user) {
-        if (user) {
-          user.getIdTokenResult()
-            .then((idTokenResult) => {
-              // Confirm the user is an Admin.
-              if (!!idTokenResult.claims.admin) {
-                // Show admin UI.
-                window.location.replace("admin.html");
-              } else {
-                window.location.replace("panel.html");
-              }
-            })
-            .catch((error) => {
-              console.log(error);
-            });
+      @keyframes fadein {
+        from {
+          opacity: 0;
         }
-      });
 
-      auth.setPersistence(firebase.auth.Auth.Persistence.SESSION)
-        .catch((error) => {
-          alert(error.message);
-        });
-
-      function persistHandler(checked) {
-        if (checked) {
-          return auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-            .catch((error) => {
-              alert(error.message);
-            });
-        } else {
-          return auth.setPersistence(firebase.auth.Auth.Persistence.SESSION)
-            .catch((error) => {
-              alert(error.message);
-            });
+        to {
+          opacity: 1;
         }
       }
 
-      document.getElementById("teamButton").addEventListener("click", function (event) {
-        event.preventDefault();
-        window.location.replace("public.html");
-      });
+      /* login page */
 
-      document.getElementById("loginForm").addEventListener("submit", function (event) {
-        event.preventDefault();
-        if (event.submitter.id === "registerButton") {
-          auth.createUserWithEmailAndPassword(document.getElementById("emailInput").value, document.getElementById("passwordInput").value)
-            .then((userCredential) => {
-              return persistHandler(document.getElementById("rememberCheck").checked);
-            })
-            .catch((error) => {
-              alert(error.message);
-            });
-        } else {
-          auth.signInWithEmailAndPassword(document.getElementById("emailInput").value, document.getElementById("passwordInput").value)
-            .then((userCredential) => {
-              return persistHandler(document.getElementById("rememberCheck").checked);
-            })
-            .catch((error) => {
-              alert(error.message);
-            });
+      main > section {
+        height: 100%;
+      }
+
+      main > section > img {
+        min-height: 100%;
+        object-fit: cover;
+      }
+
+      @media only screen and (max-width: 35.5em) {
+        select,
+        input[type="file"] {
+          display: block !important;
         }
-      });
 
-      var forgotModalWrapper = document.getElementById("forgotModalWrapper");
+        header > section > h1 {
+          font-size: 1em;
+        }
 
-      document.getElementById("forgotLink").addEventListener("click", function (event) {
-        forgotModalWrapper.style.display = "block";
-      });
-      document.getElementById("cancelButton").addEventListener("click", function (event) {
-        forgotModalWrapper.style.display = "none";
-        document.getElementById("forgotForm").reset();
-      });
+        main {
+          margin: 0rem 1rem 1rem 1rem;
+        }
 
-      document.getElementById("forgotForm").addEventListener("submit", function (event) {
-        event.preventDefault();
-        auth.sendPasswordResetEmail(document.getElementById("emailReset").value).then(function () {
-          alert("Password reset email sent.");
-          forgotModalWrapper.style.display = "none";
-          document.getElementById("forgotForm").reset();
-        }).catch(function (error) {
-          alert(error.message);
+        #leftBeef {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <section>
+        <img class="pure-img" src="assets/CVRE.png" />
+        <h1>Player Manager</h1>
+      </section>
+      <button type="button" id="teamButton" class="pure-button">
+        Team List
+      </button>
+    </header>
+    <main class="pure-g">
+      <section class="pure-u-1-2" id="leftBeef">
+        <img class="pure-img" src="assets/echo.jpg" />
+      </section>
+      <section class="pure-u-1 pure-u-sm-1-2 PUTTHECONTENTINTHEMIDDLE">
+        <form id="loginForm" class="pure-form pure-form-stacked">
+          <fieldset>
+            <input
+              type="email"
+              id="emailInput"
+              placeholder="Email Address"
+              required=""
+              autocomplete="email"
+            />
+            <input
+              type="password"
+              id="passwordInput"
+              placeholder="Password"
+              required=""
+              autocomplete="current-password"
+            />
+            <span id="forgotLink" class="pruple">Forgot your password?</span
+            ><br />
+            <label for="rememberCheck" class="pure-checkbox">
+              <input type="checkbox" id="rememberCheck" /> Remember me</label
+            >
+            <div class="SPACETHECONTENTAPART">
+              <button
+                type="submit"
+                id="loginButton"
+                class="pure-button pure-button-primary almosthalfwidth"
+              >
+                Login
+              </button>
+              <button
+                type="submit"
+                id="registerButton"
+                class="pure-button almosthalfwidth"
+              >
+                Register
+              </button>
+            </div>
+          </fieldset>
+        </form>
+      </section>
+    </main>
+    <footer>
+      <section class="pure-u-1-2 logoContainer">
+        <a href="http://discord.gg/JXbmZjp"
+          ><img
+            class="pure-img discordLogo"
+            src="assets/Discord-Logo-White.png"
+        /></a>
+      </section>
+      <p>Message haazman#4309 with questions, issues, and bugs.</p>
+    </footer>
+
+    <wrapper id="forgotModalWrapper">
+      <modal class="PUTTHECONTENTINTHEMIDDLE">
+        <form id="forgotForm" class="pure-form pure-form-stacked">
+          <fieldset>
+            <legend>Forgot Password</legend>
+            <input
+              type="email"
+              id="emailReset"
+              placeholder="Email Address"
+              required=""
+              autocomplete="email"
+            />
+            <button
+              type="submit"
+              id="resetButton"
+              class="pure-button pure-button-primary"
+            >
+              Send reset email
+            </button>
+            <button type="button" id="cancelButton" class="pure-button">
+              Cancel
+            </button>
+          </fieldset>
+        </form>
+      </modal>
+    </wrapper>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const auth = firebase.auth();
+
+        auth.onAuthStateChanged(function (user) {
+          if (user) {
+            user
+              .getIdTokenResult()
+              .then((idTokenResult) => {
+                // Confirm the user is an Admin.
+                if (!!idTokenResult.claims.admin) {
+                  // Show admin UI.
+                  window.location.replace("admin.html");
+                } else {
+                  window.location.replace("panel.html");
+                }
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          }
         });
+
+        auth
+          .setPersistence(firebase.auth.Auth.Persistence.SESSION)
+          .catch((error) => {
+            alert(error.message);
+          });
+
+        function persistHandler(checked) {
+          if (checked) {
+            return auth
+              .setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+              .catch((error) => {
+                alert(error.message);
+              });
+          } else {
+            return auth
+              .setPersistence(firebase.auth.Auth.Persistence.SESSION)
+              .catch((error) => {
+                alert(error.message);
+              });
+          }
+        }
+
+        document
+          .getElementById("teamButton")
+          .addEventListener("click", function (event) {
+            event.preventDefault();
+            window.location.replace("public.html");
+          });
+
+        document
+          .getElementById("loginForm")
+          .addEventListener("submit", function (event) {
+            event.preventDefault();
+            if (event.submitter.id === "registerButton") {
+              auth
+                .createUserWithEmailAndPassword(
+                  document.getElementById("emailInput").value,
+                  document.getElementById("passwordInput").value
+                )
+                .then((userCredential) => {
+                  return persistHandler(
+                    document.getElementById("rememberCheck").checked
+                  );
+                })
+                .catch((error) => {
+                  alert(error.message);
+                });
+            } else {
+              auth
+                .signInWithEmailAndPassword(
+                  document.getElementById("emailInput").value,
+                  document.getElementById("passwordInput").value
+                )
+                .then((userCredential) => {
+                  return persistHandler(
+                    document.getElementById("rememberCheck").checked
+                  );
+                })
+                .catch((error) => {
+                  alert(error.message);
+                });
+            }
+          });
+
+        var forgotModalWrapper = document.getElementById("forgotModalWrapper");
+
+        document
+          .getElementById("forgotLink")
+          .addEventListener("click", function (event) {
+            forgotModalWrapper.style.display = "block";
+          });
+        document
+          .getElementById("cancelButton")
+          .addEventListener("click", function (event) {
+            forgotModalWrapper.style.display = "none";
+            document.getElementById("forgotForm").reset();
+          });
+
+        document
+          .getElementById("forgotForm")
+          .addEventListener("submit", function (event) {
+            event.preventDefault();
+            auth
+              .sendPasswordResetEmail(
+                document.getElementById("emailReset").value
+              )
+              .then(function () {
+                alert("Password reset email sent.");
+                forgotModalWrapper.style.display = "none";
+                document.getElementById("forgotForm").reset();
+              })
+              .catch(function (error) {
+                alert(error.message);
+              });
+          });
       });
-
-    });
-  </script>
-</body>
-
+    </script>
+  </body>
 </html>

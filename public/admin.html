@@ -1,419 +1,517 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ADMIN | Player Manager</title>
+    <link rel="icon" type="image/png" href="assets/favicon.png" />
 
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ADMIN | Player Manager</title>
-  <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/purecss@2.0.5/build/pure-min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/purecss@2.0.5/build/grids-responsive-min.css"
+    />
+    <link rel="stylesheet" href="stylesheets/justsome.css" />
 
-  <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.5/build/pure-min.css">
-  <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.5/build/grids-responsive-min.css">
-  <link rel="stylesheet" href="stylesheets/justsome.css">
+    <script defer src="/__/firebase/8.2.5/firebase-app.js"></script>
+    <script defer src="/__/firebase/8.2.5/firebase-auth.js"></script>
+    <script defer src="/__/firebase/8.2.5/firebase-database.js"></script>
+    <script defer src="/__/firebase/8.2.5/firebase-storage.js"></script>
 
-  <script defer src="/__/firebase/8.2.5/firebase-app.js"></script>
-  <script defer src="/__/firebase/8.2.5/firebase-auth.js"></script>
-  <script defer src="/__/firebase/8.2.5/firebase-database.js"></script>
-  <script defer src="/__/firebase/8.2.5/firebase-storage.js"></script>
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
 
-  <script defer src="/__/firebase/init.js?useEmulator=true"></script>
-
-  <style>
-    main {
-      margin: 3rem;
-    }
-
-    @media only screen and (max-width: 35.5em) {
-
+    <style>
       main {
-        margin: 1rem;
-      }
-    }
-
-    @media only screen and (max-width: 48em) {
-
-      header>section>h1 {
-        font-size: 1em;
-      }
-    }
-
-    dd {
-      margin-bottom: 1rem;
-    }
-  </style>
-  <style>
-    td>img {
-      max-width: 8rem;
-      max-height: 5.25rem;
-      object-fit: contain;
-    }
-
-    td>.logo {
-      max-width: 4rem;
-      margin-top: 0.25rem;
-    }
-
-    td>img:not(.logo):hover {
-      opacity: 0.7;
-    }
-  </style>
-  <style>
-    /* The Modal (background) */
-    .modal {
-      display: none;
-      /* Hidden by default */
-      position: fixed;
-      /* Stay in place */
-      z-index: 1;
-      /* Sit on top */
-      padding-top: 100px;
-      /* Location of the box */
-      left: 0;
-      top: 0;
-      width: 100%;
-      /* Full width */
-      height: 100%;
-      /* Full height */
-      overflow: auto;
-      /* Enable scroll if needed */
-      background-color: rgb(0, 0, 0);
-      /* Fallback color */
-      background-color: rgba(0, 0, 0, 0.9);
-      /* Black w/ opacity */
-    }
-
-    /* Modal Content (image) */
-    .modal-content {
-      margin: auto;
-      display: block;
-      width: 80%;
-      max-width: 700px;
-    }
-
-    /* Caption of Modal Image */
-    #caption {
-      margin: auto;
-      display: block;
-      width: 80%;
-      max-width: 700px;
-      text-align: center;
-      color: #ccc;
-      padding: 10px 0;
-      height: 150px;
-    }
-
-    /* Add Animation */
-    .modal-content,
-    #caption {
-      animation-name: zoom;
-      animation-duration: 0.6s;
-    }
-
-    @keyframes zoom {
-      from {
-        transform: scale(0.1)
+        margin: 3rem;
       }
 
-      to {
-        transform: scale(1)
-      }
-    }
-
-    /* The Close Button */
-    .close {
-      position: absolute;
-      top: 15px;
-      right: 35px;
-      color: #f1f1f1;
-      font-size: 40px;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-
-    .close:hover,
-    .close:focus {
-      color: #bbb;
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-    /* 100% Image Width on Smaller Screens */
-    @media only screen and (max-width: 700px) {
-      .modal-content {
-        width: 100%;
-      }
-    }
-  </style>
-</head>
-
-<body>
-  <header>
-    <section>
-      <img class="pure-img" src="assets/CVRE.png">
-      <h1>ADMIN | Player Manager</h1>
-    </section>
-    <button type="button" id="logoutButton" class="pure-button">Logout</button>
-  </header>
-  <main>
-    <button type="button" id="panelButton" class="pure-button">Goto Captain Panel</button>
-
-    <dl id="userList">
-      <dt>No users.</dt>
-    </dl>
-
-  </main>
-  <footer>
-    <section class="pure-u-1-2 logoContainer">
-      <a href="http://discord.gg/JXbmZjp"><img class="pure-img discordLogo" src="assets/Discord-Logo-White.png"></a>
-    </section>
-    <p>Message haazman#4309 with questions, issues, and bugs.</p>
-  </footer>
-
-  <div id="modal" class="modal">
-    <span class="close">&times;</span>
-    <img class="modal-content" id="img01">
-    <div id="caption"></div>
-  </div>
-
-  <script>
-    var modal = document.getElementById("modal");
-
-    function showModal(thumb) {
-      modal.style.display = "block";
-      document.getElementById("img01").src = thumb.src;
-      document.getElementById("caption").innerHTML = thumb.alt;
-    }
-
-    document.getElementsByClassName("close")[0].onclick = function () {
-      modal.style.display = "none";
-    }
-  </script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-
-      const auth = firebase.auth();
-      const db = firebase.database();
-      const stor = firebase.storage();
-      var currentUser;
-      var theWholeAssDB;
-
-      auth.onAuthStateChanged(function (user) {
-        if (!user) {
-          window.location.replace("login.html");
-        } else {
-          user.getIdTokenResult()
-            .then((idTokenResult) => {
-              // Confirm the user is an Admin.
-              if (!!idTokenResult.claims.admin) {
-                // Show admin UI.
-                populateUserList();
-              } else {
-                window.location.replace("panel.html");
-              }
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-          currentUser = user;
+      @media only screen and (max-width: 35.5em) {
+        main {
+          margin: 1rem;
         }
-      });
-      document.getElementById("logoutButton").addEventListener("click", function (event) {
-        event.preventDefault();
-        auth.signOut()
-          .catch((error) => {
-            alert(error.message);
-          });
-      });
-      document.getElementById("panelButton").addEventListener("click", function (event) {
-        event.preventDefault();
-        window.location.replace("panel.html");
-      });
+      }
 
-      const userList = document.getElementById("userList");
+      @media only screen and (max-width: 48em) {
+        header > section > h1 {
+          font-size: 1em;
+        }
+      }
 
-      function refreshTable(roster, tableBod, puid) {
-        // let roster = currentUserData["roster"];
-        // let tableBod = document.getElementById("theBOD");
-        if (roster) {
-          tableBod.innerHTML = "";
-          for (let gameIndex = 0; gameIndex < Object.keys(roster).length; gameIndex++) {
-            let game = Object.keys(roster)[gameIndex];
-            let tr = document.createElement("tr");
-            let td = document.createElement("td");
-            td.appendChild(document.createTextNode(game));
+      dd {
+        margin-bottom: 1rem;
+      }
+    </style>
+    <style>
+      td > img {
+        max-width: 8rem;
+        max-height: 5.25rem;
+        object-fit: contain;
+      }
 
-            let rowwwws = 0;
-            for (let teamIndex = 0; teamIndex < Object.keys(roster[game]).length; teamIndex++) {
-              let team = Object.keys(roster[game])[teamIndex];
-              if (roster[game][team]["players"]) {
-                rowwwws += Object.keys(roster[game][team]["players"]).length;
-              } else {
-                rowwwws++;
-              }
-            }
+      td > .logo {
+        max-width: 4rem;
+        margin-top: 0.25rem;
+      }
 
-            td.setAttribute("rowspan", rowwwws);
-            tr.appendChild(td);
-            for (let teamIndex = 0; teamIndex < Object.keys(roster[game]).length; teamIndex++) {
-              let team = Object.keys(roster[game])[teamIndex];
-              if (teamIndex !== 0) {
-                tableBod.appendChild(tr);
-                tr = document.createElement("tr");
-              }
-              td = document.createElement("td");
-              let strong = document.createElement("strong");
-              strong.appendChild(document.createTextNode(`${roster[game][team].type}: `));
-              td.appendChild(strong);
-              td.appendChild(document.createTextNode(team));
-              td.appendChild(document.createElement("br"));
-              let logo = document.createElement("img");
-              logo.setAttribute("alt", team + " Logo");
-              stor.ref("teamLogos/" + puid).child(game + "/" + team).getDownloadURL().then((url) => {
-                logo.setAttribute("src", url);
+      td > img:not(.logo):hover {
+        opacity: 0.7;
+      }
+    </style>
+    <style>
+      /* The Modal (background) */
+      .modal {
+        display: none;
+        /* Hidden by default */
+        position: fixed;
+        /* Stay in place */
+        z-index: 1;
+        /* Sit on top */
+        padding-top: 100px;
+        /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%;
+        /* Full width */
+        height: 100%;
+        /* Full height */
+        overflow: auto;
+        /* Enable scroll if needed */
+        background-color: rgb(0, 0, 0);
+        /* Fallback color */
+        background-color: rgba(0, 0, 0, 0.9);
+        /* Black w/ opacity */
+      }
+
+      /* Modal Content (image) */
+      .modal-content {
+        margin: auto;
+        display: block;
+        width: 80%;
+        max-width: 700px;
+      }
+
+      /* Caption of Modal Image */
+      #caption {
+        margin: auto;
+        display: block;
+        width: 80%;
+        max-width: 700px;
+        text-align: center;
+        color: #ccc;
+        padding: 10px 0;
+        height: 150px;
+      }
+
+      /* Add Animation */
+      .modal-content,
+      #caption {
+        animation-name: zoom;
+        animation-duration: 0.6s;
+      }
+
+      @keyframes zoom {
+        from {
+          transform: scale(0.1);
+        }
+
+        to {
+          transform: scale(1);
+        }
+      }
+
+      /* The Close Button */
+      .close {
+        position: absolute;
+        top: 15px;
+        right: 35px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        transition: 0.3s;
+      }
+
+      .close:hover,
+      .close:focus {
+        color: #bbb;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      /* 100% Image Width on Smaller Screens */
+      @media only screen and (max-width: 700px) {
+        .modal-content {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <section>
+        <img class="pure-img" src="assets/CVRE.png" />
+        <h1>ADMIN | Player Manager</h1>
+      </section>
+      <button type="button" id="logoutButton" class="pure-button">
+        Logout
+      </button>
+    </header>
+    <main>
+      <button type="button" id="panelButton" class="pure-button">
+        Goto Captain Panel
+      </button>
+
+      <dl id="userList">
+        <dt>No users.</dt>
+      </dl>
+    </main>
+    <footer>
+      <section class="pure-u-1-2 logoContainer">
+        <a href="http://discord.gg/JXbmZjp"
+          ><img
+            class="pure-img discordLogo"
+            src="assets/Discord-Logo-White.png"
+        /></a>
+      </section>
+      <p>Message haazman#4309 with questions, issues, and bugs.</p>
+    </footer>
+
+    <div id="modal" class="modal">
+      <span class="close">&times;</span>
+      <img class="modal-content" id="img01" />
+      <div id="caption"></div>
+    </div>
+
+    <script>
+      var modal = document.getElementById("modal");
+
+      function showModal(thumb) {
+        modal.style.display = "block";
+        document.getElementById("img01").src = thumb.src;
+        document.getElementById("caption").innerHTML = thumb.alt;
+      }
+
+      document.getElementsByClassName("close")[0].onclick = function () {
+        modal.style.display = "none";
+      };
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const auth = firebase.auth();
+        const db = firebase.database();
+        const stor = firebase.storage();
+        var currentUser;
+        var theWholeAssDB;
+
+        auth.onAuthStateChanged(function (user) {
+          if (!user) {
+            window.location.replace("login.html");
+          } else {
+            user
+              .getIdTokenResult()
+              .then((idTokenResult) => {
+                // Confirm the user is an Admin.
+                if (!!idTokenResult.claims.admin) {
+                  // Show admin UI.
+                  populateUserList();
+                } else {
+                  window.location.replace("panel.html");
+                }
+              })
+              .catch((error) => {
+                console.log(error);
               });
-              logo.setAttribute("class", "logo");
-              td.appendChild(logo);
-              td.setAttribute("rowspan", Object.keys(roster[game][team]["players"]).length ? Object.keys(roster[game][team]["players"]).length : 1);
-              tr.appendChild(td);
-              if (roster[game][team]["players"]) {
-                for (let playerIndex = 0; playerIndex < Object.keys(roster[game][team]["players"]).length; playerIndex++) {
-                  let player = Object.keys(roster[game][team]["players"])[playerIndex];
-                  if (playerIndex !== 0) {
-                    tableBod.appendChild(tr);
-                    tr = document.createElement("tr");
-                  }
-                  td = document.createElement("td");
-                  td.appendChild(document.createTextNode(player));
-                  tr.appendChild(td);
-                  let playerData = roster[game][team]["players"][player];
-                  td = document.createElement("td");
-                  td.appendChild(document.createTextNode(playerData["tag"]));
-                  tr.appendChild(td);
-                  td = document.createElement("td");
-                  td.appendChild(document.createTextNode(playerData["email"]));
-                  tr.appendChild(td);
-                  td = document.createElement("td");
-                  td.appendChild(document.createTextNode(playerData["school"]));
-                  tr.appendChild(td);
-                  td = document.createElement("td");
-                  let img = document.createElement("img");
-                  img.setAttribute("alt", player + " Verification Image");
-                  stor.ref("playerImgs/" + puid).child(game + "/" + team + "/" + player).getDownloadURL().then((url) => {
-                    img.setAttribute("src", url);
-                  });
-                  img.addEventListener("click", function (event) {
-                    showModal(this);
-                  });
-                  td.appendChild(img);
-                  tr.appendChild(td);
-                  td = document.createElement("td");
-                  let span = document.createElement("span");
-                  span.setAttribute("style", playerData["verified"] ? "font-weight:bold;color:green" : "font-weight:bold;color:red");
-                  span.appendChild(document.createTextNode(playerData["verified"] ? "YES" : "NO"));
-                  td.appendChild(span);
-                  tr.appendChild(td);
+            currentUser = user;
+          }
+        });
+        document
+          .getElementById("logoutButton")
+          .addEventListener("click", function (event) {
+            event.preventDefault();
+            auth.signOut().catch((error) => {
+              alert(error.message);
+            });
+          });
+        document
+          .getElementById("panelButton")
+          .addEventListener("click", function (event) {
+            event.preventDefault();
+            window.location.replace("panel.html");
+          });
 
+        const userList = document.getElementById("userList");
+
+        function refreshTable(roster, tableBod, puid) {
+          // let roster = currentUserData["roster"];
+          // let tableBod = document.getElementById("theBOD");
+          if (roster) {
+            tableBod.innerHTML = "";
+            for (
+              let gameIndex = 0;
+              gameIndex < Object.keys(roster).length;
+              gameIndex++
+            ) {
+              let game = Object.keys(roster)[gameIndex];
+              let tr = document.createElement("tr");
+              let td = document.createElement("td");
+              td.appendChild(document.createTextNode(game));
+
+              let rowwwws = 0;
+              for (
+                let teamIndex = 0;
+                teamIndex < Object.keys(roster[game]).length;
+                teamIndex++
+              ) {
+                let team = Object.keys(roster[game])[teamIndex];
+                if (roster[game][team]["players"]) {
+                  rowwwws += Object.keys(roster[game][team]["players"]).length;
+                } else {
+                  rowwwws++;
+                }
+              }
+
+              td.setAttribute("rowspan", rowwwws);
+              tr.appendChild(td);
+              for (
+                let teamIndex = 0;
+                teamIndex < Object.keys(roster[game]).length;
+                teamIndex++
+              ) {
+                let team = Object.keys(roster[game])[teamIndex];
+                if (teamIndex !== 0) {
+                  tableBod.appendChild(tr);
+                  tr = document.createElement("tr");
+                }
+                td = document.createElement("td");
+                let strong = document.createElement("strong");
+                strong.appendChild(
+                  document.createTextNode(`${roster[game][team].type}: `)
+                );
+                td.appendChild(strong);
+                td.appendChild(document.createTextNode(team));
+                td.appendChild(document.createElement("br"));
+                let logo = document.createElement("img");
+                logo.setAttribute("alt", team + " Logo");
+                stor
+                  .ref("teamLogos/" + puid)
+                  .child(game + "/" + team)
+                  .getDownloadURL()
+                  .then((url) => {
+                    logo.setAttribute("src", url);
+                  });
+                logo.setAttribute("class", "logo");
+                td.appendChild(logo);
+                td.setAttribute(
+                  "rowspan",
+                  Object.keys(roster[game][team]["players"]).length
+                    ? Object.keys(roster[game][team]["players"]).length
+                    : 1
+                );
+                tr.appendChild(td);
+                if (roster[game][team]["players"]) {
+                  for (
+                    let playerIndex = 0;
+                    playerIndex <
+                    Object.keys(roster[game][team]["players"]).length;
+                    playerIndex++
+                  ) {
+                    let player = Object.keys(roster[game][team]["players"])[
+                      playerIndex
+                    ];
+                    if (playerIndex !== 0) {
+                      tableBod.appendChild(tr);
+                      tr = document.createElement("tr");
+                    }
+                    td = document.createElement("td");
+                    td.appendChild(document.createTextNode(player));
+                    tr.appendChild(td);
+                    let playerData = roster[game][team]["players"][player];
+                    td = document.createElement("td");
+                    td.appendChild(document.createTextNode(playerData["tag"]));
+                    tr.appendChild(td);
+                    td = document.createElement("td");
+                    td.appendChild(
+                      document.createTextNode(playerData["email"])
+                    );
+                    tr.appendChild(td);
+                    td = document.createElement("td");
+                    td.appendChild(
+                      document.createTextNode(playerData["school"])
+                    );
+                    tr.appendChild(td);
+                    td = document.createElement("td");
+                    let img = document.createElement("img");
+                    img.setAttribute("alt", player + " Verification Image");
+                    stor
+                      .ref("playerImgs/" + puid)
+                      .child(game + "/" + team + "/" + player)
+                      .getDownloadURL()
+                      .then((url) => {
+                        img.setAttribute("src", url);
+                      });
+                    img.addEventListener("click", function (event) {
+                      showModal(this);
+                    });
+                    td.appendChild(img);
+                    tr.appendChild(td);
+                    td = document.createElement("td");
+                    let span = document.createElement("span");
+                    span.setAttribute(
+                      "style",
+                      playerData["verified"]
+                        ? "font-weight:bold;color:green"
+                        : "font-weight:bold;color:red"
+                    );
+                    span.appendChild(
+                      document.createTextNode(
+                        playerData["verified"] ? "YES" : "NO"
+                      )
+                    );
+                    td.appendChild(span);
+                    tr.appendChild(td);
+
+                    td = document.createElement("td");
+                    let button = document.createElement("button");
+                    button.setAttribute("type", "button");
+                    button.setAttribute("class", "pure-button");
+                    button.setAttribute("id", puid);
+                    button.appendChild(
+                      document.createTextNode("Toggle Verification")
+                    );
+                    button.addEventListener("click", function (event) {
+                      toggleVerification(puid, game, team, player);
+                    });
+                    td.appendChild(button);
+                    tr.appendChild(td);
+                  }
+                } else {
                   td = document.createElement("td");
+                  td.setAttribute("colspan", 7);
+                  td.appendChild(document.createTextNode("No Players!"));
+                  tr.appendChild(td);
+                }
+              }
+              tableBod.appendChild(tr);
+            }
+          } else {
+            tableBod.innerHTML = '<tr><td colspan="9">Nothing yet!</td></tr>';
+          }
+          // console.log(tableBod);
+        }
+        function toggleVerification(vuid, game, team, player) {
+          db.ref(
+            vuid + "/roster/" + game + "/" + team + "/players/" + player
+          ).update({
+            verified:
+              !theWholeAssDB[vuid]["roster"][game][team]["players"][player][
+                "verified"
+              ],
+          });
+          theWholeAssDB[vuid]["roster"][game][team]["players"][player][
+            "verified"
+          ] =
+            !theWholeAssDB[vuid]["roster"][game][team]["players"][player][
+              "verified"
+            ];
+          refreshTable(
+            theWholeAssDB[vuid]["roster"],
+            document.getElementById(vuid + "TBABLE"),
+            vuid
+          );
+        }
+
+        function populateUserList() {
+          db.ref("/")
+            .once("value")
+            .then((snapshot) => {
+              theWholeAssDB = snapshot.val();
+              if (theWholeAssDB) {
+                userList.innerHTML = "";
+                for (let uid in theWholeAssDB) {
+                  let dt = document.createElement("dt");
+                  dt.appendChild(document.createTextNode("UID: " + uid));
+                  userList.appendChild(dt);
+                  let dd = document.createElement("dd");
+                  dd.appendChild(document.createTextNode("Discord: "));
+                  let span = document.createElement("span");
+                  span.setAttribute("style", "font-weight:bold;");
+                  span.appendChild(
+                    document.createTextNode(
+                      theWholeAssDB[uid]["discord"]
+                        ? theWholeAssDB[uid]["discord"]
+                        : "Not provided"
+                    )
+                  );
+                  dd.appendChild(span);
+                  userList.appendChild(dd);
+
+                  dd = document.createElement("dd");
+                  dd.appendChild(document.createTextNode("Approved: "));
+                  span = document.createElement("span");
+                  span.setAttribute(
+                    "style",
+                    theWholeAssDB[uid]["approved"]
+                      ? "font-weight:bold;color:green"
+                      : "font-weight:bold;color:red"
+                  );
+                  span.appendChild(
+                    document.createTextNode(
+                      theWholeAssDB[uid]["approved"] ? "YES" : "NO"
+                    )
+                  );
+                  dd.appendChild(span);
+                  userList.appendChild(dd);
+
+                  dd = document.createElement("dd");
                   let button = document.createElement("button");
                   button.setAttribute("type", "button");
                   button.setAttribute("class", "pure-button");
-                  button.setAttribute("id", puid);
-                  button.appendChild(document.createTextNode("Toggle Verification"));
+                  button.setAttribute("id", uid);
+                  button.appendChild(
+                    document.createTextNode("Toggle Approval")
+                  );
                   button.addEventListener("click", function (event) {
-                    toggleVerification(puid, game, team, player);
+                    toggleApproval(uid);
                   });
-                  td.appendChild(button);
-                  tr.appendChild(td);
+                  dd.appendChild(button);
+                  userList.appendChild(dd);
+
+                  if (theWholeAssDB[uid]["approved"]) {
+                    dd = document.createElement("dd");
+                    let table = document.createElement("table");
+                    table.setAttribute(
+                      "class",
+                      "pure-table pure-table-horizontal"
+                    );
+                    let tHead = document.createElement("thead");
+                    tHead.innerHTML =
+                      "<tr><th>Game</th><th>Team</th><th>Player Name</th><th>Player Gamertag</th><th>Player Email</th><th>Player School</th><th>Verification Image</th><th>Verified</th><th>The Cool Admin Button</th></tr>";
+                    table.appendChild(tHead);
+
+                    let tBody = document.createElement("tbody");
+                    tBody.setAttribute("id", uid + "TBABLE");
+                    refreshTable(theWholeAssDB[uid]["roster"], tBody, uid);
+                    table.appendChild(tBody);
+
+                    dd.appendChild(table);
+                    userList.appendChild(dd);
+                  }
                 }
-              } else {
-                td = document.createElement("td");
-                td.setAttribute("colspan", 7);
-                td.appendChild(document.createTextNode("No Players!"));
-                tr.appendChild(td);
               }
-            }
-            tableBod.appendChild(tr);
-          }
-        } else {
-          tableBod.innerHTML = "<tr><td colspan=\"9\">Nothing yet!</td></tr>"
+            });
         }
-        // console.log(tableBod);
-      }
-      function toggleVerification(vuid, game, team, player) {
-        db.ref(vuid + "/roster/" + game + "/" + team + "/players/" + player).update({
-          verified: (!theWholeAssDB[vuid]["roster"][game][team]["players"][player]["verified"])
-        });
-        theWholeAssDB[vuid]["roster"][game][team]["players"][player]["verified"] = !theWholeAssDB[vuid]["roster"][game][team]["players"][player]["verified"];
-        refreshTable(theWholeAssDB[vuid]["roster"], document.getElementById(vuid + "TBABLE"), vuid);
-      }
-
-      function populateUserList() {
-        db.ref("/").once("value").then((snapshot) => {
-          theWholeAssDB = snapshot.val();
-          if (theWholeAssDB) {
-            userList.innerHTML = "";
-            for (let uid in theWholeAssDB) {
-              let dt = document.createElement("dt");
-              dt.appendChild(document.createTextNode("UID: " + uid))
-              userList.appendChild(dt);
-              let dd = document.createElement("dd");
-              dd.appendChild(document.createTextNode("Discord: "));
-              let span = document.createElement("span");
-              span.setAttribute("style", "font-weight:bold;");
-              span.appendChild(document.createTextNode(theWholeAssDB[uid]["discord"] ? theWholeAssDB[uid]["discord"] : "Not provided"));
-              dd.appendChild(span);
-              userList.appendChild(dd);
-
-              dd = document.createElement("dd");
-              dd.appendChild(document.createTextNode("Approved: "));
-              span = document.createElement("span");
-              span.setAttribute("style", theWholeAssDB[uid]["approved"] ? "font-weight:bold;color:green" : "font-weight:bold;color:red");
-              span.appendChild(document.createTextNode(theWholeAssDB[uid]["approved"] ? "YES" : "NO"));
-              dd.appendChild(span);
-              userList.appendChild(dd);
-
-              dd = document.createElement("dd");
-              let button = document.createElement("button");
-              button.setAttribute("type", "button");
-              button.setAttribute("class", "pure-button");
-              button.setAttribute("id", uid);
-              button.appendChild(document.createTextNode("Toggle Approval"));
-              button.addEventListener("click", function (event) {
-                toggleApproval(uid);
-              });
-              dd.appendChild(button);
-              userList.appendChild(dd);
-
-              if (theWholeAssDB[uid]["approved"]) {
-                dd = document.createElement("dd");
-                let table = document.createElement("table");
-                table.setAttribute("class", "pure-table pure-table-horizontal");
-                let tHead = document.createElement("thead");
-                tHead.innerHTML = "<tr><th>Game</th><th>Team</th><th>Player Name</th><th>Player Gamertag</th><th>Player Email</th><th>Player School</th><th>Verification Image</th><th>Verified</th><th>The Cool Admin Button</th></tr>";
-                table.appendChild(tHead);
-
-                let tBody = document.createElement("tbody");
-                tBody.setAttribute("id", uid + "TBABLE");
-                refreshTable(theWholeAssDB[uid]["roster"], tBody, uid);
-                table.appendChild(tBody);
-
-                dd.appendChild(table);
-                userList.appendChild(dd);
-              }
-            }
-          }
-        })
-      }
-      function toggleApproval(auid) {
-        db.ref(auid).update({
-          approved: (!theWholeAssDB[auid]["approved"]),
-        });
-        theWholeAssDB[auid]["approved"] = !theWholeAssDB[auid]["approved"]
-        populateUserList();
-      }
-    });
-  </script>
-</body>
-
+        function toggleApproval(auid) {
+          db.ref(auid).update({
+            approved: !theWholeAssDB[auid]["approved"],
+          });
+          theWholeAssDB[auid]["approved"] = !theWholeAssDB[auid]["approved"];
+          populateUserList();
+        }
+      });
+    </script>
+  </body>
 </html>

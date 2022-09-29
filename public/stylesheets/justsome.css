@@ -13,7 +13,7 @@ body {
 header,
 footer,
 header > section {
-  background-color: #6A378C;
+  background-color: #6a378c;
   display: flex;
   height: 4rem;
   color: white;
@@ -82,24 +82,24 @@ footer {
 /* colors and theming */
 
 .pure-button-primary {
-  background: #6A378C;
+  background: #6a378c;
 }
 
 .pruple,
 a {
-  color: #6A378C;
-  text-decoration: none
+  color: #6a378c;
+  text-decoration: none;
 }
 
 strong {
-  color: #BFA836;
+  color: #bfa836;
   font-size: 1.25em;
 }
 
-.pure-table>tbody {
-  background-color: #6A378C;
+.pure-table > tbody {
+  background-color: #6a378c;
   color: white;
 }
-td>a {
-  color: #BFA836;
+td > a {
+  color: #bfa836;
 }

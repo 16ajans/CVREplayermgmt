@@ -1,260 +1,328 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Player Manager | Team Rosters</title>
+    <link rel="icon" type="image/png" href="assets/favicon.png" />
 
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Player Manager | Team Rosters</title>
-  <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/purecss@2.0.5/build/pure-min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/purecss@2.0.5/build/grids-responsive-min.css"
+    />
+    <link rel="stylesheet" href="stylesheets/justsome.css" />
 
-  <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.5/build/pure-min.css">
-  <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.5/build/grids-responsive-min.css">
-  <link rel="stylesheet" href="stylesheets/justsome.css">
+    <script defer src="/__/firebase/8.2.5/firebase-app.js"></script>
+    <script defer src="/__/firebase/8.2.5/firebase-auth.js"></script>
+    <script defer src="/__/firebase/8.2.5/firebase-database.js"></script>
+    <script defer src="/__/firebase/8.2.5/firebase-storage.js"></script>
 
-  <script defer src="/__/firebase/8.2.5/firebase-app.js"></script>
-  <script defer src="/__/firebase/8.2.5/firebase-auth.js"></script>
-  <script defer src="/__/firebase/8.2.5/firebase-database.js"></script>
-  <script defer src="/__/firebase/8.2.5/firebase-storage.js"></script>
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
 
-  <script defer src="/__/firebase/init.js?useEmulator=true"></script>
-
-  <style>
-    main {
-      margin: 3rem;
-    }
-
-    @media only screen and (max-width: 35.5em) {
-
+    <style>
       main {
-        margin: 1rem;
+        margin: 3rem;
       }
-    }
 
-    @media only screen and (max-width: 48em) {
-
-      header>section>h1 {
-        font-size: 1em;
-      }
-    }
-
-    div {
-      padding-bottom: 1rem;
-    }
-
-    table {
-      width: 90%;
-      table-layout: fixed;
-    }
-
-    .pure-g {
-      letter-spacing: normal;
-    }
-  </style>
-  <style>
-    td>img {
-      max-width: 8rem;
-      max-height: 8rem;
-      margin-top: 0.25rem;
-      object-fit: contain;
-    }
-  </style>
-</head>
-
-<body>
-  <header>
-    <section>
-      <img class="pure-img" src="assets/CVRE.png">
-      <h1>Player Manager | Team Rosters</h1>
-    </section>
-    <button type="button" id="loginButton" class="pure-button">Login</button>
-  </header>
-  <main>
-    <!-- <h1>Pavlov Teams</h1> -->
-    <h1>Echo Arena Teams</h1>
-    <hr>
-    <br>
-    <div id="daEAGrid" class="pure-g">
-      <div class="pure-u-1 pure-u-md-1-2 pure-u-xl-1-3">
-        No Teams.
-      </div>
-    </div>
-    <h1>Beat Saber Teams</h1>
-    <hr>
-    <br>
-    <div id="daBSGrid" class="pure-g">
-      <div class="pure-u-1 pure-u-md-1-2 pure-u-xl-1-3">
-        No Teams.
-      </div>
-    </div>
-  </main>
-  <footer>
-    <section class="pure-u-1-2 logoContainer">
-      <a href="http://discord.gg/JXbmZjp"><img class="pure-img discordLogo" src="assets/Discord-Logo-White.png"></a>
-    </section>
-    <p>Message haazman#4309 with questions, issues, and bugs.</p>
-  </footer>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-
-      const db = firebase.database();
-      const stor = firebase.storage();
-      var theWholeAssDB;
-
-      document.getElementById("loginButton").addEventListener("click", function (event) {
-        event.preventDefault();
-        window.location.replace("login.html");
-      });
-
-      function refreshTable(roster, tableBod, puid, game) {
-        // let roster = currentUserData["roster"];
-        // let tableBod = document.getElementById("theBOD");
-        if (roster) {
-          tableBod.innerHTML = "";
-          let tr = document.createElement("tr");
-          let td = document.createElement("td");
-
-          let rowwwws = 0;
-          for (let teamIndex = 0; teamIndex < Object.keys(roster).length; teamIndex++) {
-            let team = Object.keys(roster)[teamIndex];
-            if (roster[team]["players"]) {
-              rowwwws += Object.keys(roster[team]["players"]).length;
-            } else {
-              rowwwws++;
-            }
-          }
-          for (let teamIndex = 0; teamIndex < Object.keys(roster).length; teamIndex++) {
-            let team = Object.keys(roster)[teamIndex];
-            if (teamIndex !== 0) {
-              tableBod.appendChild(tr);
-              tr = document.createElement("tr");
-            }
-            td = document.createElement("td");
-            let strong = document.createElement("strong");
-            strong.appendChild(document.createTextNode(`${roster[team].type}: `));
-            td.appendChild(strong);
-            td.appendChild(document.createTextNode(team));
-            td.appendChild(document.createElement("br"));
-            let logo = document.createElement("img");
-            logo.setAttribute("alt", team + " Logo");
-            stor.ref("teamLogos/" + puid).child(game + "/" + team).getDownloadURL().then((url) => {
-              logo.setAttribute("src", url);
-            });
-            logo.setAttribute("class", "logo");
-            td.appendChild(logo);
-            td.setAttribute("rowspan", Object.keys(roster[team]["players"]).length ? Object.keys(roster[team]["players"]).length : 1);
-            tr.appendChild(td);
-            if (roster[team]["players"]) {
-              for (let playerIndex = 0; playerIndex < Object.keys(roster[team]["players"]).length; playerIndex++) {
-                let player = Object.keys(roster[team]["players"])[playerIndex];
-                if (playerIndex !== 0) {
-                  tableBod.appendChild(tr);
-                  tr = document.createElement("tr");
-                }
-                let playerData = roster[team]["players"][player];
-                td = document.createElement("td");
-                td.appendChild(document.createTextNode(playerData["tag"]));
-                tr.appendChild(td);
-                // td = document.createElement("td");
-                // td.appendChild(document.createTextNode(playerData["school"]));
-                // tr.appendChild(td);
-                // change colspans
-              }
-            } else {
-              td = document.createElement("td");
-              td.setAttribute("colspan", 1);
-              td.appendChild(document.createTextNode("No Players!"));
-              tr.appendChild(td);
-            }
-          }
-          tableBod.appendChild(tr);
-        } else {
-          tableBod.innerHTML = "<tr><td colspan=\"2\">Nothing yet!</td></tr>"
+      @media only screen and (max-width: 35.5em) {
+        main {
+          margin: 1rem;
         }
-        // console.log(tableBod);
       }
 
-      const daEAGrid = document.getElementById("daEAGrid");
-      const daBSGrid = document.getElementById("daBSGrid");
+      @media only screen and (max-width: 48em) {
+        header > section > h1 {
+          font-size: 1em;
+        }
+      }
 
-      function drawThemTables() {
-        db.ref("/").once("value").then((snapshot) => {
-          theWholeAssDB = snapshot.val();
-          if (theWholeAssDB) {
-            daEAGrid.innerHTML = "";
-            daBSGrid.innerHTML = "";
-            for (let uid in theWholeAssDB) {
-              if (theWholeAssDB[uid]["roster"]) {
-                // if (theWholeAssDB[uid]["roster"]["Pavlov"]) {
-                  if (theWholeAssDB[uid]["roster"]["Echo Arena"]) {
-                  let gridUnit = document.createElement("div");
-                  gridUnit.setAttribute("class", "pure-u-1 pure-u-md-1-2 pure-u-xl-1-3");
+      div {
+        padding-bottom: 1rem;
+      }
 
-                  let table = document.createElement("table");
-                  table.setAttribute("class", "pure-table pure-table-horizontal");
-                  // let tHead = document.createElement("thead");
-                  // tHead.innerHTML = "<tr><th>Team</th><th>Player Tag</th></tr>";
-                  // // <th>Player School</th>
-                  // table.appendChild(tHead);
+      table {
+        width: 90%;
+        table-layout: fixed;
+      }
 
-                  let tBody = document.createElement("tbody");
-                  tBody.setAttribute("id", uid + "TBABLE");
-                  // refreshTable(theWholeAssDB[uid]["roster"]["Pavlov"], tBody, uid, "Pavlov");
-                  refreshTable(theWholeAssDB[uid]["roster"]["Echo Arena"], tBody, uid, "Echo Arena");
-                  table.appendChild(tBody);
+      .pure-g {
+        letter-spacing: normal;
+      }
+    </style>
+    <style>
+      td > img {
+        max-width: 8rem;
+        max-height: 8rem;
+        margin-top: 0.25rem;
+        object-fit: contain;
+      }
+    </style>
+  </head>
 
-                  gridUnit.appendChild(table);
+  <body>
+    <header>
+      <section>
+        <img class="pure-img" src="assets/CVRE.png" />
+        <h1>Player Manager | Team Rosters</h1>
+      </section>
+      <button type="button" id="loginButton" class="pure-button">Login</button>
+    </header>
+    <main>
+      <!-- <h1>Pavlov Teams</h1> -->
+      <h1>Echo Arena Teams</h1>
+      <hr />
+      <br />
+      <div id="daEAGrid" class="pure-g">
+        <div class="pure-u-1 pure-u-md-1-2 pure-u-xl-1-3">No Teams.</div>
+      </div>
+      <h1>Beat Saber Teams</h1>
+      <hr />
+      <br />
+      <div id="daBSGrid" class="pure-g">
+        <div class="pure-u-1 pure-u-md-1-2 pure-u-xl-1-3">No Teams.</div>
+      </div>
+    </main>
+    <footer>
+      <section class="pure-u-1-2 logoContainer">
+        <a href="http://discord.gg/JXbmZjp"
+          ><img
+            class="pure-img discordLogo"
+            src="assets/Discord-Logo-White.png"
+        /></a>
+      </section>
+      <p>Message haazman#4309 with questions, issues, and bugs.</p>
+    </footer>
 
-                  gridUnit.appendChild(document.createTextNode("Captain's Discord: "));
-                  let span = document.createElement("span");
-                  span.setAttribute("style", "font-weight:bold;");
-                  span.appendChild(document.createTextNode(theWholeAssDB[uid]["discord"] ? theWholeAssDB[uid]["discord"] : "Not provided"));
-                  gridUnit.appendChild(span);
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const db = firebase.database();
+        const stor = firebase.storage();
+        var theWholeAssDB;
 
-                  daEAGrid.appendChild(gridUnit);
-                }
-                if (theWholeAssDB[uid]["roster"]["Beat Saber"]) {
-                  let gridUnit = document.createElement("div");
-                  gridUnit.setAttribute("class", "pure-u-1 pure-u-md-1-2 pure-u-xl-1-3");
+        document
+          .getElementById("loginButton")
+          .addEventListener("click", function (event) {
+            event.preventDefault();
+            window.location.replace("login.html");
+          });
 
-                  let table = document.createElement("table");
-                  table.setAttribute("class", "pure-table pure-table-horizontal");
-                  // let tHead = document.createElement("thead");
-                  // tHead.innerHTML = "<tr><th>Team</th><th>Player Tag</th></tr>";
-                  // // <th>Player School</th>
-                  // table.appendChild(tHead);
+        function refreshTable(roster, tableBod, puid, game) {
+          // let roster = currentUserData["roster"];
+          // let tableBod = document.getElementById("theBOD");
+          if (roster) {
+            tableBod.innerHTML = "";
+            let tr = document.createElement("tr");
+            let td = document.createElement("td");
 
-                  let tBody = document.createElement("tbody");
-                  tBody.setAttribute("id", uid + "TBABLE");
-                  refreshTable(theWholeAssDB[uid]["roster"]["Beat Saber"], tBody, uid, "Beat Saber");
-                  table.appendChild(tBody);
-
-                  gridUnit.appendChild(table);
-
-                  gridUnit.appendChild(document.createTextNode("Captain's Discord: "));
-                  let span = document.createElement("span");
-                  span.setAttribute("style", "font-weight:bold;");
-                  span.appendChild(document.createTextNode(theWholeAssDB[uid]["discord"] ? theWholeAssDB[uid]["discord"] : "Not provided"));
-                  gridUnit.appendChild(span);
-
-                  daBSGrid.appendChild(gridUnit);
-                }
+            let rowwwws = 0;
+            for (
+              let teamIndex = 0;
+              teamIndex < Object.keys(roster).length;
+              teamIndex++
+            ) {
+              let team = Object.keys(roster)[teamIndex];
+              if (roster[team]["players"]) {
+                rowwwws += Object.keys(roster[team]["players"]).length;
+              } else {
+                rowwwws++;
               }
             }
-            if (!daEAGrid.innerHTML) {
-              daEAGrid.innerHTML = "No Teams."
+            for (
+              let teamIndex = 0;
+              teamIndex < Object.keys(roster).length;
+              teamIndex++
+            ) {
+              let team = Object.keys(roster)[teamIndex];
+              if (teamIndex !== 0) {
+                tableBod.appendChild(tr);
+                tr = document.createElement("tr");
+              }
+              td = document.createElement("td");
+              let strong = document.createElement("strong");
+              strong.appendChild(
+                document.createTextNode(`${roster[team].type}: `)
+              );
+              td.appendChild(strong);
+              td.appendChild(document.createTextNode(team));
+              td.appendChild(document.createElement("br"));
+              let logo = document.createElement("img");
+              logo.setAttribute("alt", team + " Logo");
+              stor
+                .ref("teamLogos/" + puid)
+                .child(game + "/" + team)
+                .getDownloadURL()
+                .then((url) => {
+                  logo.setAttribute("src", url);
+                });
+              logo.setAttribute("class", "logo");
+              td.appendChild(logo);
+              td.setAttribute(
+                "rowspan",
+                Object.keys(roster[team]["players"]).length
+                  ? Object.keys(roster[team]["players"]).length
+                  : 1
+              );
+              tr.appendChild(td);
+              if (roster[team]["players"]) {
+                for (
+                  let playerIndex = 0;
+                  playerIndex < Object.keys(roster[team]["players"]).length;
+                  playerIndex++
+                ) {
+                  let player = Object.keys(roster[team]["players"])[
+                    playerIndex
+                  ];
+                  if (playerIndex !== 0) {
+                    tableBod.appendChild(tr);
+                    tr = document.createElement("tr");
+                  }
+                  let playerData = roster[team]["players"][player];
+                  td = document.createElement("td");
+                  td.appendChild(document.createTextNode(playerData["tag"]));
+                  tr.appendChild(td);
+                  // td = document.createElement("td");
+                  // td.appendChild(document.createTextNode(playerData["school"]));
+                  // tr.appendChild(td);
+                  // change colspans
+                }
+              } else {
+                td = document.createElement("td");
+                td.setAttribute("colspan", 1);
+                td.appendChild(document.createTextNode("No Players!"));
+                tr.appendChild(td);
+              }
             }
-            if (!daBSGrid.innerHTML) {
-              daBSGrid.innerHTML = "No Teams."
-            }
+            tableBod.appendChild(tr);
+          } else {
+            tableBod.innerHTML = '<tr><td colspan="2">Nothing yet!</td></tr>';
           }
-        })
-      }
+          // console.log(tableBod);
+        }
 
-      drawThemTables();
-    });
-  </script>
-</body>
+        const daEAGrid = document.getElementById("daEAGrid");
+        const daBSGrid = document.getElementById("daBSGrid");
 
+        function drawThemTables() {
+          db.ref("/")
+            .once("value")
+            .then((snapshot) => {
+              theWholeAssDB = snapshot.val();
+              if (theWholeAssDB) {
+                daEAGrid.innerHTML = "";
+                daBSGrid.innerHTML = "";
+                for (let uid in theWholeAssDB) {
+                  if (theWholeAssDB[uid]["roster"]) {
+                    // if (theWholeAssDB[uid]["roster"]["Pavlov"]) {
+                    if (theWholeAssDB[uid]["roster"]["Echo Arena"]) {
+                      let gridUnit = document.createElement("div");
+                      gridUnit.setAttribute(
+                        "class",
+                        "pure-u-1 pure-u-md-1-2 pure-u-xl-1-3"
+                      );
+
+                      let table = document.createElement("table");
+                      table.setAttribute(
+                        "class",
+                        "pure-table pure-table-horizontal"
+                      );
+                      // let tHead = document.createElement("thead");
+                      // tHead.innerHTML = "<tr><th>Team</th><th>Player Tag</th></tr>";
+                      // // <th>Player School</th>
+                      // table.appendChild(tHead);
+
+                      let tBody = document.createElement("tbody");
+                      tBody.setAttribute("id", uid + "TBABLE");
+                      // refreshTable(theWholeAssDB[uid]["roster"]["Pavlov"], tBody, uid, "Pavlov");
+                      refreshTable(
+                        theWholeAssDB[uid]["roster"]["Echo Arena"],
+                        tBody,
+                        uid,
+                        "Echo Arena"
+                      );
+                      table.appendChild(tBody);
+
+                      gridUnit.appendChild(table);
+
+                      gridUnit.appendChild(
+                        document.createTextNode("Captain's Discord: ")
+                      );
+                      let span = document.createElement("span");
+                      span.setAttribute("style", "font-weight:bold;");
+                      span.appendChild(
+                        document.createTextNode(
+                          theWholeAssDB[uid]["discord"]
+                            ? theWholeAssDB[uid]["discord"]
+                            : "Not provided"
+                        )
+                      );
+                      gridUnit.appendChild(span);
+
+                      daEAGrid.appendChild(gridUnit);
+                    }
+                    if (theWholeAssDB[uid]["roster"]["Beat Saber"]) {
+                      let gridUnit = document.createElement("div");
+                      gridUnit.setAttribute(
+                        "class",
+                        "pure-u-1 pure-u-md-1-2 pure-u-xl-1-3"
+                      );
+
+                      let table = document.createElement("table");
+                      table.setAttribute(
+                        "class",
+                        "pure-table pure-table-horizontal"
+                      );
+                      // let tHead = document.createElement("thead");
+                      // tHead.innerHTML = "<tr><th>Team</th><th>Player Tag</th></tr>";
+                      // // <th>Player School</th>
+                      // table.appendChild(tHead);
+
+                      let tBody = document.createElement("tbody");
+                      tBody.setAttribute("id", uid + "TBABLE");
+                      refreshTable(
+                        theWholeAssDB[uid]["roster"]["Beat Saber"],
+                        tBody,
+                        uid,
+                        "Beat Saber"
+                      );
+                      table.appendChild(tBody);
+
+                      gridUnit.appendChild(table);
+
+                      gridUnit.appendChild(
+                        document.createTextNode("Captain's Discord: ")
+                      );
+                      let span = document.createElement("span");
+                      span.setAttribute("style", "font-weight:bold;");
+                      span.appendChild(
+                        document.createTextNode(
+                          theWholeAssDB[uid]["discord"]
+                            ? theWholeAssDB[uid]["discord"]
+                            : "Not provided"
+                        )
+                      );
+                      gridUnit.appendChild(span);
+
+                      daBSGrid.appendChild(gridUnit);
+                    }
+                  }
+                }
+                if (!daEAGrid.innerHTML) {
+                  daEAGrid.innerHTML = "No Teams.";
+                }
+                if (!daBSGrid.innerHTML) {
+                  daBSGrid.innerHTML = "No Teams.";
+                }
+              }
+            });
+        }
+
+        drawThemTables();
+      });
+    </script>
+  </body>
 </html>
